@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EZRD-976 — GPS Ingestion Simulation Report</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --orange: #db6d28;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+  h2 {
+    font-size: 1.3rem;
+    margin-top: 3rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1.05rem; margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--accent); }
+  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .subtitle span { margin-right: 1.5rem; }
+
+  /* Section intro */
+  .section-intro {
+    font-size: 1rem;
+    color: var(--text);
+    margin: 0.75rem 0 1.25rem 0;
+    line-height: 1.75;
+  }
+
+  /* Summary cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+  .card-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .card-value { font-size: 1.6rem; font-weight: 700; margin-top: 0.25rem; }
+  .card-detail { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+  /* AC table */
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  td { vertical-align: top; }
+  .pass { color: var(--green); font-weight: 600; }
+  .fail { color: var(--red); font-weight: 600; }
+  .mixed { color: var(--yellow); font-weight: 600; }
+  .measured { color: var(--accent); font-weight: 600; }
+
+  /* Charts */
+  .chart-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+    position: relative;
+    height: 320px;
+  }
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 768px) { .chart-row { grid-template-columns: 1fr; } }
+
+  /* Stats block */
+  .stats {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    white-space: pre-line;
+  }
+  .highlight { color: var(--accent); }
+  .warn { color: var(--yellow); }
+
+  /* Callout */
+  .callout {
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    background: rgba(88, 166, 255, 0.05);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+  .callout.warn { border-left-color: var(--yellow); background: rgba(210, 153, 34, 0.05); }
+  .callout.danger { border-left-color: var(--red); background: rgba(248, 81, 73, 0.05); }
+  .callout.verdict { border-left-color: var(--green); background: rgba(63, 185, 80, 0.05); }
+
+  /* Verdict box */
+  .verdict-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+  }
+  .verdict-box h4 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+  .verdict-box h4.good { color: var(--green); }
+  .verdict-box h4.concern { color: var(--yellow); }
+  .verdict-box h4.action { color: var(--red); }
+  .verdict-box p { font-size: 0.95rem; margin-bottom: 0.5rem; }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-pass { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+  .badge-fail { background: rgba(248, 81, 73, 0.15); color: var(--red); }
+  .badge-mixed { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+
+  p { margin: 0.5rem 0; }
+  a { color: var(--accent); }
+  code { background: var(--surface); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.8rem; }
+  .detail-toggle { color: var(--text-muted); font-size: 0.85rem; cursor: pointer; margin: 0.5rem 0; }
+  .detail-toggle:hover { color: var(--accent); }
+  details { margin: 0.75rem 0; }
+  details summary { color: var(--text-muted); font-size: 0.85rem; cursor: pointer; margin-bottom: 0.5rem; }
+  details summary:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<h1>EZRD-976 — GPS Ingestion Simulation Report</h1>
+<div class="subtitle">
+  <span>Date: 2026-05-07</span>
+  <span>Environment: Dev EKS (<code>ezrd-dev</code>)</span>
+  <span>Tester: Don Adams</span>
+</div>
+
+<!-- Executive Summary -->
+<h2>What We Tested and Why</h2>
+<p class="section-intro">
+  Our system tracks school buses in real time. GPS hardware on the buses and driver tablet apps send location updates constantly. This data flows through several services before a parent opens "Where's The Bus" and sees a dot on a map. We had never stress-tested this pipeline on our dev environment to see how much it can handle, or whether it would break under heavy load. We also needed to confirm that a previous bug (EZRD-813) where bad GPS data caused buses to appear "in the ocean" is still fixed.
+</p>
+<p class="section-intro">
+  We pushed over <strong>15 million GPS records</strong> through the system at up to <strong>30 times normal traffic</strong> and measured what happened. Here are the headline numbers:
+</p>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-label">Total Records Tested</div>
+    <div class="card-value" style="color:var(--accent)">15.2M</div>
+    <div class="card-detail">Across single and multi-tenant runs</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Peak Throughput</div>
+    <div class="card-value" style="color:var(--green)">2M rec/min</div>
+    <div class="card-detail">30x normal production traffic</div>
+  </div>
+  <div class="card">
+    <div class="card-label">"Where's The Bus" Speed</div>
+    <div class="card-value" style="color:var(--green)">125ms</div>
+    <div class="card-detail">How fast parents get a response</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Bus-to-Map Delay</div>
+    <div class="card-value" style="color:var(--red)">~10s</div>
+    <div class="card-detail">How long until a bus's new position shows up</div>
+  </div>
+</div>
+
+<div class="verdict-box">
+  <h4 class="good">The Good</h4>
+  <p>The core GPS processing engine (Routing) handles 10x normal traffic with zero backlog and survives 30x. The "Where's The Bus" API stays fast even while GPS data is flooding in. Bad coordinates are properly blocked.</p>
+  <h4 class="action" style="margin-top:1rem;">Needs Attention</h4>
+  <p>When a bus sends its location, it takes about 10 seconds before a parent can see the updated position on the map. This delay is not caused by Routing &mdash; it's caused by a separate service called GPSADV that sits in the middle. This is the biggest issue uncovered by this test.</p>
+</div>
+
+<!-- Acceptance Criteria -->
+<h2>Scorecard</h2>
+<p class="section-intro">
+  The ticket defined six things we needed to prove. Here's how each one turned out:
+</p>
+<table>
+  <thead>
+    <tr><th>AC</th><th>What We Were Testing</th><th>Result</th><th>Evidence</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Can we push GPS data into the system?</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>8.1M records via the hardware path. 5 tablet bursts, all successful in under 225 ms</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Does a bus position show up for parents within 3 seconds?</td>
+      <td><span class="badge badge-mixed">MIXED</span></td>
+      <td>The API itself responds in 125 ms (fast). But the full journey from bus to parent's screen takes ~10 s (slow). The slowdown is in GPSADV, not Routing</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Does the data become stale or out of sync?</td>
+      <td><span class="badge badge-mixed">MEASURED</span></td>
+      <td>~10 s delay is consistent (only 253 ms variation). It's slow but not inconsistent or drifting</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Can the system recover when GPS devices reconnect and dump queued data?</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>At 30x peak, a backlog of 925 entries built up and the system drained it back to zero on its own</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Are broken GPS coordinates (the "buses in the ocean" bug) still blocked?</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>Sent null, empty, and mixed coordinates through both paths. All bad data was filtered out. No bad positions appeared for parents</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Did our testing affect any real data?</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+      <td>All test data used fake vehicle IDs and sandbox tenants. Nothing in production was touched</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Stream Load Test -->
+<h2>Can the System Keep Up With Heavy Traffic?</h2>
+<p class="section-intro">
+  This is the core question. GPS hardware on buses sends location updates to a Redis stream, and a background worker reads from that stream and saves the data to the database. If the worker falls behind, locations get delayed or lost. We gradually turned up the volume from normal levels all the way to 30 times production peak to find where it starts to struggle.
+</p>
+<p class="section-intro">
+  The key metric is <strong>"lag"</strong> &mdash; how many GPS entries are waiting in line to be processed. Zero lag means the system is keeping up perfectly. High lag means it's falling behind.
+</p>
+
+<h3>How It Performed at Each Volume Level</h3>
+<div class="chart-container" style="height:350px">
+  <canvas id="lagChart"></canvas>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Volume Level</th><th>GPS Records Per Minute</th><th>Backlog</th><th>Verdict</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Normal day</td><td>66,600</td><td>2 entries</td><td class="pass">No issues</td></tr>
+    <tr><td>3x peak</td><td>200,000</td><td>5 entries</td><td class="pass">No issues</td></tr>
+    <tr><td>10x peak</td><td>600,000</td><td>26 entries</td><td class="pass">No issues</td></tr>
+    <tr><td>30x peak</td><td>2,000,000</td><td>925 entries</td><td class="warn">Brief spikes, but always recovers</td></tr>
+  </tbody>
+</table>
+
+<details>
+  <summary>Raw test details</summary>
+  <div class="stats">Tenant:         er_don
+Duration:       35m 15s
+Total entries:  407,009
+Total records:  <span class="highlight">8,140,180</span>
+Peak rate:      100,000 entries/min (<span class="highlight">2,000,000 records/min</span> = 30x prod)
+Lag at stop:    1 entry</div>
+</details>
+
+<div class="verdict-box">
+  <h4 class="good">What This Means</h4>
+  <p>The system comfortably handles <strong>10 times the busiest day we've ever seen</strong> without breaking a sweat. Even at 30 times peak &mdash; a scenario that would never happen in real life &mdash; it briefly falls behind but catches right back up. There is no immediate need to add more capacity to the GPS processing pipeline. We have a very large safety margin.</p>
+</div>
+
+<!-- Multi-Tenant Comparison -->
+<h3>Does It Perform Differently With Multiple School Districts?</h3>
+<p class="section-intro">
+  In production, ~500 school districts share the system, each with their own database. Our first test used only one district. To simulate something closer to reality, we re-ran the test spreading data across 6 districts. The question: does the system perform better or worse when juggling multiple databases at once?
+</p>
+
+<div class="chart-container" style="height:320px">
+  <canvas id="multiTenantChart"></canvas>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Volume Level</th><th>1 District (max backlog)</th><th>6 Districts (max backlog)</th><th>Improvement</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Normal day</td><td>2</td><td>2</td><td>Same</td></tr>
+    <tr><td>3x peak</td><td>5</td><td>8</td><td>Same</td></tr>
+    <tr><td>10x peak</td><td>26</td><td>1</td><td class="pass">96% lower backlog</td></tr>
+    <tr><td>30x peak</td><td>925</td><td>537</td><td class="pass">42% lower backlog</td></tr>
+  </tbody>
+</table>
+
+<div class="verdict-box">
+  <h4 class="good">What This Means</h4>
+  <p>The system actually performs <strong>better</strong> with multiple districts because the database writes are spread out instead of all hitting one place. Since production has ~500 districts (not 6), real-world performance will be even better than what we measured. Our single-district test was the worst-case scenario &mdash; and it still passed easily.</p>
+</div>
+
+<!-- k6 Bus Tracker -->
+<h2>Does "Where's The Bus" Slow Down During Heavy GPS Traffic?</h2>
+<p class="section-intro">
+  Parents use "Where's The Bus" to see their child's bus on a map in real time. Behind the scenes, this means calling our API to get vehicle locations. We wanted to know: when the system is also busy processing a flood of GPS data, do parents experience slower load times? We ran the same parent-app simulation twice &mdash; once by itself, and once while GPS data was simultaneously flooding in.
+</p>
+
+<div class="chart-row">
+  <div class="chart-container" style="height:300px">
+    <canvas id="k6LatencyChart"></canvas>
+  </div>
+  <div class="chart-container" style="height:300px">
+    <canvas id="k6ThroughputChart"></canvas>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr><th>What We Measured</th><th>No GPS Load</th><th>During GPS Flood</th><th>Impact</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>How fast parents get a response (typical)</td><td>55 ms</td><td>64 ms</td><td>+16% slower</td></tr>
+    <tr><td>How fast parents get a response (worst 5%)</td><td>106 ms</td><td>125 ms</td><td>+18% slower</td></tr>
+    <tr><td>How many parents served per second</td><td>88</td><td>75</td><td>-15% fewer</td></tr>
+    <tr><td>Errors</td><td>0</td><td>0</td><td class="pass">None</td></tr>
+  </tbody>
+</table>
+
+<div class="verdict-box">
+  <h4 class="good">What This Means</h4>
+  <p>Even while the system was processing a heavy stream of GPS data, the parent app stayed fast. Responses slowed by about 18% &mdash; from a tenth of a second to about an eighth of a second. Parents would never notice this difference. The app continued to handle 75 requests per second with zero errors. <strong>GPS traffic does not meaningfully affect the parent experience.</strong></p>
+</div>
+
+<!-- E2E Latency -->
+<h2>How Long Until a Bus's New Position Shows Up on the Map?</h2>
+<p class="section-intro">
+  This is the most important question for parents: when a bus moves, how quickly does the dot on the map update? The answer involves a chain of services: the bus sends its location to our server, our server forwards it to GPSADV (a GPS processing service), GPSADV saves it to a shared cache, and then the parent app reads from that cache. We measured the total time from start to finish.
+</p>
+
+<h3>Single Test</h3>
+<p>We sent GPS positions for 5 buses and watched for them to appear in the parent-facing API.</p>
+
+<div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
+  <div class="card">
+    <div class="card-label">Our Server Accepts Data</div>
+    <div class="card-value" style="color:var(--green)">194ms</div>
+    <div class="card-detail">Fast &mdash; under a fifth of a second</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Parents Can See It</div>
+    <div class="card-value" style="color:var(--red)">7.6s</div>
+    <div class="card-detail">Slow &mdash; well over the 3-second goal</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Where the Delay Is</div>
+    <div class="card-value" style="color:var(--yellow)">GPSADV</div>
+    <div class="card-detail">External service, not our code</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Buses Found</div>
+    <div class="card-value" style="color:var(--green)">5/5</div>
+    <div class="card-detail">All buses appeared correctly</div>
+  </div>
+</div>
+
+<h3>Sustained Test (2 Minutes of Continuous Updates)</h3>
+<p>To make sure the delay is consistent and doesn't get worse over time, we sent GPS updates every 10 seconds for 2 full minutes.</p>
+
+<div class="chart-container" style="height:300px">
+  <canvas id="e2eChart"></canvas>
+</div>
+
+<details>
+  <summary>Raw sustained test data</summary>
+  <div class="stats">Injections:    12 batches (5 vehicles each)
+Visibility:    <span class="highlight">5/5 every batch (100%)</span>
+Latency min:   9,622 ms
+Latency avg:   9,744 ms
+Latency p50:   9,748 ms
+Latency p95:   9,875 ms
+Latency max:   9,875 ms
+Spread:        <span class="highlight">253 ms</span> (very stable)
+SLA (&lt;3 s):    <span class="warn">FAIL</span></div>
+</details>
+
+<div class="verdict-box">
+  <h4 class="action">What This Means</h4>
+  <p>When a bus moves, it takes about <strong>10 seconds</strong> for that new position to show up for parents. Our goal is 3 seconds or less, so this fails the target.</p>
+  <p>However, the delay is <strong>not our code's fault</strong>. Our server accepts and forwards the data in under 200 milliseconds. The remaining ~9.5 seconds are spent in GPSADV, a separate GPS processing service that sits between us and the data parents see. GPSADV appears to process data in batches on a timer rather than immediately.</p>
+  <p>The good news: the delay is <strong>rock solid</strong>. Over 12 consecutive tests spanning 2 minutes, the delay only varied by 253 milliseconds. It's slow, but it's predictable and it doesn't get worse over time or under load.</p>
+  <p><strong>Recommended action:</strong> Investigate GPSADV's processing interval. If it batches writes every ~10 seconds, reducing that interval could bring the E2E latency within the 3-second target.</p>
+</div>
+
+<!-- Invalid Coords -->
+<h2>Are Bad GPS Coordinates Still Blocked?</h2>
+<p class="section-intro">
+  Earlier this year, a bug (EZRD-813) caused buses with bad GPS data to appear "in the ocean" on parent maps. The fix added coordinate validation that filters out null, empty, or nonsensical positions. We re-tested this by deliberately sending bad data through both GPS paths to make sure the fix still holds.
+</p>
+
+<table>
+  <thead>
+    <tr><th>What We Sent</th><th>How We Sent It</th><th>What Happened</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Null coordinates (no position at all)</td><td>Tablet app path</td><td class="pass">Blocked &mdash; record dropped silently</td></tr>
+    <tr><td>Empty strings instead of numbers</td><td>Tablet app path</td><td class="pass">Blocked &mdash; record dropped silently</td></tr>
+    <tr><td>Mix of 1 good + 1 bad record</td><td>Tablet app path</td><td class="pass">Good one saved, bad one dropped</td></tr>
+    <tr><td>Empty strings</td><td>Hardware GPS path</td><td class="pass">Blocked &mdash; filtered by coordinate check</td></tr>
+  </tbody>
+</table>
+
+<p>After all injections, we checked the parent-facing API. <strong>No buses with bad coordinates appeared.</strong></p>
+
+<div class="verdict-box">
+  <h4 class="good">What This Means</h4>
+  <p>The "buses in the ocean" bug (EZRD-813) is still fixed. Both GPS paths &mdash; hardware devices and driver tablet apps &mdash; properly reject bad coordinates before they can reach parents. No bad data leaked through in any of our tests. We also wrote code to log a warning in Datadog whenever bad coordinates are dropped, so the team can monitor if GPS hardware starts sending garbage data. That logging will be verified once the code is deployed.</p>
+</div>
+
+<!-- Infrastructure -->
+<h2>Test Environment</h2>
+<p class="section-intro">
+  These tests were run against our development Kubernetes cluster, not the production servers. The infrastructure is similar but not identical to production. Here are the details for context:
+</p>
+
+<div class="stats">Environment:       Dev EKS (<code>ezrd-dev</code> cluster, <code>ezr</code> namespace)
+API Servers:       4 pods
+Stream Consumers:  2 pods (these process the GPS data)
+Cron Workers:      2 pods
+Redis:             AWS ElastiCache (<code>cache.t3.small</code>)
+Database:          AWS RDS MariaDB</div>
+
+<div class="callout warn">
+  <strong>Important context:</strong> Production runs on EC2 with PM2 (20 processes per instance, 4 instances = 80 processes). Dev EKS uses Kubernetes pods with different resource profiles. The numbers in this report give a strong directional signal, but exact production performance may differ. The safety margins we found (10x+ headroom) are large enough that this difference is unlikely to matter.
+</div>
+
+<!-- Open Items & Recommendations -->
+<h2>What Needs to Happen Next</h2>
+
+<table>
+  <thead><tr><th>#</th><th>Item</th><th>Priority</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>Fix the 10-second delay for parents.</strong> The GPSADV service adds ~10 seconds before a bus's new position shows up. This is the biggest issue found. Investigate whether GPSADV processes data on a timer and if that interval can be reduced.</td>
+      <td><span class="badge badge-fail">High</span></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>Deploy and verify the bad-coordinate logging.</strong> We wrote code that logs a Datadog warning when bad GPS data is dropped. It needs to be deployed to dev and verified end-to-end.</td>
+      <td><span class="badge badge-mixed">Medium</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Summary</h2>
+<p class="section-intro">
+  The GPS processing pipeline is in good shape. It can handle far more traffic than it currently sees, the parent app stays fast under load, and the "buses in the ocean" bug remains fixed. The one actionable finding is the ~10-second delay between a bus sending its location and that location appearing for parents &mdash; caused by the GPSADV service, not by Routing. Addressing that delay would meaningfully improve the parent experience.
+</p>
+
+<footer>
+  Generated from EZRD-976 GPS Ingestion Simulation &mdash; <a href="https://pathwise.atlassian.net/browse/EZRD-976">Jira Ticket</a>
+</footer>
+
+<script>
+// Chart.js global defaults
+Chart.defaults.color = '#8b949e';
+Chart.defaults.borderColor = '#30363d';
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+
+// 1. Stream Consumer Lag by Phase
+new Chart(document.getElementById('lagChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Normal Day\n66k rec/min', '3x Peak\n200k rec/min', '10x Peak\n600k rec/min', '30x Peak\n2M rec/min'],
+    datasets: [{
+      label: 'Backlog (entries waiting)',
+      data: [2, 5, 26, 925],
+      backgroundColor: ['#3fb950', '#3fb950', '#3fb950', '#d29922'],
+      borderRadius: 4,
+    }, {
+      label: 'GPS records per minute (thousands)',
+      data: [66.6, 200, 600, 2000],
+      type: 'line',
+      borderColor: '#58a6ff',
+      backgroundColor: 'rgba(88,166,255,0.1)',
+      pointBackgroundColor: '#58a6ff',
+      yAxisID: 'y1',
+      tension: 0.3,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: { display: true, text: 'How Much Backlog Built Up at Each Traffic Level', color: '#e6edf3', font: { size: 14 } },
+      subtitle: { display: true, text: 'Lower bars = system is keeping up. The spike at 30x shows it starting to struggle.', color: '#8b949e', padding: { bottom: 10 } }
+    },
+    scales: {
+      y: { title: { display: true, text: 'Backlog (entries)' }, grid: { color: '#21262d' } },
+      y1: { position: 'right', title: { display: true, text: 'Records/min (thousands)' }, grid: { drawOnChartArea: false } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 2. Multi-Tenant Comparison
+new Chart(document.getElementById('multiTenantChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Normal Day', '3x Peak', '10x Peak', '30x Peak'],
+    datasets: [{
+      label: '1 District',
+      data: [2, 5, 26, 925],
+      backgroundColor: 'rgba(248, 81, 73, 0.6)',
+      borderRadius: 4,
+    }, {
+      label: '6 Districts',
+      data: [2, 8, 1, 537],
+      backgroundColor: 'rgba(63, 185, 80, 0.6)',
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: { display: true, text: 'Backlog: 1 District vs 6 Districts', color: '#e6edf3', font: { size: 14 } },
+      subtitle: { display: true, text: 'Shorter green bars = better. More districts means less database contention.', color: '#8b949e', padding: { bottom: 10 } }
+    },
+    scales: {
+      y: { title: { display: true, text: 'Max Backlog (entries)' }, grid: { color: '#21262d' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 3. k6 Latency Comparison
+new Chart(document.getElementById('k6LatencyChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Typical (p50)', 'Slow (p90)', 'Worst 5% (p95)', 'Worst case'],
+    datasets: [{
+      label: 'No GPS load',
+      data: [55.2, 89.48, 105.87, 400.46],
+      backgroundColor: 'rgba(88, 166, 255, 0.6)',
+      borderRadius: 4,
+    }, {
+      label: 'During GPS flood',
+      data: [64.37, 102.47, 124.65, 330.26],
+      backgroundColor: 'rgba(210, 153, 34, 0.6)',
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: { display: true, text: 'Parent App Response Time (ms)', color: '#e6edf3', font: { size: 14 } },
+      subtitle: { display: true, text: 'How fast parents get a response. Lower = better.', color: '#8b949e', padding: { bottom: 10 } }
+    },
+    scales: {
+      y: { title: { display: true, text: 'Milliseconds' }, grid: { color: '#21262d' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 4. k6 Throughput
+new Chart(document.getElementById('k6ThroughputChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['No GPS load (88 req/s)', 'During GPS flood (75 req/s)'],
+    datasets: [{
+      data: [88, 75],
+      backgroundColor: ['rgba(88, 166, 255, 0.7)', 'rgba(210, 153, 34, 0.7)'],
+      borderColor: '#161b22',
+      borderWidth: 3,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: { display: true, text: 'Parents Served Per Second', color: '#e6edf3', font: { size: 14 } },
+      subtitle: { display: true, text: 'Only a 15% drop during heavy GPS processing', color: '#8b949e', padding: { bottom: 10 } },
+      legend: { position: 'bottom' },
+    }
+  }
+});
+
+// 5. E2E Sustained Latency
+new Chart(document.getElementById('e2eChart'), {
+  type: 'line',
+  data: {
+    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+    datasets: [{
+      label: 'Time until parents see the update (ms)',
+      data: [9748, 9672, 9675, 9875, 9847, 9730, 9798, 9785, 9706, 9705, 9770, 9622],
+      borderColor: '#f85149',
+      backgroundColor: 'rgba(248, 81, 73, 0.1)',
+      pointBackgroundColor: '#f85149',
+      fill: true,
+      tension: 0.3,
+    }, {
+      label: '3-second target',
+      data: Array(12).fill(3000),
+      borderColor: '#3fb950',
+      borderDash: [5, 5],
+      pointRadius: 0,
+      fill: false,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: { display: true, text: 'Bus-to-Map Delay Over 2 Minutes (12 consecutive tests)', color: '#e6edf3', font: { size: 14 } },
+      subtitle: { display: true, text: 'Red line should be near the green line. The gap is caused by GPSADV, not Routing.', color: '#8b949e', padding: { bottom: 10 } }
+    },
+    scales: {
+      y: { min: 0, max: 12000, title: { display: true, text: 'Milliseconds' }, grid: { color: '#21262d' } },
+      x: { title: { display: true, text: 'Test number (every 10 seconds)' }, grid: { display: false } }
+    }
+  }
+});
+</script>
+</body>
+</html>
