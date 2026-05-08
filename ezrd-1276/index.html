@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EZRD-1276 Spike Findings — Student Record Save Latency</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --purple: #bc8cff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--purple); }
+  p { margin-bottom: 1rem; }
+  .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+  .badge-critical { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .badge-high { background: rgba(210,153,34,0.15); color: var(--orange); border: 1px solid rgba(210,153,34,0.3); }
+  .badge-info { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
+  .badge-ok { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-title { font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  tr:hover td { background: rgba(88,166,255,0.04); }
+
+  .diagram {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    overflow-x: auto;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    white-space: pre;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+  }
+  .diagram .hl { color: var(--accent); }
+  .diagram .red { color: var(--red); }
+  .diagram .grn { color: var(--green); }
+  .diagram .orn { color: var(--orange); }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    background: rgba(110,118,129,0.15);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+  .metric-value { font-size: 2rem; font-weight: 700; }
+  .metric-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+  .finding { border-left: 3px solid var(--border); padding-left: 1rem; margin-bottom: 1.5rem; }
+  .finding.critical { border-left-color: var(--red); }
+  .finding.high { border-left-color: var(--orange); }
+  .finding.medium { border-left-color: var(--accent); }
+
+  .file-ref { color: var(--text-muted); font-size: 0.85rem; font-family: monospace; }
+
+  .suggestion-list { list-style: none; padding: 0; }
+  .suggestion-list li { padding: 0.75rem 1rem; margin-bottom: 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+  .suggestion-list li strong { color: var(--accent); }
+
+  .waterfall { margin-bottom: 1.5rem; }
+  .waterfall-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.3rem; font-size: 0.85rem; }
+  .waterfall-name { width: 200px; flex-shrink: 0; text-align: right; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .waterfall-bar-container { flex: 1; height: 22px; position: relative; background: rgba(110,118,129,0.08); border-radius: 3px; }
+  .waterfall-bar { height: 100%; border-radius: 3px; min-width: 2px; display: flex; align-items: center; padding-left: 6px; font-size: 0.75rem; color: #fff; font-weight: 500; }
+  .waterfall-size { width: 70px; flex-shrink: 0; text-align: right; color: var(--text-muted); font-size: 0.8rem; }
+
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 2rem; }
+  .toc h3 { margin-top: 0; color: var(--text); }
+  .toc ol { padding-left: 1.5rem; }
+  .toc li { margin-bottom: 0.3rem; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  .header-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-muted); }
+  .header-meta span { display: flex; align-items: center; gap: 0.35rem; }
+
+  @media (max-width: 700px) {
+    body { padding: 1rem; }
+    .metric-grid { grid-template-columns: 1fr 1fr; }
+    .waterfall-name { width: 120px; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>EZRD-1276 Spike Findings</h1>
+<p class="subtitle">Student Record Save Latency &mdash; Clark Production (30&ndash;40s reported)</p>
+<div class="header-meta">
+  <span><strong>Ticket:</strong> EZRD-1276</span>
+  <span><strong>Blocks:</strong> EZRD-1275</span>
+  <span><strong>Date:</strong> 2026-05-08</span>
+  <span><strong>Author:</strong> Don Adams</span>
+  <span><strong>Priority:</strong> <span class="badge badge-critical">P1 Critical</span></span>
+</div>
+
+<nav class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#tldr">TL;DR</a></li>
+    <li><a href="#environment">Environment &amp; Data Profile</a></li>
+    <li><a href="#measurements">Measurements</a></li>
+    <li><a href="#flow">Save Flow Analysis</a></li>
+    <li><a href="#root-cause">Root Cause</a></li>
+    <li><a href="#findings">Detailed Findings</a></li>
+    <li><a href="#suggestions">Suggested Remediations</a></li>
+    <li><a href="#bonus">Bonus: Feature Flag Bug</a></li>
+    <li><a href="#target">Target Response Time</a></li>
+  </ol>
+</nav>
+
+<!-- ========== TL;DR ========== -->
+<h2 id="tldr">1. TL;DR</h2>
+<div class="card">
+  <p><strong>The save itself is fast (~0.3s).</strong> The 30&ndash;40s latency comes from the frontend completely reloading the student detail view after every save &mdash; re-fetching 24&nbsp;MB of zones, stops, paths, and 20+ other requests that haven&rsquo;t changed.</p>
+  <p style="margin-bottom:0">On dev/local with Clark-sized data, the full post-save reload takes ~5s. On production Clark, network latency to RDS and concurrent load likely inflate this to the reported 30&ndash;40s. The <code>noRideWith</code> siblings query alone takes 3s locally.</p>
+</div>
+
+<!-- ========== Environment ========== -->
+<h2 id="environment">2. Environment &amp; Data Profile</h2>
+<div class="metric-grid">
+  <div class="metric">
+    <div class="metric-value" style="color: var(--red);">309,512</div>
+    <div class="metric-label">Active Students</div>
+  </div>
+  <div class="metric">
+    <div class="metric-value" style="color: var(--orange);">36,419</div>
+    <div class="metric-label">Stops</div>
+  </div>
+  <div class="metric">
+    <div class="metric-value" style="color: var(--orange);">919,115</div>
+    <div class="metric-label">Agenda Records</div>
+  </div>
+  <div class="metric">
+    <div class="metric-value" style="color: var(--accent);">6,409</div>
+    <div class="metric-label">Routes</div>
+  </div>
+</div>
+<p>Clark (<code>er_clarknv</code>) is one of the largest tenants in the platform. These record counts put maximum stress on every unbounded query and full-table fetch in the save and hydration paths.</p>
+
+<!-- ========== Measurements ========== -->
+<h2 id="measurements">3. Measurements</h2>
+
+<h3>Backend API Timing (curl, local Docker, Clark DB)</h3>
+<table>
+  <thead><tr><th>Operation</th><th>Endpoint</th><th>Time</th><th>Size</th></tr></thead>
+  <tbody>
+    <tr><td>Save (no-change)</td><td><code>PUT /api/student/1</code></td><td style="color:var(--green)">0.13s</td><td>32 B</td></tr>
+    <tr><td>Save (no-change, 3 addresses)</td><td><code>PUT /api/student/371252</code></td><td style="color:var(--green)">0.33s</td><td>37 B</td></tr>
+    <tr><td>Hydrate single student</td><td><code>GET /api/student/1</code></td><td>0.65s</td><td>4 KB</td></tr>
+    <tr><td>Hydrate student (3 addrs)</td><td><code>GET /api/student/371252</code></td><td style="color:var(--orange)">3.44s</td><td>13 KB</td></tr>
+    <tr><td>Full student list (!)</td><td><code>GET /api/students</code></td><td style="color:var(--red)">-</td><td style="color:var(--red)">106 MB</td></tr>
+  </tbody>
+</table>
+
+<h3>Frontend Network Waterfall &mdash; Post-Save Reload (Dev, Clark)</h3>
+<p>After clicking Save, the frontend fires <strong>25+ requests</strong> to rebuild the detail view. Total waterfall: ~5s on dev.</p>
+
+<div class="waterfall">
+  <div class="waterfall-row">
+    <span class="waterfall-name">185?noRideWith=1</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:100%; background:var(--red);">2.99s</div></div>
+    <span class="waterfall-size">12.8 KB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">routed</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:24%; background:var(--orange);">724ms</div></div>
+    <span class="waterfall-size">0.5 KB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">path?tid=8</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:19%; background:var(--orange);">577ms</div></div>
+    <span class="waterfall-size">11 KB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">attendance?sid=185</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:16%; background:var(--orange);">488ms</div></div>
+    <span class="waterfall-size">0.4 KB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">zones (20 MB)</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:15%; background:var(--orange);">449ms</div></div>
+    <span class="waterfall-size" style="color:var(--red);">20 MB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">settings</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:14.5%; background:#555;">435ms</div></div>
+    <span class="waterfall-size">3.9 KB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">check</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:9.5%; background:#555;">285ms</div></div>
+    <span class="waterfall-size">0.4 KB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">185 (3 calls)</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:7.6%; background:#555;">226ms</div></div>
+    <span class="waterfall-size">1.5 KB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">ethnicity</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:7.5%; background:#555;">224ms</div></div>
+    <span class="waterfall-size">1.2 KB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">simple (all stops)</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:7.2%; background:#555;">215ms</div></div>
+    <span class="waterfall-size" style="color:var(--red);">3.7 MB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">predators</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:6.8%; background:#555;">203ms</div></div>
+    <span class="waterfall-size">0.4 KB</span>
+  </div>
+  <div class="waterfall-row">
+    <span class="waterfall-name">+ 14 more requests</span>
+    <div class="waterfall-bar-container"><div class="waterfall-bar" style="width:5%; background:#333;"></div></div>
+    <span class="waterfall-size"></span>
+  </div>
+</div>
+
+<!-- ========== Flow ========== -->
+<h2 id="flow">4. Save Flow Analysis</h2>
+<div class="diagram"><span class="hl">FRONTEND</span>  ui/src/student/details/details.js
+
+  User clicks Save
+       │
+       ▼
+  <span class="grn">saveStudent()</span>  ──►  <span class="grn">PUT /api/student/:id</span>  ──►  <span class="grn">~0.3s</span>  ✓ Fast
+       │                     │
+       │                     ▼
+       │               <span class="hl">BACKEND</span>  app/student/api.js:631
+       │                     │
+       │                     ├── updateStudent() transaction
+       │                     │    ├── fetch old student
+       │                     │    ├── save grades, addresses, contacts,
+       │                     │    │   schedules, equipment, agenda, UDFs
+       │                     │    ├── resetMorningPaths (if changed)
+       │                     │    └── fullAutoAssign (if enabled)
+       │                     │
+       │                     └── return { id, autoAssignStatus }
+       │
+       ▼
+  <span class="red">this.getStudent()</span>  ──►  <span class="red">FULL DETAIL RELOAD</span>  ──►  <span class="red">~5s dev / 30-40s prod</span>
+       │
+       ├── GET /api/student/:id                    0.5 KB     87ms
+       ├── GET /api/zones?type=1&date=...    <span class="red">20,001 KB</span>    449ms
+       ├── GET /api/.../noRideWith=1              12.8 KB  <span class="red">2,990ms</span>
+       ├── GET /api/stop/simple              <span class="red"> 3,706 KB</span>    215ms
+       ├── GET /api/.../path?tid=8                11.0 KB    577ms
+       ├── GET /api/routed                         0.5 KB    724ms
+       ├── GET /api/attendance?sid=...             0.4 KB    488ms
+       ├── GET /api/settings                       3.9 KB    435ms
+       └── ... 17 more requests
+</div>
+
+<!-- ========== Root Cause ========== -->
+<h2 id="root-cause">5. Root Cause</h2>
+<div class="card" style="border-color: var(--red);">
+  <div class="card-title"><span class="badge badge-critical">Root Cause</span> Unnecessary full-page reload after save</div>
+  <p>After <code>PUT /api/student/:id</code> completes, <code>details.js:297</code> calls <code>this.getStudent()</code> which triggers a complete teardown and rebuild of the student detail view &mdash; including 20&nbsp;MB of map zones, 3.7&nbsp;MB of stops, path calculations, siblings, attendance, and 20+ other API calls. <strong>None of this data changed as a result of the save.</strong></p>
+  <p style="margin-bottom:0">The save transaction itself completes in 0.1&ndash;0.3s. The perceived 30&ndash;40s latency is entirely the reload waterfall, amplified on production by network latency to RDS and concurrent user load.</p>
+</div>
+
+<!-- ========== Findings ========== -->
+<h2 id="findings">6. Detailed Findings</h2>
+
+<div class="finding critical">
+  <h3><span class="badge badge-critical">F1</span> Post-save full reload transfers ~24 MB</h3>
+  <p>The frontend makes 25+ API calls after every save, re-downloading zones (20&nbsp;MB), stops (3.7&nbsp;MB), paths, attendance, predators, ethnicity codes, overlays, and more. On dev this takes ~5s; on prod Clark with network overhead, it reaches 30&ndash;40s.</p>
+  <p class="file-ref">ui/src/student/details/details.js:297 &rarr; this.getStudent()</p>
+</div>
+
+<div class="finding critical">
+  <h3><span class="badge badge-critical">F2</span> <code>noRideWith</code> siblings query: 3s per call</h3>
+  <p>The <code>/:id?noRideWith=1</code> endpoint takes 2.99s on dev with Clark data &mdash; the single slowest request in the waterfall. This fires on both initial load and post-save reload. Likely doing an unbounded scan of 309k students to find siblings.</p>
+</div>
+
+<div class="finding high">
+  <h3><span class="badge badge-high">F3</span> Zones endpoint returns 20 MB per call</h3>
+  <p>The <code>zones?type=1&date=...</code> endpoint returns all geographic zones for the tenant. This is map display data that has zero relationship to a student save, yet re-fetches on every save.</p>
+</div>
+
+<div class="finding high">
+  <h3><span class="badge badge-high">F4</span> <code>GET /api/stop/simple</code> returns ALL stops (3.7 MB)</h3>
+  <p>All 36,419 stops are fetched to display stop pins on the map. Also called in the backend during <code>attachMoreToAgenda()</code> in <code>app/agenda/agenda.js:382</code>, which fetches every stop in the sandbox then filters in JavaScript.</p>
+</div>
+
+<div class="finding high">
+  <h3><span class="badge badge-high">F5</span> Legacy student list returns 106 MB (non-paginated)</h3>
+  <p><code>GET /api/students</code> returns all 309k students in a single JSON payload (106&nbsp;MB). The Phoenix pagination flag exists but requires <strong>two</strong> flags to be enabled: the client-level <code>phoenixClient</code> toggle AND the <code>enablePhoenixStudentPagination</code> feature flag. The feature flag is gated behind Firebase Remote Config &rarr; Redis &rarr; in-memory cache, with a type-comparison bug (see <a href="#bonus">Bonus</a>).</p>
+</div>
+
+<div class="finding medium">
+  <h3><span class="badge badge-info">F6</span> Backend hydration has N+1 address-to-stop lookups</h3>
+  <p>In <code>app/student/index.js:936</code>, <code>attachAddressStops()</code> loops through each address and calls <code>stopMod.getStopByName()</code> individually. A student with 3 addresses = 3 separate DB queries. Relatively minor with Clark&rsquo;s max of 3 addresses per student, but a code smell.</p>
+  <p class="file-ref">app/student/index.js:936&ndash;948</p>
+</div>
+
+<div class="finding medium">
+  <h3><span class="badge badge-info">F7</span> <code>attachMoreToAgenda()</code> fetches all stops, schools, routes, trips</h3>
+  <p>The agenda enrichment at <code>app/agenda/agenda.js:382</code> calls <code>getAllStopsSimple()</code> (all 36k stops), <code>SELECT * FROM vwAllSchools</code>, and loads all routes and trips for the sandbox. This runs during both the save transaction (for <code>compareChanges</code>) and the post-save hydration.</p>
+  <p class="file-ref">app/agenda/agenda.js:382&ndash;482</p>
+</div>
+
+<!-- ========== Suggestions ========== -->
+<h2 id="suggestions">7. Suggested Remediations</h2>
+
+<h3>Immediate Impact (addresses the 30&ndash;40s directly)</h3>
+<ul class="suggestion-list">
+  <li>
+    <strong>S1. Eliminate the full-page reload after save.</strong>
+    Instead of calling <code>this.getStudent()</code> (which rebuilds the entire detail view), only re-fetch the student record itself (<code>GET /api/student/:id</code>) and update the in-memory model. Map data (zones, stops, paths) should be preserved &mdash; they don&rsquo;t change on a student field edit. This alone likely reduces save latency from 30&ndash;40s to &lt;&nbsp;1s.
+    <br><span class="file-ref">ui/src/student/details/details.js:297</span>
+  </li>
+  <li>
+    <strong>S2. Optimize the <code>noRideWith</code> siblings query.</strong>
+    At 3s per call, this is the heaviest single request. Profile the underlying query &mdash; likely needs an index on the family/sibling lookup columns, or the result should be cached since siblings don&rsquo;t change during a save.
+  </li>
+</ul>
+
+<h3>Medium-Term (improves overall Clark experience)</h3>
+<ul class="suggestion-list">
+  <li>
+    <strong>S3. Cache map data on the frontend.</strong>
+    Zones (20&nbsp;MB) and stops (3.7&nbsp;MB) should be loaded once per session and invalidated only when actually modified. These are tenant-level resources that change infrequently.
+  </li>
+  <li>
+    <strong>S4. Paginate the student list for all large tenants.</strong>
+    The 106&nbsp;MB student list response should never happen. Enable <code>enablePhoenixStudentPagination</code> for Clark in production. Fix the Redis type-comparison bug (see <a href="#bonus">Bonus</a>) so manual flag setting works correctly.
+  </li>
+  <li>
+    <strong>S5. Filter <code>attachMoreToAgenda()</code> at the query level.</strong>
+    Instead of fetching all 36k stops then filtering in JS, pass the required stop IDs into the query. Same for schools, routes, and trips.
+  </li>
+</ul>
+
+<h3>Longer-Term (scalability)</h3>
+<ul class="suggestion-list">
+  <li>
+    <strong>S6. Batch the N+1 address-to-stop lookups.</strong>
+    Replace the per-address <code>getStopByName()</code> loop with a single <code>WHERE name IN (...)</code> query.
+    <br><span class="file-ref">app/student/index.js:936&ndash;948</span>
+  </li>
+  <li>
+    <strong>S7. Return updated fields from save response.</strong>
+    The PUT currently returns <code>{ id, autoAssignStatus }</code>. If it returned the updated student object, the frontend wouldn&rsquo;t need to re-fetch at all.
+  </li>
+  <li>
+    <strong>S8. Make <code>fullAutoAssign</code> always async.</strong>
+    For non-Phoenix clients, auto-assign blocks the save response synchronously. Move all auto-assign to BullMQ queues regardless of client config.
+    <br><span class="file-ref">app/geo/features/autoassign.js:182&ndash;204</span>
+  </li>
+</ul>
+
+<!-- ========== Bonus ========== -->
+<h2 id="bonus">8. Bonus: Feature Flag Type Bug</h2>
+<div class="card">
+  <div class="card-title"><span class="badge badge-high">Bug</span> Feature flag comparison uses strict equality with mismatched types</div>
+  <p>The <code>redis.get()</code> wrapper at <code>app/shared/redis.js:141</code> runs <code>JSON.parse()</code> on every value. The feature flag reader at <code>app/shared/feature-flags.js:128</code> compares with:</p>
+  <p><code>flagCache.set(flagName, cached === '1')</code></p>
+  <p>If the cron worker or an operator stores a bare <code>1</code> (e.g., <code>redis-cli SET rc:flag:name 1</code>), <code>JSON.parse("1")</code> returns the <strong>number</strong> <code>1</code>, and <code>1 === '1'</code> is <code>false</code>. The flag silently evaluates as disabled.</p>
+  <p style="margin-bottom:0">The cron worker presumably stores <code>"1"</code> (JSON-encoded string) which parses correctly, but this is fragile and undocumented. The comparison should be <code>cached == '1'</code> or <code>Boolean(cached)</code>.</p>
+</div>
+
+<!-- ========== Target ========== -->
+<h2 id="target">9. Target Response Time</h2>
+<table>
+  <thead><tr><th>Metric</th><th>Current (Prod Clark)</th><th>Target</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>End-to-end save (click Save &rarr; toast)</td>
+      <td style="color:var(--red)">30&ndash;40s</td>
+      <td style="color:var(--green)">&lt; 2s</td>
+    </tr>
+    <tr>
+      <td>Page re-render after toast</td>
+      <td style="color:var(--orange)">2&ndash;5s</td>
+      <td style="color:var(--green)">&lt; 0.5s (no full reload)</td>
+    </tr>
+    <tr>
+      <td>PUT /api/student/:id backend</td>
+      <td style="color:var(--green)">0.1&ndash;0.3s</td>
+      <td style="color:var(--green)">0.1&ndash;0.3s (already fine)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem;">
+  Generated from spike investigation on 2026-05-08. Measurements taken on local Docker with production-equivalent Clark data (309k students).
+  Ticket: <a href="https://pathwise.atlassian.net/browse/EZRD-1276" style="color:var(--accent);">EZRD-1276</a> |
+  Blocks: <a href="https://pathwise.atlassian.net/browse/EZRD-1275" style="color:var(--accent);">EZRD-1275</a>
+</p>
+
+</body>
+</html>
