@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>EZRD-1276 — Post-Save Waterfall Analysis</title>
+		<style>
+			:root {
+				--bg: #0f1419;
+				--panel: #161b22;
+				--border: #30363d;
+				--text: #e6edf3;
+				--muted: #8b949e;
+				--accent: #58a6ff;
+				--keep: #3fb950;
+				--drop: #f85149;
+				--tweak: #d29922;
+				--code-bg: #1c2128;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			html,
+			body {
+				background: var(--bg);
+				color: var(--text);
+				font-family:
+					-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+				line-height: 1.55;
+				margin: 0;
+				padding: 0;
+			}
+			main {
+				max-width: 1400px;
+				margin: 0 auto;
+				padding: 32px 24px 80px;
+			}
+			h1 {
+				font-size: 28px;
+				margin: 0 0 4px;
+				font-weight: 600;
+			}
+			h1 .sub {
+				color: var(--muted);
+				font-weight: 400;
+				font-size: 16px;
+			}
+			h2 {
+				font-size: 20px;
+				margin: 40px 0 12px;
+				padding-bottom: 6px;
+				border-bottom: 1px solid var(--border);
+				font-weight: 600;
+			}
+			h3 {
+				font-size: 16px;
+				margin: 24px 0 8px;
+				color: var(--accent);
+			}
+			.meta {
+				color: var(--muted);
+				font-size: 13px;
+				margin-bottom: 24px;
+			}
+			.meta a {
+				color: var(--accent);
+				text-decoration: none;
+			}
+			.meta a:hover {
+				text-decoration: underline;
+			}
+			p {
+				margin: 8px 0 12px;
+			}
+			code {
+				font-family: 'SF Mono', Menlo, Consolas, monospace;
+				background: var(--code-bg);
+				padding: 1px 5px;
+				border-radius: 3px;
+				font-size: 12.5px;
+				color: #f0f6fc;
+			}
+			pre {
+				background: var(--code-bg);
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				padding: 12px 14px;
+				overflow-x: auto;
+				margin: 12px 0;
+			}
+			pre code {
+				background: transparent;
+				padding: 0;
+				font-size: 12.5px;
+				line-height: 1.6;
+			}
+			.callout {
+				background: var(--panel);
+				border-left: 3px solid var(--accent);
+				padding: 14px 18px;
+				margin: 16px 0 24px;
+				border-radius: 4px;
+			}
+			.callout strong {
+				color: var(--text);
+			}
+			.legend {
+				display: flex;
+				gap: 18px;
+				flex-wrap: wrap;
+				margin: 12px 0 16px;
+				font-size: 13px;
+			}
+			.legend .tag {
+				display: inline-block;
+				padding: 2px 10px;
+				border-radius: 3px;
+				font-weight: 600;
+				font-size: 11px;
+				letter-spacing: 0.4px;
+			}
+			.tag.keep {
+				background: rgba(63, 185, 80, 0.15);
+				color: var(--keep);
+				border: 1px solid rgba(63, 185, 80, 0.4);
+			}
+			.tag.drop {
+				background: rgba(248, 81, 73, 0.15);
+				color: var(--drop);
+				border: 1px solid rgba(248, 81, 73, 0.4);
+			}
+			.tag.tweak {
+				background: rgba(210, 153, 34, 0.15);
+				color: var(--tweak);
+				border: 1px solid rgba(210, 153, 34, 0.4);
+			}
+			.table-wrap {
+				overflow-x: auto;
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				background: var(--panel);
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				font-size: 13px;
+			}
+			thead th {
+				text-align: left;
+				background: #1c2128;
+				color: var(--muted);
+				font-weight: 600;
+				font-size: 12px;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				padding: 10px 12px;
+				border-bottom: 1px solid var(--border);
+				position: sticky;
+				top: 0;
+				z-index: 1;
+			}
+			tbody td {
+				padding: 12px 12px;
+				border-bottom: 1px solid var(--border);
+				vertical-align: top;
+			}
+			tbody tr:last-child td {
+				border-bottom: none;
+			}
+			tbody tr:hover {
+				background: rgba(88, 166, 255, 0.04);
+			}
+			td.num {
+				color: var(--muted);
+				font-weight: 600;
+				width: 30px;
+			}
+			td.verdict {
+				width: 100px;
+				text-align: center;
+			}
+			td.endpoint code {
+				white-space: nowrap;
+			}
+			ol.steps {
+				counter-reset: step;
+				list-style: none;
+				padding: 0;
+			}
+			ol.steps li {
+				counter-increment: step;
+				position: relative;
+				padding: 12px 16px 12px 56px;
+				margin-bottom: 8px;
+				background: var(--panel);
+				border: 1px solid var(--border);
+				border-radius: 6px;
+			}
+			ol.steps li::before {
+				content: counter(step);
+				position: absolute;
+				left: 14px;
+				top: 12px;
+				width: 28px;
+				height: 28px;
+				background: var(--accent);
+				color: #0d1117;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-weight: 700;
+				font-size: 13px;
+			}
+			.footer-q {
+				margin-top: 40px;
+				padding: 16px 18px;
+				background: var(--panel);
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				color: var(--text);
+			}
+			ul {
+				margin: 8px 0 12px;
+				padding-left: 22px;
+			}
+			ul li {
+				margin: 4px 0;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>
+				EZRD-1276 — Post-Save Waterfall Analysis<br />
+				<span class="sub">What reloads after a student save, what's necessary, and what to do</span>
+			</h1>
+			<div class="meta">
+				<a href="https://pathwise.atlassian.net/browse/EZRD-1276" target="_blank">EZRD-1276</a>
+				·
+				<a href="https://don-pathwise.github.io/engineering-reports/ezrd-1276/" target="_blank">Spike report</a>
+				· Branch: <code>spike/ezrd-1276-student-save-latency</code>
+			</div>
+
+			<h2>TL;DR</h2>
+			<div class="callout">
+				Backend save itself is fast (0.1–0.3s). The 30–40s pain on Clark is the UI tearing down and rebuilding
+				the entire student detail view on success — firing <strong>~20 requests</strong> including two
+				unfiltered multi-MB map fetches and a <code>/students/routed</code> call that triggers a hidden
+				<code>SELECT * FROM trip</code> with <strong>no WHERE clause</strong>. Almost none of these are
+				required by the act of saving.
+				<br /><br />
+				The single highest-leverage fix is changing <code>_saveStudent()</code> in
+				<code>ui/src/student/details/details.js:283-309</code> to merge the response into the in-memory
+				student instead of calling <code>getStudent()</code> at line 297.
+			</div>
+
+			<h2>The post-save waterfall</h2>
+			<p>What reloads, what's needed, what to do.</p>
+			<div class="legend">
+				<span><span class="tag keep">KEEP</span> needs to refresh after save</span>
+				<span><span class="tag drop">DROP</span> doesn't change on save — never call it on this path</span>
+				<span><span class="tag tweak">TWEAK</span> call but fix the backend or narrow the scope</span>
+			</div>
+
+			<div class="table-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Triggered by</th>
+							<th>Endpoint</th>
+							<th>What the backend does and why it matters</th>
+							<th>Save invalidates this?</th>
+							<th>Verdict</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="num">1</td>
+							<td><code>model.details.js:91</code><br /><span style="color: var(--muted)">Promise.all leg 1</span></td>
+							<td class="endpoint"><code>GET /api/student/:id?noRideWith=1</code></td>
+							<td>
+								Re-fetches the student record, then runs <code>attachStudentsNoRideWith</code> (an
+								unbounded query against the <code>noridewith</code> table with no semester filter) and
+								<code>attachAddressStops</code>, which fires one <code>getStopByName</code> query per
+								student address — each one scans <code>vwAllStops</code> with
+								<code>WHERE name LIKE 'x%'</code>. This is the single slowest call on Clark at roughly
+								3 seconds.
+								<br /><br />
+								<code>app/student/index.js:824</code>, <code>app/student/student.js:534</code>,
+								<code>app/student/index.js:936-948</code>
+							</td>
+							<td>The just-saved record, yes</td>
+							<td class="verdict"><span class="tag tweak">TWEAK</span></td>
+						</tr>
+						<tr>
+							<td class="num">2</td>
+							<td><code>model.details.js:91</code><br /><span style="color: var(--muted)">Promise.all leg 2</span></td>
+							<td class="endpoint"><code>GET /api/zones?type=1&amp;date=…</code></td>
+							<td>
+								Executes <code>SELECT * FROM zone WHERE type=?</code> with no caching, returning every
+								column including a large parsed <code>shape</code> polygon for each zone. The response
+								is around 20 MB.
+								<br /><br />
+								<code>app/zone/model.js:21-38</code>
+							</td>
+							<td>No — zones are tenant config, unchanged by a student edit</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">3</td>
+							<td><code>model.details.js:91</code><br /><span style="color: var(--muted)">Promise.all leg 3</span></td>
+							<td class="endpoint"><code>GET /api/walkingrestriction</code></td>
+							<td>Returns the full list of walking restrictions for the tenant. The endpoint is small and the result is static for the session.</td>
+							<td>No</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">4</td>
+							<td><code>model.details.js:91</code><br /><span style="color: var(--muted)">Promise.all leg 4</span></td>
+							<td class="endpoint"><code>GET /api/admin/settings</code></td>
+							<td>Loads tenant and user settings. Cost is low, but the call is unconditional and the data does not change between page loads.</td>
+							<td>No</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">5</td>
+							<td><code>model.details.js:91</code><br /><span style="color: var(--muted)">Promise.all leg 5</span></td>
+							<td class="endpoint"><code>GET /api/school/boundary</code></td>
+							<td>Returns the district boundary polygon. The frontend already caches the result in <code>this.app.districtBoundary</code> after the first call, so subsequent fetches should be skipped — but the post-save path re-issues the request anyway.</td>
+							<td>No — already cached client-side after first call</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">6</td>
+							<td><code>model.details.js:91</code><br /><span style="color: var(--muted)">Promise.all leg 6, conditional</span></td>
+							<td class="endpoint"><code>GET /api/admin/student/change/:requestId</code></td>
+							<td>Looks up a single pending change request by id. Cheap and only fires when there is an active change request flow.</td>
+							<td>Only if a change request was saved</td>
+							<td class="verdict"><span class="tag keep">KEEP</span></td>
+						</tr>
+						<tr>
+							<td class="num">7</td>
+							<td><code>model.details.js:112</code><br /><span style="color: var(--muted)">After Promise.all</span></td>
+							<td class="endpoint"><code>GET /api/vehicles</code></td>
+							<td>Returns the tenant's vehicle list. The frontend guards this with <code>!_vehicleModel.vehicles.length</code>, so the call only runs the first time the details page is opened in a session.</td>
+							<td>No — already memoized</td>
+							<td class="verdict"><span class="tag keep">KEEP</span></td>
+						</tr>
+						<tr>
+							<td class="num">8</td>
+							<td><code>model.details.js:131</code><br /><span style="color: var(--muted)">After Promise.all</span></td>
+							<td class="endpoint"><code>POST /api/students/routed</code></td>
+							<td>
+								This is the most damaging backend call in the waterfall. The handler calls
+								<code>getStudentsRoutedStatus</code>, which on a cache miss fans out into
+								<code>attachAgenda</code> → <code>attachMoreToAgenda</code>
+								(<code>app/agenda/agenda.js:382-482</code>). For a single student, that path fires four
+								wide queries:
+								<ul>
+									<li>It loads every stop in the tenant via <code>getAllStopsSimple</code> (about 36,000 rows) and filters them down in memory.</li>
+									<li>It pulls every school via an unbounded <code>SELECT id,code,name,stopId FROM vwAllSchools</code>.</li>
+									<li>It loads every route in the sandbox via a 3-way LEFT JOIN against <code>route</code>, <code>vehicleextra</code>, <code>staff</code>, and <code>user</code>, with no <code>semesterId</code> filter.</li>
+									<li>It executes <strong><code>SELECT * FROM trip</code></strong> with no WHERE clause at all (<code>agenda.js:435</code>) — a full table scan of every trip in the database.</li>
+								</ul>
+								None of that work scales with the amount of data actually needed for one student's
+								routing status.
+							</td>
+							<td>Possibly (route status of saved student may change if <code>fullAutoAssign</code> ran)</td>
+							<td class="verdict"><span class="tag tweak">TWEAK</span></td>
+						</tr>
+						<tr>
+							<td class="num">9</td>
+							<td><code>model.details.js:139</code><br /><span style="color: var(--muted)">After Promise.all</span></td>
+							<td class="endpoint"><code>GET /api/admin/student/:id/change</code></td>
+							<td>Looks up the pending student-change records for this student. Cheap, but only meaningful when a change-request workflow is active.</td>
+							<td>Only if there's an active change request flow</td>
+							<td class="verdict"><span class="tag keep">KEEP</span></td>
+						</tr>
+						<tr>
+							<td class="num">10</td>
+							<td><code>studentLoaded</code> → <code>general.js</code></td>
+							<td class="endpoint"><code>GET /api/admin/properties/ethnicity</code></td>
+							<td>
+								Runs <code>SELECT * FROM studentproperty WHERE property='ethnicity'</code> against the
+								database with no caching. The result is a static reference list of ethnicity codes that
+								never changes within a session.
+								<br /><br />
+								<code>app/student/property.js:84-86</code>
+							</td>
+							<td>No — never changes during a session</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">11</td>
+							<td><code>studentLoaded</code> → <code>general.js</code></td>
+							<td class="endpoint"><code>GET /api/admin/properties/tcode</code></td>
+							<td>Same query shape as the ethnicity lookup — a static reference list fetched fresh from the database on every save.</td>
+							<td>No</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">12</td>
+							<td><code>studentLoaded</code> → <code>general.js</code></td>
+							<td class="endpoint"><code>GET /api/tprogram</code></td>
+							<td>Returns the tprogram list. Conditional on <code>me.tprogram</code>, but when it does fire the data is static for the session.</td>
+							<td>No</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">13</td>
+							<td><code>studentLoaded</code> → <code>info.js</code></td>
+							<td class="endpoint"><code>GET /api/equipments</code></td>
+							<td>Returns the full equipment list for the tenant. Small, but unconditional and static for the session.</td>
+							<td>No</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">14</td>
+							<td><code>studentLoaded</code> → <code>info.js</code></td>
+							<td class="endpoint"><code>GET /api/students/addresses</code></td>
+							<td>Returns the student's address list. Only meaningful to re-fetch if an address field was actually edited.</td>
+							<td>Yes if address fields were edited</td>
+							<td class="verdict"><span class="tag tweak">TWEAK</span></td>
+						</tr>
+						<tr>
+							<td class="num">15</td>
+							<td><code>studentLoaded</code> → <code>address.js</code></td>
+							<td class="endpoint"><code>POST /api/path?tid=8</code><br />(walking)</td>
+							<td>Recomputes the walking path between the student's address and the school. The call itself costs around 577ms and is only relevant if the address changed.</td>
+							<td>Yes — but only if address changed</td>
+							<td class="verdict"><span class="tag tweak">TWEAK</span></td>
+						</tr>
+						<tr>
+							<td class="num">16</td>
+							<td><code>studentLoaded</code> → <code>address.js</code></td>
+							<td class="endpoint"><code>POST /api/path?tid=8</code><br />(driving)</td>
+							<td>Same recompute as the walking path call but for driving mode. The path endpoint fires twice per address (once walking, once driving) and only matters when the address changed.</td>
+							<td>Yes — only if address changed</td>
+							<td class="verdict"><span class="tag tweak">TWEAK</span></td>
+						</tr>
+						<tr>
+							<td class="num">17</td>
+							<td><code>studentLoaded</code> → <code>audit.js</code></td>
+							<td class="endpoint"><code>GET /api/audit/student/:id</code></td>
+							<td>Loads the audit trail for this student. Since the save just wrote a new audit row, the displayed trail is genuinely out of date until this refreshes.</td>
+							<td>Yes — new audit row was just written</td>
+							<td class="verdict"><span class="tag keep">KEEP</span></td>
+						</tr>
+						<tr>
+							<td class="num">18</td>
+							<td><code>studentLoaded</code> → <code>notification.history.js</code></td>
+							<td class="endpoint"><code>GET /api/notificationhistory/student/:id</code></td>
+							<td>Returns the notification history for this student. A save does not generate a notification, so the underlying data is unchanged from before the save.</td>
+							<td>No — save doesn't generate notifications</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">19</td>
+							<td><code>studentLoaded</code> → <code>attendance.js</code></td>
+							<td class="endpoint"><code>GET /api/attendance?sid=:id</code></td>
+							<td>
+								Executes a 5-way LEFT JOIN across <code>attendance</code>, <code>vehicle</code>,
+								<code>student</code>, <code>tripstop</code>, <code>trip</code>, and
+								<code>vwAllStops</code> with no caching, then runs <code>doubleCheckStopName</code> and
+								<code>compareAttendanceAndAgenda</code> for additional per-row work. None of the
+								underlying data changes when a student is saved.
+								<br /><br />
+								<code>app/attendance/index.js:340-410</code>
+							</td>
+							<td>No — save doesn't change historical attendance</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+						<tr>
+							<td class="num">20</td>
+							<td><code>studentLoaded</code> → <code>schedule.js</code></td>
+							<td class="endpoint"><code>GET /api/stops/simple</code></td>
+							<td>
+								Returns all 36,000 stops (about 3.7 MB). The endpoint is already Redis-cached
+								server-side with smart timestamp-based invalidation, so the actual backend cost is
+								low — the waste is on the wire, asking for data that did not change because of the save.
+								<br /><br />
+								<code>app/stop/stop.js:130-186</code>
+							</td>
+							<td>No — stops don't change because a student was saved</td>
+							<td class="verdict"><span class="tag drop">DROP</span></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<h2>The pattern behind the table</h2>
+			<p>Three classes of waste, in priority order.</p>
+
+			<h3>1. Full-page rehydration on a partial-state change</h3>
+			<p>
+				The save handler treats success the same as a fresh route into the page — <code>getStudent()</code>
+				rebuilds everything. Of the ~20 calls, only items 1, 6, 14–17 carry data that the save plausibly
+				invalidated. The other 12 are unconditional context-loads (zones, walking restrictions, settings,
+				properties, stops, equipment, district boundary, notifications, attendance).
+			</p>
+
+			<h3>2. Backend handlers that fan out far beyond their stated job</h3>
+			<p>
+				The <code>/students/routed</code> call for one student silently loads all routes + all trips + all stops
+				+ all schools for the sandbox via <code>attachMoreToAgenda</code>. The
+				<code>SELECT * FROM trip</code> with <strong>no WHERE clause</strong> at
+				<code>app/agenda/agenda.js:435</code> is the worst single query — table scan of every trip across every
+				tenant context for an unrelated lookup. The <code>noRideWith</code> path fans into per-address N+1 stop
+				lookups using a <code>LIKE 'name%'</code> scan.
+			</p>
+
+			<h3>3. Static reference data fetched per-save</h3>
+			<p>
+				Ethnicity codes, tcodes, equipment types, walking restrictions, zones, district boundary, settings —
+				none of these change while the page is open. Move them to app-boot, cache them in memory for the
+				session.
+			</p>
+
+			<h2>Does the Phoenix UI flag affect this?</h2>
+			<p>
+				<strong>No.</strong> The Phoenix UI feature flag does not gate any part of the post-save flow on the
+				student details page. The save handler, the post-save reload (<code>getStudent()</code>), the model
+				layer, the HTTP layer, and every one of the ten <code>studentLoaded</code> child-component subscribers
+				contain zero references to <code>isPhoenixUI</code>, <code>isPhoenixStudentPagination</code>, or
+				<code>isPhoenixRouteListV3</code>. The same is true for every backend handler in the waterfall
+				(<code>app/student/</code>, <code>app/agenda/</code>, <code>app/zone/</code>, <code>app/stop/</code>,
+				<code>app/attendance/</code>).
+			</p>
+			<p>
+				Where the Phoenix flags do branch is in <code>ui/src/student/services/model.provider.js:55-56</code>:
+			</p>
+			<pre><code>if (this._me.usePaginatedAPI()) return this._phoenixPaginatedModel;
+if (this._me.isPhoenixUI()) return this._phoenixModel;</code></pre>
+			<p>
+				That switch only chooses between <code>StudentListModel</code>, <code>PhoenixStudentListModel</code>,
+				and <code>PhoenixPaginatedStudentListModel</code> on the student <strong>list</strong> page.
+				<code>enablePhoenixRouteListV3</code> does the equivalent for the route list. The details page always
+				uses <code>StudentDetailsModel</code> directly, with no provider indirection. Toggling the Phoenix flag
+				changes the latency of the <code>/students</code> list endpoint (the 309k-row, 106 MB fetch flagged in
+				the spike report) but has no effect on the 30–40s post-save slowdown.
+			</p>
+			<div class="callout">
+				<strong>Caveat worth knowing.</strong> The redis flag-type-comparison bug at
+				<code>app/shared/redis.js:141</code> and <code>app/shared/feature-flags.js:128</code> can silently flip
+				any flag's evaluated state if someone sets it via <code>redis-cli SET ... 1</code> (a bare number rather
+				than a quoted string). If you ever try to A/B the Phoenix flag against save latency by toggling Redis
+				directly, that bug could mask the answer. The code investigation above bypasses that risk — the
+				post-save path simply has no Phoenix branch to flip.
+			</div>
+
+			<h2>Recommended sequence (best ROI first)</h2>
+			<ol class="steps">
+				<li>
+					<strong>Stop calling <code>getStudent()</code> after save</strong> — return the hydrated student in
+					the PUT response and merge it. Cuts ~15 of the 20 calls in one stroke.
+					(<code>ui/src/student/details/details.js:297</code> is the trigger;
+					<code>model.details.js:283-354</code> is the model save method that needs to capture and return the
+					updated record.)
+				</li>
+				<li>
+					<strong>Add <code>WHERE sandboxId=? AND semesterId=?</code> to <code>app/agenda/agenda.js:435</code></strong>
+					(<code>SELECT * FROM trip</code>). One-line fix, big drop in <code>/students/routed</code> cost.
+				</li>
+				<li>
+					<strong>Batch <code>attachAddressStops</code></strong> in <code>app/student/index.js:936-948</code> —
+					single <code>name IN (?)</code> query instead of per-address <code>LIKE</code>.
+				</li>
+				<li>
+					<strong>Add <code>semesterId</code> filter to the noridewith query</strong> in
+					<code>app/student/student.js:534</code>.
+				</li>
+				<li>
+					<strong>Hoist static reference loads</strong> (ethnicity, tcode, equipment, walking restrictions,
+					zones, settings, district boundary) to app boot or a singleton with TTL. Items 2, 3, 4, 5, 10, 11,
+					12, 13 in the table go away on the save path.
+				</li>
+				<li>
+					<strong>Gate <code>studentLoaded</code> re-fetches on dirty fields</strong> — address-related child
+					components only refetch paths/addresses if address fields actually changed.
+				</li>
+			</ol>
+
+			<div class="footer-q">
+				Steps 1 + 5 alone should take post-save perceived latency from 30–40s to under 1–2s on Clark,
+				<strong>without touching any SQL</strong>.
+			</div>
+		</main>
+	</body>
+</html>
