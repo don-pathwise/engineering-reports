@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>export-student-buses · proposed EKS flow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { font-size: 17px; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    .step-number { font-variant-numeric: tabular-nums; }
+    .flow-line {
+      position: relative; width: 3px;
+      background: linear-gradient(to bottom, rgb(148 163 184), rgb(71 85 105));
+      margin-left: auto; margin-right: auto; border-radius: 2px;
+    }
+    .flow-line::after {
+      content: ""; position: absolute; bottom: -1px; left: 50%;
+      transform: translateX(-50%);
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 11px solid rgb(71 85 105);
+    }
+    .badge-num {
+      width: 3rem; height: 3rem; border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.06);
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.75rem; border-radius: 9999px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-width: 1px;
+    }
+    .main-card {
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <!-- HERO -->
+  <header class="border-b-2 border-slate-300 bg-white">
+    <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-900 text-sm font-bold tracking-wide uppercase mb-5 border border-emerald-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        Proposed flow · running on EKS
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-3">
+        export-student-buses
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+        Same 30-min cadence for every client. One new module inside the existing <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-base text-slate-900">crons-worker</code> pod. Config and secrets move into source control. That's the whole change.
+      </p>
+
+      <div class="flex flex-wrap gap-2 mt-6">
+        <span class="pill bg-sky-100 text-sky-900 border-sky-300">♻ Migrated</span>
+        <span class="pill bg-purple-100 text-purple-900 border-purple-300">🆕 New</span>
+        <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">✓ Unchanged</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-5">
+
+    <!-- ═════════ PLAN OF WORK ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card p-7 sm:p-9 mb-2">
+      <div class="text-sm font-bold tracking-wider uppercase text-slate-700 mb-2">Plan of work</div>
+      <h2 class="text-2xl font-bold text-slate-950 mb-2">What we'll do, in order</h2>
+      <p class="text-slate-700 text-lg mb-6 leading-relaxed">
+        Eight steps from today's EC2-based setup to running entirely on EKS with the same SLA. Everything below this is the spec for these steps.
+      </p>
+
+      <ol class="space-y-4">
+        <li class="flex gap-4 items-start">
+          <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number">1</div>
+          <div class="flex-1 pt-1">
+            <h3 class="text-lg font-bold text-slate-950 mb-1">Source-control the launcher</h3>
+            <p class="text-slate-700 leading-relaxed">
+              Merge Aaron's <a href="https://github.com/TransActComm/ezrd-async/pull/19" class="underline font-semibold text-slate-900">PR #19</a> to bring the 201-line dispatch script and the 5 missing CLI tools into the repo.
+              <span class="inline-flex items-center gap-1.5 ml-1 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 text-xs font-bold border border-emerald-300 align-middle">✓ In flight</span>
+            </p>
+          </div>
+        </li>
+
+        <li class="flex gap-4 items-start">
+          <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number">2</div>
+          <div class="flex-1 pt-1">
+            <h3 class="text-lg font-bold text-slate-950 mb-1">Translate the launcher into YAML</h3>
+            <p class="text-slate-700 leading-relaxed">
+              One-time mechanical parse: each of the 201 command lines becomes a structured entry in <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">clients.yaml</code>. Per-client flags (<code class="font-mono text-sm">--fields</code>, <code class="font-mono text-sm">--headers</code>, SFTP target, etc.) become typed config.
+            </p>
+          </div>
+        </li>
+
+        <li class="flex gap-4 items-start">
+          <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number">3</div>
+          <div class="flex-1 pt-1">
+            <h3 class="text-lg font-bold text-slate-950 mb-1">Move SFTP passwords to AWS Secrets Manager</h3>
+            <p class="text-slate-700 leading-relaxed">
+              Push the ~10 plaintext passwords currently inline in the launcher into <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">ezrd/&lt;env&gt;/ezrouting</code>, keyed by client name. The YAML references the secret key, never the value.
+            </p>
+          </div>
+        </li>
+
+        <li class="flex gap-4 items-start">
+          <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number">4</div>
+          <div class="flex-1 pt-1">
+            <h3 class="text-lg font-bold text-slate-950 mb-1">Refactor the CLI tool</h3>
+            <p class="text-slate-700 leading-relaxed">
+              Expose <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">exportStudentBuses(opts)</code> as a pure async function. The existing CLI entrypoint stays in place for backward compatibility during the soak period.
+            </p>
+          </div>
+        </li>
+
+        <li class="flex gap-4 items-start">
+          <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number">5</div>
+          <div class="flex-1 pt-1">
+            <h3 class="text-lg font-bold text-slate-950 mb-1">Add the BullMQ module to ezrouting</h3>
+            <p class="text-slate-700 leading-relaxed">
+              New <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">cron-jobs/export-student-buses/</code> directory with the scheduler and worker. Two-line registration into the existing <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">cronjob.queues.js</code>. Concurrency 3 in the existing <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">crons-worker</code> pod.
+            </p>
+          </div>
+        </li>
+
+        <li class="flex gap-4 items-start">
+          <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number">6</div>
+          <div class="flex-1 pt-1">
+            <h3 class="text-lg font-bold text-slate-950 mb-1">Notify external-SFTP districts of the source-IP change</h3>
+            <p class="text-slate-700 leading-relaxed">
+              Send a heads-up to the 10 districts whose SFTP servers we push to directly: our source IP changes from ProdWeb_PRIMARY's external IP to the EKS NAT gateway. Some districts allowlist us today and will need to add the new IP; others don't require it. We don't know which is which — defensive notification covers both.
+              <span class="block mt-2"><strong class="text-slate-950">Separately:</strong> resolve the private-IP routing for stfrancismn (<code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm">10.32.15.214</code>) — VPN, peering, or a relay from EKS. This is on our side, not the customer's.</span>
+            </p>
+          </div>
+        </li>
+
+        <li class="flex gap-4 items-start">
+          <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number">7</div>
+          <div class="flex-1 pt-1">
+            <h3 class="text-lg font-bold text-slate-950 mb-1">Validate before cutover <span class="text-sm text-slate-600 font-semibold">(method optional)</span></h3>
+            <p class="text-slate-700 leading-relaxed mb-3">
+              Before flipping aarzhou's cron off, we need confidence the new module produces correct output. The simplest approach would be running both systems in parallel and comparing — but <strong class="text-slate-950">that may not be safe here:</strong> some customer SFTPs allow only one session per user, and duplicate files arriving 30 seconds apart can confuse customer-side imports. Pick the validation path that fits the risk tolerance:
+            </p>
+            <ul class="space-y-2 pl-4 mt-2">
+              <li class="text-slate-700 leading-relaxed">
+                <strong class="text-slate-950">Shadow mode</strong> <span class="text-emerald-700 text-sm font-bold">(safest)</span> — EKS writes outputs to a side S3 bucket instead of customer SFTP. Compare hashes against aarzhou's actual files mirrored to the same bucket. No customer-facing duplicates.
+              </li>
+              <li class="text-slate-700 leading-relaxed">
+                <strong class="text-slate-950">Per-tenant canary</strong> — pick 1-2 cooperative districts, swap their entry from aarzhou to EKS, observe their downstream for a week, then generalize.
+              </li>
+              <li class="text-slate-700 leading-relaxed">
+                <strong class="text-slate-950">Schedule offset</strong> — aarzhou fires at :00 and :30, EKS at :15 and :45. No duplicates at the destination; real customer infrastructure exercised.
+              </li>
+              <li class="text-slate-700 leading-relaxed">
+                <strong class="text-slate-950">Direct cutover</strong> <span class="text-amber-700 text-sm font-bold">(fastest)</span> — rely on dev/uat testing, flip on prd with a rollback plan (uncomment aarzhou's crontab line if anything breaks).
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="flex gap-4 items-start">
+          <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number">8</div>
+          <div class="flex-1 pt-1">
+            <h3 class="text-lg font-bold text-slate-950 mb-1">Cut over and decommission</h3>
+            <p class="text-slate-700 leading-relaxed">
+              Comment out aarzhou's crontab line, delete the legacy <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">.sh</code> from <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">ezrd-async</code>, retire the dispatch script on <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">sftp.ezrouting.com</code>.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ═════════ CONSTRAINT BANNER ═════════ -->
+    <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7 mb-2">
+      <div class="flex items-start gap-4">
+        <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+        <div>
+          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Sizing constraint</div>
+          <p class="text-slate-800 text-lg leading-relaxed">
+            <strong class="text-slate-950">Every client must be exported every 30 minutes.</strong> No per-client cadence reductions, no event-driven fast paths. The 30-min window is the SLA for all 201 invocations — the new design has to meet it as reliably as the EC2 one does today.
+          </p>
+          <p class="text-slate-700 text-base mt-2 leading-relaxed">
+            Measured baseline today: 201 invocations × ~6s avg = <strong>~20 min sequential batch</strong>, with ~10 min slack inside the 30-min window. Anything we build needs to match or beat that.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ STEP 1: TRIGGER ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-5">
+          <div class="badge-num bg-sky-200 text-sky-900 step-number flex-shrink-0">1</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-2 flex-wrap">
+              <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Trigger</div>
+              <span class="pill bg-sky-100 text-sky-900 border-sky-300">♻ Migrated</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-3">BullMQ repeatable job, not crond</h2>
+            <p class="text-slate-700 mb-5 text-lg leading-relaxed">
+              The schedule lives in code. When the existing <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-base text-slate-900">crons-worker</code> pod boots, <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-base text-slate-900">bullmq_crons.js</code> registers a repeatable job that fires on exactly the same cron expression as today.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-rose-100 border-2 border-rose-300 rounded-xl p-5">
+                <div class="text-rose-900 font-bold text-xs tracking-wider uppercase mb-2">Was</div>
+                <div class="font-mono text-sm text-slate-900 bg-white rounded-md p-3 border-2 border-rose-300 leading-relaxed">
+                  <span class="text-slate-500"># /etc/crontab on aarzhou</span><br>
+                  */30 * * * 1-5 export-student-buses.sh
+                </div>
+              </div>
+              <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5">
+                <div class="text-emerald-900 font-bold text-xs tracking-wider uppercase mb-2">Now</div>
+                <div class="font-mono text-sm text-slate-900 bg-white rounded-md p-3 border-2 border-emerald-300 leading-relaxed overflow-x-auto">
+                  queue.add(<span class="text-amber-700">'fanout'</span>, {}, {<br>
+                  &nbsp;&nbsp;repeat: { pattern: <span class="text-amber-700">'*/30 * * * 1-5'</span> }<br>
+                  })
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flex justify-center items-center py-1"><div class="flow-line h-16"></div></div>
+    <div class="flex justify-center -mt-8 mb-3 relative">
+      <span class="bg-slate-100 px-4 text-sm font-bold text-slate-700">tick fires every 30 min, Mon–Fri</span>
+    </div>
+
+    <!-- ═════════ STEP 2: CONFIG ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-5">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">2</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-2 flex-wrap">
+              <div class="text-sm font-bold tracking-wider uppercase text-purple-800">Configuration</div>
+              <span class="pill bg-purple-100 text-purple-900 border-purple-300">🆕 New</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-3">201 invocations, in version-controlled YAML</h2>
+            <p class="text-slate-700 mb-5 text-lg leading-relaxed">
+              The 201-line dispatch script gets translated once into structured config, committed to the repo. Plaintext SFTP passwords get extracted to AWS Secrets Manager and referenced by key name.
+            </p>
+
+            <div class="bg-purple-100 border-2 border-purple-300 rounded-xl p-5 mb-5">
+              <div class="font-mono text-xs text-purple-900 font-bold mb-2 tracking-wider">ezrouting/cron-jobs/export-student-buses/clients.yaml</div>
+<pre class="font-mono text-sm text-slate-900 bg-white rounded-md p-4 border-2 border-purple-300 overflow-x-auto leading-relaxed">- <span class="text-purple-800 font-semibold">client:</span> gloucesterva
+  <span class="text-purple-800 font-semibold">sftpFolder:</span> <span class="text-amber-700">"gloucesterva-49Yy8rKTJIEdJG48/"</span>
+  <span class="text-purple-800 font-semibold">allAgenda:</span> true
+  <span class="text-purple-800 font-semibold">fields:</span>
+    - <span class="text-amber-700">"Student ID"</span>
+    - <span class="text-amber-700">"s => s.agenda.homeToSchool ? 'To' : 'From'"</span>
+    <span class="text-slate-500"># ...preserved verbatim from the launcher</span>
+
+- <span class="text-purple-800 font-semibold">client:</span> newarkoh
+  <span class="text-purple-800 font-semibold">sftp:</span>
+    <span class="text-purple-800 font-semibold">host:</span> ftp.swiftwavenetwork.com
+    <span class="text-purple-800 font-semibold">port:</span> 9922
+    <span class="text-purple-800 font-semibold">username:</span> newarkcitysd
+    <span class="text-purple-800 font-semibold">passwordSecretKey:</span> SFTP_PASSWORD_NEWARKOH  <span class="text-slate-500"># ← from Secrets Manager</span>
+  <span class="text-slate-500"># ...</span></pre>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
+                <div class="text-xs font-bold text-slate-700 tracking-wider uppercase mb-1">Source of truth</div>
+                <div class="text-slate-950 font-bold">Git, not a remote SFTP host</div>
+                <p class="text-sm text-slate-700 mt-1 leading-relaxed">PR-reviewed changes. The current script lives only on <code class="font-mono text-xs bg-slate-200 px-1 rounded">sftp.ezrouting.com</code> and gets copied around — that goes away.</p>
+              </div>
+              <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
+                <div class="text-xs font-bold text-slate-700 tracking-wider uppercase mb-1">Secrets</div>
+                <div class="text-slate-950 font-bold">AWS Secrets Manager</div>
+                <p class="text-sm text-slate-700 mt-1 leading-relaxed">Mounted onto the pod via ExternalSecret. No plaintext SFTP passwords in source control.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flex justify-center items-center py-1"><div class="flow-line h-16"></div></div>
+    <div class="flex justify-center -mt-8 mb-3 relative">
+      <span class="bg-slate-100 px-4 text-sm font-bold text-slate-700">on each tick, enqueue 201 jobs</span>
+    </div>
+
+    <!-- ═════════ STEP 3: WORKER ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-5">
+          <div class="badge-num bg-amber-200 text-amber-900 step-number flex-shrink-0">3</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-2 flex-wrap">
+              <div class="text-sm font-bold tracking-wider uppercase text-amber-800">Worker</div>
+              <span class="pill bg-purple-100 text-purple-900 border-purple-300">🆕 New</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-3">One queue, concurrency 3, in the existing pod</h2>
+            <p class="text-slate-700 mb-6 text-lg leading-relaxed">
+              No dedicated worker pod, no fanout machinery, no rate limiter. The module is just another sibling under <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-base text-slate-900">cron-jobs/</code> in the existing <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-base text-slate-900">crons-worker</code> pod, alongside the 9 modules already running there.
+            </p>
+
+            <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-6 mb-5">
+              <div class="text-amber-900 font-bold text-xs tracking-wider uppercase mb-3">BullMQ Worker</div>
+<pre class="font-mono text-sm text-slate-900 bg-white rounded-md p-4 border-2 border-amber-300 overflow-x-auto leading-relaxed"><span class="text-purple-700">const</span> queue = <span class="text-purple-700">new</span> <span class="text-sky-700">Queue</span>(<span class="text-amber-700">'export-student-buses'</span>, { connection });
+
+<span class="text-slate-500">// every tick, enqueue all 201 invocations at once</span>
+<span class="text-purple-700">async function</span> <span class="text-sky-700">fanoutWorker</span>() {
+  <span class="text-purple-700">for</span> (<span class="text-purple-700">const</span> cfg <span class="text-purple-700">of</span> clientsConfig) {
+    <span class="text-purple-700">await</span> queue.<span class="text-sky-700">add</span>(<span class="text-amber-700">'export'</span>, cfg, { attempts: <span class="text-fuchsia-700">2</span> });
+  }
+}
+
+<span class="text-slate-500">// 3 client exports run at once; the other 198 wait in the queue</span>
+<span class="text-purple-700">new</span> <span class="text-sky-700">Worker</span>(<span class="text-amber-700">'export-student-buses'</span>, exportWorker, {
+  connection,
+  concurrency: <span class="text-fuchsia-700">3</span>,
+});</pre>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
+                <div class="text-2xl font-extrabold text-amber-900 tabular-nums">3</div>
+                <div class="text-sm font-bold text-slate-800 mt-1">concurrent exports at any moment</div>
+              </div>
+              <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
+                <div class="text-2xl font-extrabold text-amber-900 tabular-nums">~7 min</div>
+                <div class="text-sm font-bold text-slate-800 mt-1">batch wall-time (vs. ~20 min today)</div>
+              </div>
+              <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
+                <div class="text-2xl font-extrabold text-amber-900 tabular-nums">23 min</div>
+                <div class="text-sm font-bold text-slate-800 mt-1">slack inside the 30-min window</div>
+              </div>
+            </div>
+
+            <div class="bg-slate-100 border-2 border-slate-300 rounded-lg p-4 mt-5 text-slate-800 leading-relaxed text-sm">
+              <strong class="text-slate-950">Why not a dedicated pod or higher concurrency?</strong>
+              At measured ~6s avg / ~60s worst per client, concurrency 3 finishes the whole batch in roughly a third of the current sequential time. There's no resource pressure to defend against and no benefit to over-parallelizing — more concurrency just means more competing DB connections without finishing sooner.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flex justify-center items-center py-1"><div class="flow-line h-16"></div></div>
+    <div class="flex justify-center -mt-8 mb-3 relative">
+      <span class="bg-slate-100 px-4 text-sm font-bold text-slate-700">worker picks up one client job</span>
+    </div>
+
+    <!-- ═════════ STEP 4: PROCESS ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-5">
+          <div class="badge-num bg-teal-200 text-teal-900 step-number flex-shrink-0">4</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-2 flex-wrap">
+              <div class="text-sm font-bold tracking-wider uppercase text-teal-800">Process</div>
+              <span class="pill bg-sky-100 text-sky-900 border-sky-300">♻ Migrated</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-3">Same logic, called as a function</h2>
+            <p class="text-slate-700 mb-5 text-lg leading-relaxed">
+              The existing CLI tool is refactored to expose <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-base text-slate-900">exportStudentBuses(opts)</code> as a pure async function. The worker calls it directly — same DB queries, same field mapping, same JS-lambda eval, same XLSX/CSV serialization.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+              <div class="bg-teal-100 border-2 border-teal-300 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="w-7 h-7 rounded-full bg-teal-700 text-white font-bold text-sm flex items-center justify-center">a</span>
+                  <h3 class="font-bold text-teal-950">Build records</h3>
+                </div>
+                <p class="text-sm text-teal-950 leading-relaxed">
+                  Same query path through <code class="font-mono text-xs bg-white px-1 rounded border border-teal-300">mysql-wrapper</code> and ezrouting's domain modules. The pod already initializes both.
+                </p>
+              </div>
+              <div class="bg-teal-100 border-2 border-teal-300 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="w-7 h-7 rounded-full bg-teal-700 text-white font-bold text-sm flex items-center justify-center">b</span>
+                  <h3 class="font-bold text-teal-950">Map to columns</h3>
+                </div>
+                <p class="text-sm text-teal-950 leading-relaxed">
+                  Same per-district fields. The YAML strings for inline JS lambdas (<code class="font-mono text-xs bg-white px-1 rounded border border-teal-300">s =&gt; ...</code>) pass through unchanged and get eval'd row by row.
+                </p>
+              </div>
+              <div class="bg-teal-100 border-2 border-teal-300 rounded-xl p-5">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="w-7 h-7 rounded-full bg-teal-700 text-white font-bold text-sm flex items-center justify-center">c</span>
+                  <h3 class="font-bold text-teal-950">Serialize &amp; SFTP</h3>
+                </div>
+                <p class="text-sm text-teal-950 leading-relaxed">
+                  Same CSV/TSV/XLSX writers. Same SFTP push logic — but password now comes from <code class="font-mono text-xs bg-white px-1 rounded border border-teal-300">process.env.SFTP_PASSWORD_*</code>, mounted by ExternalSecret.
+                </p>
+              </div>
+            </div>
+
+            <div class="bg-slate-100 border-2 border-slate-300 rounded-lg p-4 text-slate-800 leading-relaxed">
+              <strong class="text-slate-950">The only real refactor:</strong> the CLI tool's top-level code (which reads <code class="font-mono text-sm bg-slate-200 px-1 rounded">argv</code>, mutates <code class="font-mono text-sm bg-slate-200 px-1 rounded">global.configuration</code>, and calls <code class="font-mono text-sm bg-slate-200 px-1 rounded">process.exit()</code>) is moved into a CLI wrapper, leaving the body as a clean function the worker can call. The CLI wrapper stays in place during the soak period for backward compatibility.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flex justify-center items-center py-1"><div class="flow-line h-16"></div></div>
+    <div class="flex justify-center -mt-8 mb-3 relative">
+      <span class="bg-slate-100 px-4 text-sm font-bold text-slate-700">SFTP upload</span>
+    </div>
+
+    <!-- ═════════ STEP 5: DESTINATIONS ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9 pb-5">
+        <div class="flex items-start gap-5">
+          <div class="badge-num bg-emerald-200 text-emerald-900 step-number flex-shrink-0">5</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-2 flex-wrap">
+              <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Destinations</div>
+              <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">✓ Unchanged</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-2">Files land in the same places</h2>
+            <p class="text-slate-700 text-lg leading-relaxed">
+              The destinations are exactly what they are today. Only meaningful difference: the <em>source IP</em> of the SFTP connection is the EKS NAT gateway, not the EC2 box.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-px bg-slate-300 border-t-2 border-slate-300">
+        <div class="bg-white p-7 sm:p-9">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="px-2.5 py-1 rounded-md bg-emerald-200 text-emerald-900 text-xs font-bold tracking-wider uppercase border border-emerald-400">Managed</span>
+            <span class="text-sm font-bold text-slate-700">191 files</span>
+          </div>
+          <h3 class="text-xl font-bold text-slate-950 mb-2">sftp.ezrouting.com</h3>
+          <p class="text-slate-700 leading-relaxed">Drop folder per district. Customers SFTP in to pull. Same as today.</p>
+        </div>
+        <div class="bg-white p-7 sm:p-9">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="px-2.5 py-1 rounded-md bg-rose-200 text-rose-900 text-xs font-bold tracking-wider uppercase border border-rose-400">External</span>
+            <span class="text-sm font-bold text-slate-700">10 files</span>
+          </div>
+          <h3 class="text-xl font-bold text-slate-950 mb-2">Customer-owned SFTP</h3>
+          <p class="text-slate-700 leading-relaxed">
+            Direct push to 7 unique hosts. Includes one private IP (stfrancismn) — VPN or relay required from EKS.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="flex justify-center items-center py-1"><div class="flow-line h-16"></div></div>
+
+    <!-- ═════════ STEP 6: CONSUMERS ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-5">
+          <div class="badge-num bg-slate-300 text-slate-900 step-number flex-shrink-0">6</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-2 flex-wrap">
+              <div class="text-sm font-bold tracking-wider uppercase text-slate-800">Consumer</div>
+              <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">✓ Unchanged</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-2">District ingests the file</h2>
+            <p class="text-slate-700 text-lg leading-relaxed">
+              Districts pull or receive exactly as before. They don't know anything changed. Same SLA, same files, same cadence — that's the whole point.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ RESOURCE BUDGET ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card p-7 sm:p-9 mt-12">
+      <div class="text-sm font-bold tracking-wider uppercase text-slate-700 mb-2">Resource budget</div>
+      <h2 class="text-2xl font-bold text-slate-950 mb-2">The math works at concurrency 3</h2>
+      <p class="text-slate-700 text-lg mb-6 leading-relaxed">
+        Sized against measured behavior, not worst-case projection. The new design is strictly faster than today on every metric while consuming roughly the same resources.
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-slate-100">
+              <th class="text-left py-3 px-4 font-bold text-slate-900 border-2 border-slate-300">Metric</th>
+              <th class="text-left py-3 px-4 font-bold text-rose-900 border-2 border-slate-300">Today (sequential)</th>
+              <th class="text-left py-3 px-4 font-bold text-emerald-900 border-2 border-slate-300">Proposed (concurrency 3)</th>
+              <th class="text-left py-3 px-4 font-bold text-slate-900 border-2 border-slate-300">Headroom</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="bg-white">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Batch wall-time</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">~20 min</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">~7 min</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">23 min inside the 30-min window</td>
+            </tr>
+            <tr class="bg-slate-50">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">DB connections at peak</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">1 × 2-3 = 2-3</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">3 × 2-3 = 6-9</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">trivial against per-shard limits</td>
+            </tr>
+            <tr class="bg-white">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Pod memory at peak</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">~30 MB (one client at a time)</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">~90 MB (three clients at a time)</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">tiny fraction of pod allotment</td>
+            </tr>
+            <tr class="bg-slate-50">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Slack for late jobs</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">~10 min</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">~23 min</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">2x today's buffer</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4">
+          <div class="text-amber-900 font-bold text-xs tracking-wider uppercase mb-1">Tunable if needed</div>
+          <p class="text-slate-800 text-sm leading-relaxed">
+            <code class="font-mono text-xs bg-white px-1 rounded border border-amber-300">concurrency: 3</code> is the only knob to turn. If the batch ever pushes against the window during back-to-school crunch, raise it to 4 or 5. If we ever see DB pressure, drop it to 2. The lever is one config value, not a redesign.
+          </p>
+        </div>
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4">
+          <div class="text-amber-900 font-bold text-xs tracking-wider uppercase mb-1">What we considered and rejected</div>
+          <p class="text-slate-800 text-sm leading-relaxed">
+            Fanout staggering, DB-shard rate limiter, dedicated <code class="font-mono text-xs bg-white px-1 rounded border border-amber-300">exports-worker</code> Deployment, streaming serialization. All useful if the work were 10x larger or coupled to the web app's DB capacity. At the measured ~6s avg job size, they're over-engineering.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ FILES TOUCHED ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card p-7 sm:p-9 mt-5">
+      <div class="text-sm font-bold tracking-wider uppercase text-slate-700 mb-2">What gets created or edited</div>
+      <h2 class="text-2xl font-bold text-slate-950 mb-5">One repo, six files</h2>
+
+      <div class="bg-slate-950 text-slate-50 rounded-xl p-6 font-mono text-sm leading-relaxed overflow-x-auto border-2 border-slate-300">
+<span class="text-slate-400">ezrouting/</span>
+<span class="text-slate-400">├──</span> cron-jobs/
+<span class="text-slate-400">│   ├──</span> cronjob.queues.js                          <span class="px-2 py-0.5 ml-2 rounded bg-sky-800 text-sky-100 text-xs">edit · 2 lines</span>
+<span class="text-slate-400">│   └──</span> <span class="text-emerald-300">export-student-buses/</span>                      <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new directory</span>
+<span class="text-slate-400">│       ├──</span> <span class="text-emerald-300">clients.yaml</span>                          <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new · 201 entries</span>
+<span class="text-slate-400">│       ├──</span> <span class="text-emerald-300">export-student-buses.queues.js</span>        <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new · scheduler + worker</span>
+<span class="text-slate-400">│       └──</span> <span class="text-emerald-300">export.worker.js</span>                      <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new · per-client logic</span>
+<span class="text-slate-400">└──</span> app/cli-tools/
+<span class="text-slate-400">    └──</span> export-student-buses.js                     <span class="px-2 py-0.5 ml-2 rounded bg-sky-800 text-sky-100 text-xs">refactor · expose pure fn</span>
+      </div>
+
+      <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-lg p-4">
+          <div class="text-sm font-bold text-slate-950">ezrd-gitops</div>
+          <p class="text-sm text-slate-800 mt-1 leading-relaxed">
+            No new Helm template. If new secret keys aren't already exposed by ezrouting's <code class="font-mono text-xs bg-slate-200 px-1 rounded">externalsecret.yaml</code>, add them there.
+          </p>
+        </div>
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-lg p-4">
+          <div class="text-sm font-bold text-slate-950">AWS Secrets Manager</div>
+          <p class="text-sm text-slate-800 mt-1 leading-relaxed">
+            Add ~30 plaintext SFTP passwords to <code class="font-mono text-xs bg-slate-200 px-1 rounded">ezrd/&lt;env&gt;/ezrouting</code> keyed by client name.
+          </p>
+        </div>
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-lg p-4">
+          <div class="text-sm font-bold text-slate-950">ezrd-async</div>
+          <p class="text-sm text-slate-800 mt-1 leading-relaxed">
+            Cleanup only. Delete <code class="font-mono text-xs bg-slate-200 px-1 rounded">legacy/export-student-buses.sh</code> after the soak completes.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ BEFORE / AFTER ═════════ -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card p-7 sm:p-9 mt-5">
+      <div class="text-sm font-bold tracking-wider uppercase text-slate-700 mb-2">Before / after</div>
+      <h2 class="text-2xl font-bold text-slate-950 mb-5">At a glance</h2>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-slate-100">
+              <th class="text-left py-3 px-4 font-bold text-slate-900 border-2 border-slate-300">Concern</th>
+              <th class="text-left py-3 px-4 font-bold text-rose-900 border-2 border-slate-300">Legacy (aarzhou EC2)</th>
+              <th class="text-left py-3 px-4 font-bold text-emerald-900 border-2 border-slate-300">Proposed (EKS)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="bg-white">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Where the runner lives</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">aarzhou's EC2 host</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">Existing <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-xs">crons-worker</code> pod, no new Deployment</td>
+            </tr>
+            <tr class="bg-slate-50">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Schedule defined in</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">crontab line</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">Code (BullMQ <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-xs">repeat</code>)</td>
+            </tr>
+            <tr class="bg-white">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Per-client config</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">201-line .sh on external SFTP host</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300"><code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-xs">clients.yaml</code> in repo</td>
+            </tr>
+            <tr class="bg-slate-50">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">SFTP passwords</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">Inline plaintext in .sh</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">AWS Secrets Manager</td>
+            </tr>
+            <tr class="bg-white">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Execution model</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">Sequential bash loop, ~20 min wall</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">3 workers in parallel, ~7 min wall</td>
+            </tr>
+            <tr class="bg-slate-50">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Per-client cadence</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">Every 30 min, all clients</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">Every 30 min, all clients <span class="text-emerald-700 font-bold">(unchanged SLA)</span></td>
+            </tr>
+            <tr class="bg-white">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Per-client failure isolation</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">None — one bad export can hang the loop</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">Per-job retry + backoff</td>
+            </tr>
+            <tr class="bg-slate-50">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Outbound source IP</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">EC2 host external IP</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">EKS NAT gateway IP <span class="text-amber-800 font-bold">(customers must allowlist)</span></td>
+            </tr>
+            <tr class="bg-white">
+              <td class="py-3 px-4 font-bold text-slate-950 border-2 border-slate-300">Observability</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">aarzhou syslog files</td>
+              <td class="py-3 px-4 text-slate-800 border-2 border-slate-300">Datadog (auto-wired via <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-xs">monitors_bullmq.tf</code>)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t-2 border-slate-300 mt-12 py-8 bg-white">
+    <div class="max-w-6xl mx-auto px-6 text-center text-sm text-slate-700">
+      Proposed migration target as of 2026-05-12 · companion to the
+      <a href="export-student-buses-flow.html" class="underline font-semibold text-slate-900 hover:text-slate-700">legacy data flow</a>
+    </div>
+  </footer>
+
+</body>
+</html>
