@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Legacy Cron Output Audit — Parity Validation Strategy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+      }},
+    };
+  </script>
+  <style>
+    html { font-size: 17px; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    .step-number { font-variant-numeric: tabular-nums; }
+    .badge-num {
+      width: 3rem; height: 3rem; border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.06);
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.75rem; border-radius: 9999px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-width: 1px;
+    }
+    .pill-sm {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.18rem 0.55rem; border-radius: 9999px;
+      font-size: 0.66rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      border-width: 1px; white-space: nowrap;
+    }
+    .main-card {
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    code.k {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: rgb(226 232 240); color: rgb(15 23 42);
+      padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em;
+      white-space: nowrap;
+    }
+    code.k.wrap { white-space: normal; word-break: break-all; }
+    .ttable thead th { position: sticky; top: 0; z-index: 1; }
+    section[id] { scroll-margin-top: 1.5rem; }
+    a.permalink {
+      color: rgb(203 213 225);
+      font-weight: 400;
+      font-size: 1.1rem;
+      text-decoration: none;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+      transition: color 0.15s;
+    }
+    a.permalink:hover { color: rgb(15 23 42); }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <header class="border-b-2 border-slate-300 bg-white">
+    <div class="max-w-[110rem] mx-auto px-6 py-12 sm:py-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 mb-6">
+        <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+        <span class="text-xs font-bold tracking-wider uppercase">Draft · Planning Artifact</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-4">
+        Legacy Cron Output Audit
+      </h1>
+      <div class="text-2xl font-bold text-slate-700 mb-6">Parity Validation Strategy &mdash; EZRD-1462 / EKS Cutover</div>
+      <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed mb-6">
+        For each of the 22 legacy entries still running on <code class="k">aarzhou</code>'s EC2 host
+        (per the Confluence cron inventory): exactly what does it produce, where does the output land,
+        is anything durable enough to compare against the migrated counterpart, and what is the recommended
+        parity-validation strategy?
+      </p>
+      <div class="flex flex-wrap gap-x-8 gap-y-2 text-sm text-slate-600">
+        <div><span class="font-semibold text-slate-800">Date:</span> 2026-05-15</div>
+        <div><span class="font-semibold text-slate-800">Author:</span> Don Adams</div>
+        <div><span class="font-semibold text-slate-800">Status:</span> Draft</div>
+        <div><span class="font-semibold text-slate-800">Scope:</span> the <code class="k">legacy/</code> table only (3 already-on-EKS jobs excluded)</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-[110rem] mx-auto px-6 py-12 space-y-5">
+
+    <!-- 1. TL;DR -->
+    <section id="tldr" class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">1</div>
+          <div class="flex-1 pt-1">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="text-sm font-bold tracking-wider uppercase text-purple-800">Bottom line</div>
+              <span class="pill bg-purple-100 text-purple-900 border-purple-300">TL;DR</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-2">Most of the work is making outputs durable — not reading the source<a href="#tldr" class="permalink" aria-label="Permalink to TL;DR">#</a></h2>
+            <p class="text-slate-700 leading-relaxed">Four headline observations frame the rest of the page.</p>
+          </div>
+        </div>
+        <ul class="space-y-3 ml-2">
+          <li class="flex items-start gap-3">
+            <div class="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+            <div class="text-slate-800"><span class="font-semibold">Only two legacy jobs already keep durable copies of what they produce or consume:</span>
+              <code class="k">export-ezr-data</code> (S3 backup) and <code class="k">import-fuellogs</code> (raw CSV archived to S3). Everything else writes to <code class="k">/tmp/</code>, ships via SFTP, or mutates a DB — and forgets.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <div class="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+            <div class="text-slate-800"><span class="font-semibold">Three of the &ldquo;blocked&rdquo; reports are actually free wins:</span>
+              <code class="k">export-contact-list-reports</code>, <code class="k">export-dismissal-reports</code>, and <code class="k">export-punch-reports</code> all write date-stamped files that persist on disk or SFTP — easy to grab for parity even though the source code isn't migrated yet.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <div class="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+            <div class="text-slate-800"><span class="font-semibold">All DB-mutating jobs need a snapshot-before-and-after harness</span>, not a file diff. That's eight of the 22 entries. A generic <code class="k">mysqldump &rarr; structural diff</code> helper would cover all of them.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <div class="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+            <div class="text-slate-800"><span class="font-semibold">Two jobs produce nothing comparable:</span> <code class="k">schoolToolPost</code> POSTs to a third-party REST API (no file output, side-effect is on SchoolTool), and <code class="k">gps-service reload</code> is a pm2 control — obsolete on EKS.</div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 2. Legend -->
+    <section id="legend" class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="badge-num bg-slate-200 text-slate-900 step-number flex-shrink-0">2</div>
+          <div class="flex-1 pt-1">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="text-sm font-bold tracking-wider uppercase text-slate-700">Reference</div>
+              <span class="pill bg-slate-100 text-slate-800 border-slate-300">Legend</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-2">Status legend (matches Confluence)<a href="#legend" class="permalink" aria-label="Permalink to legend">#</a></h2>
+            <p class="text-slate-700 leading-relaxed">Each job is tagged with one of six statuses describing where its source code lives today.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="flex items-start gap-3 p-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl">
+            <span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300 flex-shrink-0">🟢 On EKS</span>
+            <span class="text-sm text-slate-800">Built from <code class="k">src/</code>, deployed via <code class="k">ezrd-gitops</code>, running as a K8s <code class="k">CronJob</code></span>
+          </div>
+          <div class="flex items-start gap-3 p-4 bg-sky-50 border-2 border-sky-200 rounded-xl">
+            <span class="pill-sm bg-sky-100 text-sky-900 border-sky-300 flex-shrink-0">🔵 In repo</span>
+            <span class="text-sm text-slate-800">Script + deps self-contained in <code class="k">legacy/</code>; no cross-repo dependency</span>
+          </div>
+          <div class="flex items-start gap-3 p-4 bg-amber-50 border-2 border-amber-200 rounded-xl">
+            <span class="pill-sm bg-amber-100 text-amber-900 border-amber-300 flex-shrink-0">🟡 Cross-repo</span>
+            <span class="text-sm text-slate-800">Calls a CLI tool in a sibling repo; tool exists in source control</span>
+          </div>
+          <div class="flex items-start gap-3 p-4 bg-rose-50 border-2 border-rose-200 rounded-xl">
+            <span class="pill-sm bg-rose-100 text-rose-900 border-rose-300 flex-shrink-0">🔴 EC2-only</span>
+            <span class="text-sm text-slate-800">CLI tool does <span class="font-semibold">not exist in any branch</span> of any TransActComm repo — lives only on aarzhou</span>
+          </div>
+          <div class="flex items-start gap-3 p-4 bg-purple-50 border-2 border-purple-200 rounded-xl">
+            <span class="pill-sm bg-purple-100 text-purple-900 border-purple-300 flex-shrink-0">🟣 SQL only</span>
+            <span class="text-sm text-slate-800">No Node, just inline <code class="k">mysql</code></span>
+          </div>
+          <div class="flex items-start gap-3 p-4 bg-slate-50 border-2 border-slate-200 rounded-xl">
+            <span class="pill-sm bg-slate-100 text-slate-800 border-slate-300 flex-shrink-0">⚪ Shell only</span>
+            <span class="text-sm text-slate-800">No Node code path at all — pure shell utility (7z, s3cmd, sftp, pm2)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Per-job table -->
+    <section id="per-job-audit" class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="badge-num bg-teal-200 text-teal-900 step-number flex-shrink-0">3</div>
+          <div class="flex-1 pt-1">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="text-sm font-bold tracking-wider uppercase text-teal-800">The audit</div>
+              <span class="pill bg-teal-100 text-teal-900 border-teal-300">Per-job</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-2">Per-Job Output &amp; Parity Strategy<a href="#per-job-audit" class="permalink" aria-label="Permalink to per-job audit">#</a></h2>
+            <p class="text-slate-700 leading-relaxed">One row per legacy entry. The <em>Durable copy?</em> column answers &ldquo;could a future engineer reconstruct what this job did yesterday?&rdquo; The <em>Parity strategy</em> column is the recommended approach for proving the migrated counterpart produces equivalent output.</p>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+          <table class="ttable w-full text-sm min-w-[1280px]">
+            <colgroup>
+              <col class="w-[18%]">  <!-- Job -->
+              <col class="w-[8%]">   <!-- Status -->
+              <col class="w-[20%]">  <!-- What it produces -->
+              <col class="w-[20%]">  <!-- Destination -->
+              <col class="w-[12%]">  <!-- Durable? -->
+              <col class="w-[22%]">  <!-- Parity strategy -->
+            </colgroup>
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+                <th class="text-left px-4 py-3">Job · Schedule</th>
+                <th class="text-left px-3 py-3">Status</th>
+                <th class="text-left px-4 py-3">What it produces</th>
+                <th class="text-left px-4 py-3">Output destination</th>
+                <th class="text-left px-4 py-3">Durable copy?</th>
+                <th class="text-left px-4 py-3">Parity strategy</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white">
+
+              <!-- export-student-buses (legacy wrapper) -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-student-buses</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/30 * * * 1-5</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700">4-line wrapper <code class="k wrap">ezrd-crons/legacy/export-student-buses.sh</code>: (1) <code class="k wrap">scp</code> the 201-line dispatcher <code class="k wrap">export-student-buses.temp.sh</code> from <code class="k wrap">sftp.ezrouting.com:/home/nan/data-export/</code>, (2) execute it &mdash; runs 201 <code class="k wrap">node app/cli-tools/export-student-buses.js …</code> invocations, each producing one tenant's CSV / TSV / TXT / XLSX in <code class="k">/tmp/</code>.</td>
+                <td class="px-4 py-3 text-slate-700">Each tenant: <code class="k wrap">/tmp/&lt;filename&gt;</code> &rarr; <code class="k wrap">scp</code> to <code class="k wrap">sftp.ezrouting.com:/upload/&lt;folder&gt;/</code> (managed, 191 of 201) or <code class="k wrap">sshpass + sftp put</code> to the customer's SFTP host (external, 10 of 201).</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">No</span><div class="text-xs text-slate-600 mt-2"><code class="k">/tmp</code> overwritten every 30 min; SFTP destination overwrites at same key. Dispatcher itself lives only on <code class="k wrap">sftp.ezrouting.com:/home/nan/data-export/</code>, not in source control.</div></td>
+                <td class="px-4 py-3 text-slate-700">Snapshot <code class="k wrap">/tmp/*-buses*</code> and similar from aarzhou after each tick &mdash; same approach as <code class="k">export-students-stops</code>. Also retrieve the dispatcher <code class="k">.sh</code> from the SFTP host as part of cutover prep.</td>
+              </tr>
+
+              <!-- export-ezr-data -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-ezr-data</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/30 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-slate-100 text-slate-800 border-slate-300">⚪ Shell only</span></td>
+                <td class="px-4 py-3 text-slate-700">7z bundles of ezrouting host-local <code class="k">clients/*.json</code> + <code class="k">guide/</code> directories.</td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">s3://geodataintelligence/backup/ezr-clients.7z</code> + <code class="k wrap">ezr-guides.7z</code> (overwrites every 30 min).</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">Yes — S3</span><div class="text-xs text-slate-600 mt-2">Single rolling version.</div></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">No migration</span><div class="text-xs text-slate-700 mt-2">EC2-disk safety net disappears under EKS where state lives on durable storage with AWS-native backups.</div></td>
+              </tr>
+
+              <!-- export-students-stops -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-students-stops</div><div class="text-xs text-slate-500 mt-1"><code class="k">2 21 * * 0-4</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700">Runs <code class="k wrap">export-students.js</code> + <code class="k wrap">export-route-stops.js</code> for <code class="k">gloucesterva</code>. Writes <code class="k wrap">/tmp/gloucesterva-students.csv</code> + <code class="k wrap">/tmp/gloucesterva-stops.csv</code>.</td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">ftp.wheresthebus.com:/</code> via sshpass.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">No</span><div class="text-xs text-slate-600 mt-2"><code class="k">/tmp</code> transient; remote overwrites at same key.</div></td>
+                <td class="px-4 py-3 text-slate-700">Snapshot <code class="k">/tmp/gloucesterva-*</code> after the Sun–Thu 21:02 run; or pull from <code class="k">ftp.wheresthebus.com</code> if credentials and retention allow.</td>
+              </tr>
+
+              <!-- schoolToolPost -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">schoolToolPost</div><div class="text-xs text-slate-500 mt-1"><code class="k">30 12,18 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-sky-100 text-sky-900 border-sky-300">🔵 In repo</span></td>
+                <td class="px-4 py-3 text-slate-700">scp's <code class="k">apiexport.csv</code> for wgenesee + cambridge, then POSTs row-by-row to SchoolTool REST. Local artifacts are debug only (<code class="k wrap">error_response.json</code>, <code class="k wrap">unexpected_responses.json</code>, <code class="k wrap">missing_modes.txt</code>).</td>
+                <td class="px-4 py-3 text-slate-700">SchoolTool REST API (<code class="k wrap">cnyric07.schooltool.com</code>, <code class="k wrap">schooltool4.neric.org</code>) — side effect, not a file.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">No</span><div class="text-xs text-slate-600 mt-2">Debug JSONs are sampled errors only.</div></td>
+                <td class="px-4 py-3 text-slate-700">Wrap axios in both legacy + migrated runs and write each request body to a JSON file; diff bodies. Alternative: query SchoolTool after both runs and compare downstream state.</td>
+              </tr>
+
+              <!-- export-dismissal-reports -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-dismissal-reports</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 11 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">auto-dismissal-report.js --client pwcsva</code>. CLI not in source control. Expected: <code class="k wrap">dismissal-pwcsva-&lt;date&gt;-&lt;time&gt;.csv</code> (pattern inferred from sibling contact-list output).</td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">/home/aarzhou/apps/ezrouting/files/pwcsva/reports/</code> (likely).</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">Yes — disk</span><div class="text-xs text-slate-600 mt-2">Date-stamped, persists across runs.</div></td>
+                <td class="px-4 py-3 text-slate-700">scp from <code class="k wrap">aarzhou:/home/aarzhou/apps/ezrouting/files/pwcsva/reports/</code>. Unblocked for parity even though the CLI itself isn't migrated yet — old + new both run, compare outputs.</td>
+              </tr>
+
+              <!-- export-contact-list-reports -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-contact-list-reports</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 8,12-21 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">auto-contact-list-report.js --client pwcsva</code>. <span class="font-semibold">Confirmed</span> writes <code class="k wrap">contact-list-pwcsva-&lt;date&gt;-17.csv</code> (verified via paths referenced by <code class="k">compare-contact-list-daily-changes.sh</code>).</td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">/home/aarzhou/apps/ezrouting/files/pwcsva/reports/</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">Yes — disk</span><div class="text-xs text-slate-600 mt-2">Daily archive in filename.</div></td>
+                <td class="px-4 py-3 text-slate-700">scp the latest <code class="k wrap">contact-list-pwcsva-&lt;date&gt;-17.csv</code> after the 17:00 run.</td>
+              </tr>
+
+              <!-- compare-contact-list-daily-changes -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">compare-contact-list-daily-changes</div><div class="text-xs text-slate-500 mt-1"><code class="k">5 17 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-sky-100 text-sky-900 border-sky-300">🔵 In repo</span></td>
+                <td class="px-4 py-3 text-slate-700">Python diff of yesterday's vs today's contact-list CSVs. Writes <code class="k wrap">/tmp/difference-&lt;date&gt;.csv</code> + <code class="k wrap">/tmp/difference-with-stop-and-time-changes-&lt;date&gt;.csv</code>.</td>
+                <td class="px-4 py-3 text-slate-700">SFTP to <code class="k wrap">pwcsva@sftp.ezrouting.com</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">No</span><div class="text-xs text-slate-600 mt-2"><code class="k">/tmp</code> transient.</div></td>
+                <td class="px-4 py-3 text-slate-700">Snapshot <code class="k">/tmp/difference-*</code> immediately after the 17:05 run; or pull from pwcsva's SFTP folder if retained.</td>
+              </tr>
+
+              <!-- export-punch-reports -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-punch-reports</div><div class="text-xs text-slate-500 mt-1"><code class="k">30 0 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">get-punch-report.js --client manateefl</code>. Two outputs: rolling <code class="k wrap">PUNCHED_TIME.csv</code> + dated <code class="k wrap">Daily_Punch_Records/PUNCHED_TIME_&lt;DATE&gt;.csv</code>.</td>
+                <td class="px-4 py-3 text-slate-700">Customer SFTP host, under <code class="k wrap">/PeopleSoft/</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">Yes — SFTP</span><div class="text-xs text-slate-600 mt-2"><span class="font-semibold">Built-in daily archive</span> via <code class="k">--output2</code>.</div></td>
+                <td class="px-4 py-3 text-slate-700">Fetch any historical <code class="k wrap">PUNCHED_TIME_&lt;DATE&gt;.csv</code> directly from the customer SFTP — date-stamped files already exist. Credential coordination required.</td>
+              </tr>
+
+              <!-- import-fuellogs -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-fuellogs</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">import-fuellog.js</code> for <code class="k">brazosporttex</code> + <code class="k">bentonvillear</code>. DB writes; also archives raw input CSV.</td>
+                <td class="px-4 py-3 text-slate-700">DB tables in <code class="k">er_brazosporttex</code> / <code class="k">er_bentonvillear</code>; raw input to <code class="k wrap">s3://geodataintelligence/sftp/&lt;client&gt;/fuellogs-&lt;TODAY&gt;.csv</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">Yes — input</span><div class="text-xs text-slate-600 mt-2">Date-stamped raw CSV in S3.</div></td>
+                <td class="px-4 py-3 text-slate-700">Input is preserved. For DB parity: snapshot <code class="k">fuellog</code> table before/after and diff.</td>
+              </tr>
+
+              <!-- import-drivers -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-drivers</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 5 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">import-staff-types.js</code> (not in source control) + <code class="k wrap">import-drivers.js</code> for <code class="k">psdil</code> + <code class="k">manateefl</code>. CSV from SFTP &rarr; staff/driver tables.</td>
+                <td class="px-4 py-3 text-slate-700">DB only — <code class="k">staff</code>, related driver tables.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">No</span><div class="text-xs text-slate-600 mt-2">Input CSV not archived.</div></td>
+                <td class="px-4 py-3 text-slate-700">Dump <code class="k">staff</code> / driver tables before+after; diff with <code class="k wrap">mysqldump --skip-extended-insert</code>. Add one <code class="k">s3cmd put</code> to the wrapper to archive input (non-code change, mirrors fuellogs).</td>
+              </tr>
+
+              <!-- import-staff-attendance -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-staff-attendance</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/5 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">import-attendance.js --client psdil</code>. Imports <code class="k wrap">export-WorkSegments-TransExportSegments.csv</code> into punch/attendance.</td>
+                <td class="px-4 py-3 text-slate-700">DB only — punch / attendance table in <code class="k">er_psdil</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">No</span><div class="text-xs text-slate-600 mt-2">Input only on SFTP.</div></td>
+                <td class="px-4 py-3 text-slate-700">Snapshot punch/attendance state before+after. Archive input to S3 via wrapper edit if needed.</td>
+              </tr>
+
+              <!-- summarize-trips -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">summarize-trips</div><div class="text-xs text-slate-500 mt-1"><code class="k">5 0 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">summarize-trips.js --date &lt;yesterday&gt;</code>. DB writes summarising prior day's trips.</td>
+                <td class="px-4 py-3 text-slate-700">DB (trip-summary table); stdout to <code class="k wrap">/home/aarzhou/summarize-log</code> (single file, overwritten daily).</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">Partial</span><div class="text-xs text-slate-600 mt-2">Log persists but is stdout only.</div></td>
+                <td class="px-4 py-3 text-slate-700">Snapshot trip-summary table before+after; log file is supplementary signal.</td>
+              </tr>
+
+              <!-- import-photos -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-photos</div><div class="text-xs text-slate-500 mt-1"><code class="k">5 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">import-photos.js --client laveenaz</code>. Pulls <code class="k wrap">/files/photos.zip</code> from SFTP, extracts, updates DB photo records.</td>
+                <td class="px-4 py-3 text-slate-700">File system under <code class="k wrap">ezrouting/files/laveenaz/</code> + DB.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">Partial</span><div class="text-xs text-slate-600 mt-2">Files persist on host disk; input zip on SFTP.</div></td>
+                <td class="px-4 py-3 text-slate-700">Snapshot DB photo records + sample image hashes before+after.</td>
+              </tr>
+
+              <!-- import-photos-2 -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-photos-2</div><div class="text-xs text-slate-500 mt-1"><code class="k">5 6 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700">Same CLI, three clients (<code class="k">taftca</code>, <code class="k">amadorca</code>, <code class="k">fsusdca</code>). Note: <code class="k">rm files/taftca/aeries-photos/*</code> after — intermediate files <span class="font-semibold">not</span> retained.</td>
+                <td class="px-4 py-3 text-slate-700">Same as import-photos.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">Partial</span><div class="text-xs text-slate-600 mt-2">Final files persist; intermediates wiped.</div></td>
+                <td class="px-4 py-3 text-slate-700">Same as import-photos.</td>
+              </tr>
+
+              <!-- import-photos-taftca -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-photos-taftca</div><div class="text-xs text-slate-500 mt-1"><code class="k">10 5 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700">Runs <code class="k wrap">apiGet.js</code> from the <code class="k">aeriesPics</code> repo (<span class="font-semibold">not in TransActComm</span>) to fetch images from <code class="k wrap">taftcityapi.aeries.net</code>, then <code class="k wrap">import-photos.js --client taftca</code>.</td>
+                <td class="px-4 py-3 text-slate-700">Intermediate API output briefly on disk; final state in DB + filesystem.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">Partial</span><div class="text-xs text-slate-600 mt-2">Intermediate transient.</div></td>
+                <td class="px-4 py-3 text-slate-700">Snapshot DB photo records before+after. <span class="font-semibold">Prerequisite:</span> retrieve <code class="k">aeriesPics</code> repo from aarzhou before any migration work.</td>
+              </tr>
+
+              <!-- import-eligibility-programs -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-eligibility-programs</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 6 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">import-programs-sftp.js</code> for <code class="k">wdmcsia</code>/<code class="k">psdil</code>/<code class="k">houstonisd</code>/<code class="k">clarknv</code>; <code class="k wrap">import-programs-recalc-apply-only.js</code> for <code class="k">manateefl</code> (latter is EC2-only). DB writes; stdout to <code class="k wrap">/home/aarzhou/import-programs.output</code>.</td>
+                <td class="px-4 py-3 text-slate-700">DB (<code class="k">ed_eligibilitystudentprogram</code>); log overwritten daily.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">Partial</span><div class="text-xs text-slate-600 mt-2">Log persists for one day.</div></td>
+                <td class="px-4 py-3 text-slate-700">Dump <code class="k wrap">er_&lt;client&gt;.ed_eligibilitystudentprogram</code> before+after and diff. <span class="font-semibold">Note:</span> clarknv's <code class="k">--calc-program</code> grandfathering expression is already lifted into <code class="k">cron-grandfathering</code> on EKS — partial parity already provable.</td>
+              </tr>
+
+              <!-- sync-eligibility-programs -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">sync-eligibility-programs</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/5 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-purple-100 text-purple-900 border-purple-300">🟣 SQL only</span></td>
+                <td class="px-4 py-3 text-slate-700">Inline <code class="k">mysql</code> DELETE+INSERT against <code class="k wrap">er_manateefl.ed_eligibilitystudentprogram</code> (SPED + IB/ACE) and <code class="k wrap">er_psdil.ed_eligibilitystudentprogram</code> (INT).</td>
+                <td class="px-4 py-3 text-slate-700">DB only.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">No</span><div class="text-xs text-slate-600 mt-2">Pure DML.</div></td>
+                <td class="px-4 py-3 text-slate-700">Snapshot affected <code class="k">programId</code> rows before+after; idempotent re-runs on both systems should produce identical row sets.</td>
+              </tr>
+
+              <!-- update-houston-sandboxes -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">update-houston-sandboxes</div><div class="text-xs text-slate-500 mt-1"><code class="k">30 6 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-purple-100 text-purple-900 border-purple-300">🟣 SQL only</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">mysql &lt; update-houston-sandboxes.sql</code> against <code class="k">er_houstonisd</code>. Copies <code class="k">sandboxId=0</code> state into planning + staging sandboxes for <code class="k">yeargrade</code> / <code class="k">studentextra</code> / <code class="k">userdefinedfield</code>.</td>
+                <td class="px-4 py-3 text-slate-700">DB only.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">No</span><div class="text-xs text-slate-600 mt-2">SQL is in the repo so the operation is deterministic.</div></td>
+                <td class="px-4 py-3 text-slate-700">Dump planning + staging sandbox rows before+after on a fixture run; verify identical UPDATE result-sets.</td>
+              </tr>
+
+              <!-- import-leave-requests -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-leave-requests</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/5 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">sync-leaverequest.js --client pwcsva</code>. Pulls <code class="k wrap">EmployeeCallout.xlsx</code> from SFTP, imports leave records.</td>
+                <td class="px-4 py-3 text-slate-700">DB (leaverequest table in <code class="k">er_pwcsva</code>).</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">No</span><div class="text-xs text-slate-600 mt-2">Input on SFTP, not archived.</div></td>
+                <td class="px-4 py-3 text-slate-700">Snapshot <code class="k">leaverequest</code> rows before+after.</td>
+              </tr>
+
+              <!-- backup-dbs -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">backup-dbs</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/30 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">🟢 On EKS</span></td>
+                <td class="px-4 py-3 text-slate-700">Per-DB <code class="k">.sql.gz</code> dumps via <code class="k wrap">archive-service/backup-dbs.js</code>. <span class="font-semibold">Already migrated as</span> <code class="k">cron-backup-dbs</code>.</td>
+                <td class="px-4 py-3 text-slate-700">S3 backup bucket (per env).</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">Yes — S3</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">Done</span><div class="text-xs text-slate-700 mt-2">Verify both waves produce same per-DB <code class="k">.sql.gz</code> output for one window during soak.</div></td>
+              </tr>
+
+              <!-- preprocess-clarknv-map -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">preprocess-clarknv-map</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 22 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-sky-100 text-sky-900 border-sky-300">🔵 In repo</span></td>
+                <td class="px-4 py-3 text-slate-700">Node CLIs (<code class="k wrap">hazard-zones-to-osmid.js</code>, <code class="k wrap">get-turn-restrictions.js</code> — copied into <code class="k">ezd-safety/app/cli-tools/</code> at runtime then deleted!) + Python (<code class="k wrap">lonlat_to_node.py</code>, <code class="k wrap">remove_ways.py</code>).</td>
+                <td class="px-4 py-3 text-slate-700">Fast-routing data directory (preprocessed map artifacts).</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">Yes — disk</span><div class="text-xs text-slate-600 mt-2">Produced map files persist.</div></td>
+                <td class="px-4 py-3 text-slate-700">Hash and structurally diff the produced map files. Source is in <code class="k">ezrd-crons/legacy/preprocess-clarknv-map/</code>.</td>
+              </tr>
+
+              <!-- gps-service reload -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">gps-service reload</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 */3 * * *</code> · secondary host</div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-slate-100 text-slate-800 border-slate-300">⚪ Shell only</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k">pm2 reload gps-service</code> — inline command, no file.</td>
+                <td class="px-4 py-3 text-slate-700">PM2 control plane — restarts the gps-service process.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-slate-100 text-slate-800 border-slate-300">N/A</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-slate-100 text-slate-800 border-slate-300">Obsolete on EKS</span><div class="text-xs text-slate-700 mt-2">Rolling restarts are native. If there's a memory leak, fix via <code class="k">livenessProbe</code> + <code class="k">resources.limits.memory</code>.</div></td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Roll-up by status -->
+    <section id="rollup" class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="badge-num bg-sky-200 text-sky-900 step-number flex-shrink-0">4</div>
+          <div class="flex-1 pt-1">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Roll-up</div>
+              <span class="pill bg-sky-100 text-sky-900 border-sky-300">By status</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-2">22 entries · by source-control status<a href="#rollup" class="permalink" aria-label="Permalink to roll-up">#</a></h2>
+            <p class="text-slate-700 leading-relaxed">Independent of parity strategy — this is where the source code lives today.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5 text-center">
+            <div class="text-3xl font-extrabold text-emerald-900 tabular-nums">1</div>
+            <div class="text-xs font-bold tracking-wider uppercase text-emerald-800 mt-1">🟢 On EKS</div>
+            <div class="text-xs text-slate-600 mt-2">backup-dbs</div>
+          </div>
+          <div class="bg-sky-50 border-2 border-sky-200 rounded-xl p-5 text-center">
+            <div class="text-3xl font-extrabold text-sky-900 tabular-nums">3</div>
+            <div class="text-xs font-bold tracking-wider uppercase text-sky-800 mt-1">🔵 In repo</div>
+            <div class="text-xs text-slate-600 mt-2">schoolToolPost · compare-contact-list · preprocess-clarknv-map</div>
+          </div>
+          <div class="bg-amber-50 border-2 border-amber-200 rounded-xl p-5 text-center">
+            <div class="text-3xl font-extrabold text-amber-900 tabular-nums">8</div>
+            <div class="text-xs font-bold tracking-wider uppercase text-amber-800 mt-1">🟡 Cross-repo</div>
+            <div class="text-xs text-slate-600 mt-2">student-buses · students-stops · fuellogs · staff-attendance · summarize-trips · photos · photos-2 · leave-requests</div>
+          </div>
+          <div class="bg-rose-50 border-2 border-rose-200 rounded-xl p-5 text-center">
+            <div class="text-3xl font-extrabold text-rose-900 tabular-nums">6</div>
+            <div class="text-xs font-bold tracking-wider uppercase text-rose-800 mt-1">🔴 EC2-only</div>
+            <div class="text-xs text-slate-600 mt-2">dismissal · contact-list · punch · drivers · photos-taftca · eligibility-programs</div>
+          </div>
+          <div class="bg-purple-50 border-2 border-purple-200 rounded-xl p-5 text-center">
+            <div class="text-3xl font-extrabold text-purple-900 tabular-nums">2</div>
+            <div class="text-xs font-bold tracking-wider uppercase text-purple-800 mt-1">🟣 SQL only</div>
+            <div class="text-xs text-slate-600 mt-2">sync-eligibility · houston-sandboxes</div>
+          </div>
+          <div class="bg-slate-50 border-2 border-slate-200 rounded-xl p-5 text-center">
+            <div class="text-3xl font-extrabold text-slate-900 tabular-nums">2</div>
+            <div class="text-xs font-bold tracking-wider uppercase text-slate-700 mt-1">⚪ Shell only</div>
+            <div class="text-xs text-slate-600 mt-2">ezr-data · gps-service reload</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Parity strategy by output type -->
+    <section id="parity-buckets" class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="badge-num bg-emerald-200 text-emerald-900 step-number flex-shrink-0">5</div>
+          <div class="flex-1 pt-1">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Buckets</div>
+              <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">By output type</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-2">Parity strategy buckets<a href="#parity-buckets" class="permalink" aria-label="Permalink to parity buckets">#</a></h2>
+            <p class="text-slate-700 leading-relaxed">Four distinct validation patterns cover the 22 entries. Each maps to a small reusable harness.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+          <div class="border-2 border-emerald-200 rounded-xl p-5 bg-emerald-50/40">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">Easy</span>
+              <h3 class="text-lg font-bold text-slate-950">Durable file output — just grab it</h3>
+            </div>
+            <p class="text-sm text-slate-700 mb-3">Output already persists (disk, S3, or SFTP). One <code class="k">scp</code> away from a parity test.</p>
+            <ul class="space-y-1 text-sm text-slate-800">
+              <li>• <code class="k">export-contact-list-reports</code> — daily-stamped on disk</li>
+              <li>• <code class="k">export-dismissal-reports</code> — daily-stamped on disk (inferred)</li>
+              <li>• <code class="k">export-punch-reports</code> — daily-stamped on SFTP</li>
+              <li>• <code class="k">import-fuellogs</code> — raw input archived to S3</li>
+              <li>• <code class="k">export-ezr-data</code> — single rolling backup in S3</li>
+              <li>• <code class="k">summarize-trips</code> — log file on disk (supplementary)</li>
+              <li>• <code class="k">preprocess-clarknv-map</code> — map files on disk</li>
+            </ul>
+          </div>
+
+          <div class="border-2 border-amber-200 rounded-xl p-5 bg-amber-50/40">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">Timed</span>
+              <h3 class="text-lg font-bold text-slate-950">Transient file output — needs a snapshot window</h3>
+            </div>
+            <p class="text-sm text-slate-700 mb-3">Output exists only between two cron ticks. Need a snapshot of <code class="k">/tmp/</code> on aarzhou before the next run overwrites.</p>
+            <ul class="space-y-1 text-sm text-slate-800">
+              <li>• <code class="k">export-student-buses</code> — 201 per-tenant files in <code class="k">/tmp/</code>, every 30 min</li>
+              <li>• <code class="k">export-students-stops</code> — <code class="k">/tmp/gloucesterva-*</code>, Sun–Thu nights</li>
+              <li>• <code class="k">compare-contact-list-daily-changes</code> — <code class="k">/tmp/difference-*</code>, daily 17:05</li>
+            </ul>
+            <p class="text-xs text-slate-600 mt-3">One snapshot harness can cover all three: <code class="k wrap">ssh aarzhou 'tar -czf … /tmp/&lt;pattern&gt;'</code> scheduled to run a few minutes after each tick.</p>
+          </div>
+
+          <div class="border-2 border-rose-200 rounded-xl p-5 bg-rose-50/40 lg:col-span-2">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">Harder</span>
+              <h3 class="text-lg font-bold text-slate-950">DB-mutating jobs — snapshot state before &amp; after</h3>
+            </div>
+            <p class="text-sm text-slate-700 mb-3">No file output to compare. Need <code class="k">mysqldump</code> of the affected tables before and after each run, then structural diff. A generic <code class="k">~/Desktop/parity-diff-db.sh</code> would cover all of them.</p>
+            <ul class="space-y-1 text-sm text-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-x-6">
+              <li>• <code class="k">import-drivers</code></li>
+              <li>• <code class="k">import-staff-attendance</code></li>
+              <li>• <code class="k">summarize-trips</code> (trip-summary table)</li>
+              <li>• <code class="k">import-photos</code> / <code class="k">import-photos-2</code> / <code class="k">import-photos-taftca</code></li>
+              <li>• <code class="k">import-eligibility-programs</code></li>
+              <li>• <code class="k">sync-eligibility-programs</code></li>
+              <li>• <code class="k">update-houston-sandboxes</code></li>
+              <li>• <code class="k">import-leave-requests</code></li>
+            </ul>
+          </div>
+
+          <div class="border-2 border-slate-200 rounded-xl p-5 bg-slate-50 lg:col-span-2">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="pill-sm bg-slate-100 text-slate-800 border-slate-300">Other</span>
+              <h3 class="text-lg font-bold text-slate-950">Non-comparable — different validation approach</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-slate-800">
+              <li>• <code class="k">schoolToolPost</code> — capture each axios request body (wrapper or interceptor) on both legacy and migrated; diff the HTTP payloads. Alternative: compare downstream SchoolTool state via its query API.</li>
+              <li>• <code class="k">gps-service reload</code> — obsolete on EKS (drop entirely; replace with <code class="k">livenessProbe</code> + memory limits if the underlying leak is real).</li>
+              <li>• <code class="k">backup-dbs</code> — already migrated as <code class="k">cron-backup-dbs</code>; just verify both waves produce same <code class="k">.sql.gz</code> output for one window during soak.</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Failure detection during cutover -->
+    <section id="failure-detection" class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0">6</div>
+          <div class="flex-1 pt-1">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="text-sm font-bold tracking-wider uppercase text-rose-800">Cutover window</div>
+              <span class="pill bg-rose-100 text-rose-900 border-rose-300">Failure detection</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-2">How will we know if a legacy cron is failing?<a href="#failure-detection" class="permalink" aria-label="Permalink to failure detection">#</a></h2>
+            <p class="text-slate-700 leading-relaxed">External traffic is on EKS, but these 22 entries keep firing on the PM2/aarzhou box during the soak. We need a way to detect failures <em>without</em> waiting for a customer ticket. For each job: where does the failure signal land today, what side-effect can we verify externally, and what is the silent-failure risk if no one looks.</p>
+          </div>
+        </div>
+
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-5 mb-6">
+          <div class="flex items-start gap-3">
+            <div class="text-amber-900 text-xl flex-shrink-0 leading-none">📬</div>
+            <div>
+              <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Unified signal source — already exists</div>
+              <p class="text-slate-800 leading-relaxed">Per the live <code class="k">CRONJOB</code> file: <span class="font-semibold">9 of the 22 entries have no <code class="k">&gt;</code> redirect</span>, which means crond delivers their stdout + stderr to <code class="k wrap">/var/spool/mail/aarzhou</code> (or <code class="k wrap">/var/mail/aarzhou</code>). One <code class="k wrap">ssh aarzhou tail -n 500 /var/spool/mail/aarzhou</code> reveals every silent cron failure since the last rotation. Combine that with three explicit log files (<code class="k wrap">export.log</code>, <code class="k wrap">backup-output.log</code>, <code class="k wrap">preproc-clarknv-map.log</code>) and two internal redirects (<code class="k wrap">summarize-log</code>, <code class="k wrap">import-programs.output</code>), and we already have a near-complete failure log surface on the box.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+          <table class="ttable w-full text-sm min-w-[1380px]">
+            <colgroup>
+              <col class="w-[14%]">
+              <col class="w-[8%]">
+              <col class="w-[20%]">
+              <col class="w-[20%]">
+              <col class="w-[9%]">
+              <col class="w-[23%]">
+              <col class="w-[6%]">
+            </colgroup>
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+                <th class="text-left px-4 py-3">Job · Schedule</th>
+                <th class="text-left px-3 py-3">Status</th>
+                <th class="text-left px-4 py-3">Today's failure signal</th>
+                <th class="text-left px-4 py-3">Externally observable</th>
+                <th class="text-left px-4 py-3">Silent-fail risk</th>
+                <th class="text-left px-4 py-3">Recommended monitor</th>
+                <th class="text-center px-3 py-3">Needs code?</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white">
+
+              <!-- export-student-buses -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-student-buses</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/30 * * * 1-5</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700">Appended to <code class="k wrap">/home/aarzhou/export.log</code> via <code class="k">&gt;&gt;</code>. Grows unbounded; rotation policy unknown.</td>
+                <td class="px-4 py-3 text-slate-700">File mtimes at <code class="k wrap">sftp.ezrouting.com:/upload/&lt;folder&gt;/</code> (managed, 191 entries). Customer SFTP destinations for the 10 external entries.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily <code class="k wrap">grep -E "Error|Failed|missing" /home/aarzhou/export.log | tail -200</code>; alert if managed-SFTP folder mtime is &gt; 35 min stale during cron window.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- export-ezr-data -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-ezr-data</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/30 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-slate-100 text-slate-800 border-slate-300">⚪ Shell only</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">/dev/null</span><div class="text-xs text-slate-600 mt-2">No log anywhere. Failure is invisible until the S3 object goes stale.</div></td>
+                <td class="px-4 py-3 text-slate-700">S3 object <code class="k wrap">s3://geodataintelligence/backup/ezr-clients.7z</code> last-modified timestamp.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">CloudWatch alarm: <code class="k">s3 head-object</code> age &gt; 60 min on both <code class="k">ezr-clients.7z</code> and <code class="k">ezr-guides.7z</code>.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- export-students-stops -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-students-stops</div><div class="text-xs text-slate-500 mt-1"><code class="k">2 21 * * 0-4</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">cron mail spool</span><div class="text-xs text-slate-600 mt-2">No <code class="k">&gt;</code> redirect &rarr; <code class="k wrap">/var/spool/mail/aarzhou</code>.</div></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">ftp.wheresthebus.com:/</code> mtime for gloucesterva files (Sun–Thu nights only).</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 High</span><div class="text-xs text-slate-600 mt-2">Daily, single tenant, customer SLA.</div></td>
+                <td class="px-4 py-3 text-slate-700">Nightly check after 21:05: mail-spool grep + customer SFTP mtime &lt; 1h old.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- schoolToolPost -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">schoolToolPost</div><div class="text-xs text-slate-500 mt-1"><code class="k">30 12,18 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-sky-100 text-sky-900 border-sky-300">🔵 In repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">cron mail spool</span> + local debug files <code class="k wrap">error_response.json</code>, <code class="k wrap">unexpected_responses.json</code>, <code class="k wrap">missing_modes.txt</code> in <code class="k">~/apps/schoolToolPost/</code>.</td>
+                <td class="px-4 py-3 text-slate-700">SchoolTool REST query for recently-posted records. Indirect: customer report of missing students.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Twice-daily: check <code class="k">error_response.json</code> mtime + size; tail mail spool. Long-term: ship the debug JSONs to Datadog via filebeat.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- export-dismissal-reports -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-dismissal-reports</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 11 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">/dev/null</span><div class="text-xs text-slate-600 mt-2">No log anywhere on aarzhou.</div></td>
+                <td class="px-4 py-3 text-slate-700">Daily-stamped file under <code class="k wrap">~/apps/ezrouting/files/pwcsva/reports/</code> exists + non-empty after 11:30.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily 11:30 check: <code class="k wrap">ssh aarzhou ls -la ~/apps/ezrouting/files/pwcsva/reports/dismissal-$(date +%Y-%m-%d)*</code>; alert if missing or zero bytes.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- export-contact-list-reports -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-contact-list-reports</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 8,12-21 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">/dev/null</span></td>
+                <td class="px-4 py-3 text-slate-700">Hourly-stamped file <code class="k wrap">contact-list-pwcsva-&lt;date&gt;-&lt;hour&gt;.csv</code> under <code class="k">~/apps/ezrouting/files/pwcsva/reports/</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Hourly check during 8:30–21:30: expected filename exists. A missing file in two consecutive ticks = page.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- compare-contact-list-daily-changes -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">compare-contact-list-daily-changes</div><div class="text-xs text-slate-500 mt-1"><code class="k">5 17 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-sky-100 text-sky-900 border-sky-300">🔵 In repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">/dev/null</span></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k wrap">pwcsva@sftp.ezrouting.com</code> for daily <code class="k wrap">difference-&lt;date&gt;.csv</code>. Also requires upstream <code class="k">export-contact-list-reports</code> to have run.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily 17:15 check on pwcsva SFTP for the new <code class="k">difference-*.csv</code>; chained dependency on #6.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- export-punch-reports -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">export-punch-reports</div><div class="text-xs text-slate-500 mt-1"><code class="k">30 0 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">/dev/null</span></td>
+                <td class="px-4 py-3 text-slate-700">Customer SFTP <code class="k wrap">/PeopleSoft/Daily_Punch_Records/PUNCHED_TIME_&lt;DATE&gt;.csv</code> exists by 01:00.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 High</span><div class="text-xs text-slate-600 mt-2">Payroll-adjacent.</div></td>
+                <td class="px-4 py-3 text-slate-700">Daily 01:00 check on manateefl SFTP for today's <code class="k">PUNCHED_TIME_*.csv</code>; page on miss.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- import-fuellogs -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-fuellogs</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">/dev/null</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily S3 archive at <code class="k wrap">s3://geodataintelligence/sftp/&lt;client&gt;/fuellogs-&lt;date&gt;.csv</code>. Per-row DB row count delta in <code class="k">vehicle.fuellog</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">🟢 Low</span><div class="text-xs text-slate-600 mt-2">S3 archive exposes failures.</div></td>
+                <td class="px-4 py-3 text-slate-700">CloudWatch alarm on S3 daily object missing after 02:00. DB row-count delta &gt; 0 in last 24h for each client.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- import-drivers -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-drivers</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 5 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">/dev/null</span></td>
+                <td class="px-4 py-3 text-slate-700">DB <code class="k">staff</code> / driver table row mtimes in <code class="k">er_psdil</code> + <code class="k">er_manateefl</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 High</span><div class="text-xs text-slate-600 mt-2">Daily; affects ops.</div></td>
+                <td class="px-4 py-3 text-slate-700">Daily 05:30 DB check: <code class="k">SELECT max(updatedAt) FROM staff</code> for both tenants; alert if older than 24h.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- import-staff-attendance -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-staff-attendance</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/5 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">/dev/null</span></td>
+                <td class="px-4 py-3 text-slate-700">DB punch/attendance row count delta in <code class="k">er_psdil</code> over rolling 15-min window.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span><div class="text-xs text-slate-600 mt-2">Every 5 min &mdash; one miss is fine; an hour of misses is a problem.</div></td>
+                <td class="px-4 py-3 text-slate-700">DB query every 15 min: any new rows in last 30 min during business hours? Alert if zero for 2+ hours.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- summarize-trips -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">summarize-trips</div><div class="text-xs text-slate-500 mt-1"><code class="k">5 0 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-sky-100 text-sky-900 border-sky-300">internal log</span><div class="text-xs text-slate-600 mt-2">Cron line is <code class="k">&gt; /dev/null</code> but script redirects node stdout to <code class="k wrap">/home/aarzhou/summarize-log</code> internally. Single-file, overwritten daily.</div></td>
+                <td class="px-4 py-3 text-slate-700"><code class="k">summarize-log</code> mtime + tail. DB trip-summary table row counts for yesterday.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">🟢 Low</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily 00:15: <code class="k wrap">ssh aarzhou tail -50 /home/aarzhou/summarize-log</code> + grep errors.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- import-photos -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-photos</div><div class="text-xs text-slate-500 mt-1"><code class="k">5 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">cron mail spool</span></td>
+                <td class="px-4 py-3 text-slate-700">File count delta under <code class="k wrap">~/apps/ezrouting/files/laveenaz/</code>. DB photo record count.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Hourly mail-spool tail; daily DB photo-record count rollup.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- import-photos-2 -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-photos-2</div><div class="text-xs text-slate-500 mt-1"><code class="k">5 6 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">cron mail spool</span></td>
+                <td class="px-4 py-3 text-slate-700">DB photo record counts for taftca / amadorca / fsusdca.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily 06:30 mail-spool tail + DB photo-record count delta.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- import-photos-taftca -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-photos-taftca</div><div class="text-xs text-slate-500 mt-1"><code class="k">10 5 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">cron mail spool</span><div class="text-xs text-slate-600 mt-2">Aeries API failures land here.</div></td>
+                <td class="px-4 py-3 text-slate-700">Aeries-side: API rate limits, cert expiry. EZR-side: DB photo-record count for taftca.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily 05:30 mail-spool grep; track <code class="k wrap">AERIES_API_CERT_TAFTCA</code> expiry date.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- import-eligibility-programs -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-eligibility-programs</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 6 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-rose-100 text-rose-900 border-rose-300">🔴 EC2-only</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">cron mail spool</span> + <span class="pill-sm bg-sky-100 text-sky-900 border-sky-300">internal log</span><div class="text-xs text-slate-600 mt-2">clarknv invocation redirects stdout to <code class="k wrap">/home/aarzhou/import-programs.output</code>; other clients land in mail spool.</div></td>
+                <td class="px-4 py-3 text-slate-700">DB <code class="k wrap">ed_eligibilitystudentprogram</code> row-count deltas per tenant.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily 06:30: tail mail spool + <code class="k">import-programs.output</code>; per-tenant DB row count delta.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- sync-eligibility-programs -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">sync-eligibility-programs</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/5 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-purple-100 text-purple-900 border-purple-300">🟣 SQL only</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">cron mail spool</span><div class="text-xs text-slate-600 mt-2">mysql client prints errors only on failure.</div></td>
+                <td class="px-4 py-3 text-slate-700">DB row count for SPED/IB-ACE in <code class="k">er_manateefl</code> + INT in <code class="k">er_psdil</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">🟢 Low</span><div class="text-xs text-slate-600 mt-2">Idempotent every 5 min.</div></td>
+                <td class="px-4 py-3 text-slate-700">Mail-spool tail; sustained failure pattern (10+ consecutive misses) = alert.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- update-houston-sandboxes -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">update-houston-sandboxes</div><div class="text-xs text-slate-500 mt-1"><code class="k">30 6 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-purple-100 text-purple-900 border-purple-300">🟣 SQL only</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">cron mail spool</span></td>
+                <td class="px-4 py-3 text-slate-700">DB planning + staging sandbox row mtimes for yeargrade / studentextra / userdefinedfield.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily 07:00: mail-spool tail; verify sandbox row mtime within last 30 min.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- import-leave-requests -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">import-leave-requests</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/5 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Cross-repo</span></td>
+                <td class="px-4 py-3 text-slate-700"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">cron mail spool</span></td>
+                <td class="px-4 py-3 text-slate-700">DB <code class="k">leaverequest</code> table mtime in <code class="k">er_pwcsva</code>.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Mail-spool tail; sustained-failure alert if no new rows in 2+ hours during business hours.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- backup-dbs -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">backup-dbs</div><div class="text-xs text-slate-500 mt-1"><code class="k">*/30 * * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">🟢 On EKS</span></td>
+                <td class="px-4 py-3 text-slate-700">Cron line writes to <code class="k wrap">/home/aarzhou/backup-output.log</code>; EKS version logs to Datadog.</td>
+                <td class="px-4 py-3 text-slate-700">S3 backup bucket per-DB <code class="k">.sql.gz</code> object mtimes.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">🟢 Low</span></td>
+                <td class="px-4 py-3 text-slate-700">EKS Datadog already in place. For the legacy duplicate during soak: tail <code class="k wrap">backup-output.log</code> + S3 mtime check.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- preprocess-clarknv-map -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">preprocess-clarknv-map</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 22 * * *</code></div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-sky-100 text-sky-900 border-sky-300">🔵 In repo</span></td>
+                <td class="px-4 py-3 text-slate-700">Cron line redirects stdout to <code class="k wrap">/home/aarzhou/preproc-clarknv-map.log</code>.</td>
+                <td class="px-4 py-3 text-slate-700">Fast-routing data dir file mtime for clarknv map artifacts.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-amber-100 text-amber-900 border-amber-300">🟡 Medium</span></td>
+                <td class="px-4 py-3 text-slate-700">Daily 22:30: tail <code class="k">preproc-clarknv-map.log</code>; verify map artifact mtime within last 30 min.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+              <!-- gps-service reload -->
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><div class="font-semibold text-slate-900">gps-service reload</div><div class="text-xs text-slate-500 mt-1"><code class="k">0 */3 * * *</code> · secondary host</div></td>
+                <td class="px-3 py-3"><span class="pill-sm bg-slate-100 text-slate-800 border-slate-300">⚪ Shell only</span></td>
+                <td class="px-4 py-3 text-slate-700">pm2 logs on the secondary host. <code class="k">pm2 reload</code> exits 0 even when it can't reload cleanly.</td>
+                <td class="px-4 py-3 text-slate-700"><code class="k">pm2 status</code> uptime for gps-service. End-user: GPS telemetry not flowing.</td>
+                <td class="px-4 py-3"><span class="pill-sm bg-emerald-100 text-emerald-900 border-emerald-300">🟢 Low</span></td>
+                <td class="px-4 py-3 text-slate-700">Cron uptime alarm only (Datadog already tracks gps-service health). Plan: drop entirely once EKS is the source of truth.</td>
+                <td class="px-3 py-3 text-center"><input type="checkbox" disabled class="w-5 h-5 rounded border-slate-400 cursor-default"></td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4 mt-4">
+          <div class="flex items-start gap-3">
+            <div class="text-emerald-800 text-xl flex-shrink-0 leading-none">✓</div>
+            <div>
+              <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-1">Zero code changes required</div>
+              <p class="text-slate-800 text-sm leading-relaxed">Every recommended monitor in the table above relies on signals that already exist &mdash; mail spool, the three explicit log files, the two internal-redirect logs, S3 object mtimes, DB row mtimes, customer SFTP destinations, and PM2/Datadog data we're already collecting. The full failure-detection layer can be deployed via Datadog monitors, CloudWatch alarms, and small <code class="k">ssh</code>-cron polling scripts &mdash; <span class="font-semibold">without modifying any of the 21 legacy <code class="k">.sh</code> wrappers or the CLIs they invoke</span>. The <code class="k">/dev/null</code> redirects stay where they are; observability comes from the side effects, not from the cron's stdout.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
+          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4">
+            <div class="text-xs font-bold tracking-wider uppercase text-emerald-800 mb-1">🟢 Low risk</div>
+            <div class="text-2xl font-extrabold text-emerald-900 tabular-nums">5</div>
+            <div class="text-xs text-slate-700 mt-1">Existing signal sufficient (S3 archive, internal log, idempotent retry, or EKS-monitored).</div>
+          </div>
+          <div class="bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+            <div class="text-xs font-bold tracking-wider uppercase text-amber-800 mb-1">🟡 Medium risk</div>
+            <div class="text-2xl font-extrabold text-amber-900 tabular-nums">14</div>
+            <div class="text-xs text-slate-700 mt-1">Failures discoverable but no one's looking — needs an active monitor.</div>
+          </div>
+          <div class="bg-rose-50 border-2 border-rose-200 rounded-xl p-4">
+            <div class="text-xs font-bold tracking-wider uppercase text-rose-800 mb-1">🔴 High risk</div>
+            <div class="text-2xl font-extrabold text-rose-900 tabular-nums">3</div>
+            <div class="text-xs text-slate-700 mt-1">Customer-SLA jobs that are silent today &mdash; <code class="k">export-students-stops</code>, <code class="k">export-punch-reports</code>, <code class="k">import-drivers</code>. Page on miss.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Next steps -->
+    <section id="next-steps" class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+      <div class="p-7 sm:p-9">
+        <div class="flex items-start gap-4 mb-6">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">7</div>
+          <div class="flex-1 pt-1">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="text-sm font-bold tracking-wider uppercase text-purple-800">Plan</div>
+              <span class="pill bg-purple-100 text-purple-900 border-purple-300">Next steps</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 mb-2">Recommended sequence<a href="#next-steps" class="permalink" aria-label="Permalink to next steps">#</a></h2>
+            <p class="text-slate-700 leading-relaxed">In priority order.</p>
+          </div>
+        </div>
+        <ol class="space-y-4">
+          <li class="flex gap-4">
+            <div class="badge-num bg-purple-100 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
+            <div class="pt-1">
+              <div class="font-semibold text-slate-950">Build the shared transient-snapshot harness for the three <code class="k">/tmp/</code>-output legacy jobs.</div>
+              <div class="text-sm text-slate-700 mt-1">A single cron entry or helper script on aarzhou that <code class="k wrap">tar -czf</code>'s matching files from <code class="k">/tmp/</code> a few minutes after each tick. Covers <code class="k">export-student-buses</code>, <code class="k">export-students-stops</code>, and <code class="k">compare-contact-list-daily-changes</code>. Retrieve the <code class="k wrap">export-student-buses.temp.sh</code> dispatcher from <code class="k wrap">sftp.ezrouting.com:/home/nan/data-export/</code> at the same time.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="badge-num bg-purple-100 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
+            <div class="pt-1">
+              <div class="font-semibold text-slate-950">Retrieve the 🔴 EC2-only CLIs from aarzhou.</div>
+              <div class="text-sm text-slate-700 mt-1">5 JS tools + the entire <code class="k">aeriesPics</code> repo. Commit to their expected homes (<code class="k">ezrouting/app/cli-tools/</code>, <code class="k">ezd-driver/app/cli-tools/</code>, <code class="k">ezd-eligibility/app/cli-tools/</code>, new <code class="k">aeriesPics</code> repo).</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="badge-num bg-purple-100 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
+            <div class="pt-1">
+              <div class="font-semibold text-slate-950">Document the one-line capture for every &ldquo;durable file output&rdquo; job.</div>
+              <div class="text-sm text-slate-700 mt-1">Each one is a single <code class="k">scp</code>. Put them in each job's migration spec as the parity step.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="badge-num bg-purple-100 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">4</div>
+            <div class="pt-1">
+              <div class="font-semibold text-slate-950">Build a generic DB-state parity harness.</div>
+              <div class="text-sm text-slate-700 mt-1">One <code class="k">~/Desktop/parity-diff-db.sh</code> that takes <code class="k">--client X --tables a,b,c</code>, mysqldumps before+after, diffs. Reusable across all 8 DB-mutating jobs.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="badge-num bg-purple-100 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">5</div>
+            <div class="pt-1">
+              <div class="font-semibold text-slate-950">Stand up the schoolToolPost HTTP capture wrapper.</div>
+              <div class="text-sm text-slate-700 mt-1">An axios interceptor that writes each request body to disk. Run once on legacy + migrated, diff bodies.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="badge-num bg-purple-100 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">6</div>
+            <div class="pt-1">
+              <div class="font-semibold text-slate-950">Drop <code class="k">gps-service reload</code> entirely on EKS.</div>
+              <div class="text-sm text-slate-700 mt-1">If there's a real memory leak driving the 3-hour cadence, fix it via <code class="k">livenessProbe</code> + <code class="k">resources.limits.memory</code>. Investigate root cause; don't recreate the cron.</div>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="badge-num bg-rose-100 text-rose-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">7</div>
+            <div class="pt-1">
+              <div class="font-semibold text-slate-950">Stand up the legacy-cutover failure-detection harness (section 6).</div>
+              <div class="text-sm text-slate-700 mt-1">Three layers: (a) hourly poll of <code class="k wrap">/var/spool/mail/aarzhou</code> + the three explicit log files via a small Datadog log-shipper or ssh-cron, (b) per-job side-effect checks (S3 object age, DB row mtime, customer SFTP file existence), (c) page-on-miss alarms specifically for the 3 🔴 High-risk jobs (<code class="k">export-students-stops</code>, <code class="k">export-punch-reports</code>, <code class="k">import-drivers</code>). Build before EKS external-traffic cutover, not after.</div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 8. Open questions -->
+    <section id="open-questions" class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+      <div class="flex items-start gap-4">
+        <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">?</div>
+        <div class="flex-1">
+          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-3">Open questions to resolve before each migration<a href="#open-questions" class="permalink" aria-label="Permalink to open questions">#</a></div>
+          <ul class="space-y-2 text-slate-800">
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-700 mt-2.5 flex-shrink-0"></div><div>Does <code class="k">aarzhou</code> run <code class="k">tmpwatch</code> or <code class="k">systemd-tmpfiles</code> against <code class="k">/tmp/</code>? If yes, snapshot timing is critical for any &ldquo;Timed&rdquo;-bucket job.</div></li>
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-700 mt-2.5 flex-shrink-0"></div><div>For the 🔴 EC2-only CLI tools: who owns retrieval and commit — Joey, Aaron, or original author?</div></li>
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-700 mt-2.5 flex-shrink-0"></div><div>Does the customer SFTP for <code class="k">export-punch-reports</code> actually retain daily <code class="k wrap">PUNCHED_TIME_&lt;DATE&gt;.csv</code> files indefinitely, or rolling window?</div></li>
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-700 mt-2.5 flex-shrink-0"></div><div>Does <code class="k">ftp.wheresthebus.com</code> retain prior <code class="k">students-stops</code> uploads or overwrite?</div></li>
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-700 mt-2.5 flex-shrink-0"></div><div>For <code class="k">export-dismissal-reports</code>: confirm the actual filename pattern by listing <code class="k wrap">aarzhou:/home/aarzhou/apps/ezrouting/files/pwcsva/reports/</code> after a fresh 11:00 run.</div></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="text-slate-500 text-sm text-center pt-6">
+      Sources: <code class="k">ezrd-async/legacy/*.sh</code> · Confluence cron inventory · <code class="k wrap">ezrouting/app/cli-tools/</code>
+    </div>
+
+  </main>
+
+</body>
+</html>
