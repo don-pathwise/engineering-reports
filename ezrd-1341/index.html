@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EZRD-1341 · Duplicate Route Fix — Test Steps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: {
+      sans: ['Inter','ui-sans-serif','system-ui','sans-serif'],
+      mono: ['JetBrains Mono','ui-monospace','monospace'],
+    }}}};
+  </script>
+  <style>
+    html { font-size: 16px; }
+    body { color: rgb(15 23 42); }
+    code.k { font-family:'JetBrains Mono',monospace; background:rgb(226 232 240); padding:.08rem .35rem; border-radius:.25rem; font-size:.85em; }
+    .main-card { box-shadow: 0 1px 3px rgba(15,23,42,.08); }
+    ol.steps { counter-reset: s; }
+    ol.steps > li { counter-increment: s; position: relative; padding-left: 2rem; margin-bottom:.4rem; }
+    ol.steps > li::before { content: counter(s); position:absolute; left:0; top:.05rem; width:1.4rem; height:1.4rem; background:rgb(186 230 253); color:rgb(7 89 133); border-radius:9999px; font-size:.8rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .expect { background:rgb(236 253 245); border-left:4px solid rgb(16 185 129); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <header class="bg-white border-b-2 border-slate-300">
+    <div class="max-w-4xl mx-auto px-6 py-8">
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">EZRD-1341 — Duplicate Route Fix · Test Steps</h1>
+      <p class="text-slate-700 mt-2">Confirm that approving/creating a route that matches an existing <strong>driverless</strong> route <strong>merges</strong> into it (no duplicate) and <strong>fills in the driver</strong>. Tenant: <code class="k">testqa</code> (UAT).</p>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-8 space-y-5">
+
+    <!-- buses to use -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-2">Buses to use (already exist in testqa)</h2>
+      <ul class="text-slate-700 space-y-1">
+        <li>• <strong>No default driver:</strong> <code class="k">FPB-005</code>, <code class="k">FPB-012</code>, <code class="k">Bus-030</code></li>
+        <li>• <strong>Has a default driver:</strong> <code class="k">Bus-001</code>, <code class="k">Automation Bus-1</code></li>
+      </ul>
+      <p class="text-slate-600 text-sm mt-3"><strong>Make a "driverless route":</strong> Routes → <strong>＋</strong> → enter a Name, pick a <em>no-default-driver</em> bus, leave <strong>Driver blank</strong>, set a recurrence, add one trip + one stop, <strong>Save</strong>. Confirm via ⋮ → General that the Driver input is empty.</p>
+    </section>
+
+    <!-- Scenario 1 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">1 · Driverless route merges + driver filled in <span class="text-emerald-700 text-sm font-semibold">(main fix)</span></h2>
+      <ol class="steps text-slate-700">
+        <li>Routes → make a driverless route named <code class="k">QA1341-A</code> on bus <code class="k">FPB-005</code> (Driver blank). Save.</li>
+        <li>Route Builder → <strong>＋</strong> → Name <code class="k">QA1341-A</code>, Vehicle <code class="k">FPB-005</code>, <strong>Driver = QA Driver</strong>, same recurrence. Add a trip + stop → Save → Submit.</li>
+        <li>Approve the request (New/Change Requests).</li>
+        <li>Routes → open <code class="k">QA1341-A</code> → ⋮ → General.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> still <strong>one</strong> route named <code class="k">QA1341-A</code> (no duplicate); Driver field now shows <strong>QA Driver</strong> (was blank).</div>
+    </section>
+
+    <!-- Scenario 2 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">2 · Driver comes from the bus's default driver</h2>
+      <ol class="steps text-slate-700">
+        <li>Make a driverless route <code class="k">QA1341-B</code> on bus <code class="k">Bus-001</code> (Driver blank). Note Bus-001's default driver — shown as the greyed "default: …" hint.</li>
+        <li>Route Builder → <strong>＋</strong> → Name <code class="k">QA1341-B</code>, Vehicle <code class="k">Bus-001</code>, <strong>Driver = Bus-001's default driver</strong>, same recurrence. Add trip + stop → Save → Submit.</li>
+        <li>Approve → open <code class="k">QA1341-B</code> → ⋮ → General.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> one route <code class="k">QA1341-B</code> (no duplicate); Driver filled in with the default driver.</div>
+    </section>
+
+    <!-- Scenario 3 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">3 · Different driver than the bus default → new route</h2>
+      <ol class="steps text-slate-700">
+        <li>Make a driverless route <code class="k">QA1341-C</code> on bus <code class="k">Bus-001</code> (Driver blank).</li>
+        <li>Route Builder → <strong>＋</strong> → Name <code class="k">QA1341-C</code>, Vehicle <code class="k">Bus-001</code>, <strong>Driver = a different person</strong> than Bus-001's default, same recurrence. Add trip + stop → Save → Submit → Approve.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> a <strong>new</strong> route is created (now two <code class="k">QA1341-C</code>); the original stays driverless.</div>
+    </section>
+
+    <!-- Scenario 4 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">4 · Request has no driver → new route</h2>
+      <ol class="steps text-slate-700">
+        <li>Make a driverless route <code class="k">QA1341-D</code> on bus <code class="k">FPB-012</code> (Driver blank).</li>
+        <li>Route Builder → <strong>＋</strong> → Name <code class="k">QA1341-D</code>, Vehicle <code class="k">FPB-012</code>, <strong>Driver blank</strong>, same recurrence. Add trip + stop → Save → Submit → Approve.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> a <strong>new</strong> route is created (two driverless routes are not merged).</div>
+    </section>
+
+    <!-- Scenario 5 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">5 · Different name → new route</h2>
+      <ol class="steps text-slate-700">
+        <li>Make a driverless route <code class="k">QA1341-E</code> on bus <code class="k">Bus-030</code> (Driver blank).</li>
+        <li>Route Builder → <strong>＋</strong> → Name <code class="k">QA1341-E-DIFF</code> (different), Vehicle <code class="k">Bus-030</code>, Driver = QA Driver, same recurrence. Add trip + stop → Save → Submit → Approve.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> a <strong>new</strong> route <code class="k">QA1341-E-DIFF</code> is created; <code class="k">QA1341-E</code> is untouched.</div>
+    </section>
+
+    <!-- Scenario 6 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">6 · Same fix via the Routes tab (not Route Builder)</h2>
+      <ol class="steps text-slate-700">
+        <li>Make a driverless route <code class="k">QA1341-F</code> on bus <code class="k">FPB-005</code> (Driver blank).</li>
+        <li>Routes → <strong>＋</strong> → create another route: Name <code class="k">QA1341-F</code>, Vehicle <code class="k">FPB-005</code>, <strong>Driver = QA Driver</strong>, same recurrence. Add trip + stop → Save.</li>
+        <li>Open <code class="k">QA1341-F</code> → ⋮ → General.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> one route <code class="k">QA1341-F</code> (no duplicate); Driver now shows QA Driver.</div>
+    </section>
+
+    <!-- Scenario 7 regression -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">7 · Normal route still merges <span class="text-slate-500 text-sm font-semibold">(regression)</span></h2>
+      <ol class="steps text-slate-700">
+        <li>Make a route <code class="k">QA1341-G</code> on bus <code class="k">Bus-001</code> <strong>with a driver assigned</strong> (not blank). Save.</li>
+        <li>Route Builder → <strong>＋</strong> → Name <code class="k">QA1341-G</code>, Vehicle <code class="k">Bus-001</code>, <strong>same driver</strong>, same recurrence. Add trip + stop → Save → Submit → Approve.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> merges into the existing route — no new route created.</div>
+    </section>
+
+    <div class="text-slate-500 text-sm text-center pt-4">EZRD-1341 · PR ezrd-mono#151 · testqa (UAT)</div>
+
+  </main>
+</body>
+</html>
