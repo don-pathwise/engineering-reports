@@ -36,6 +36,7 @@
     <div class="max-w-4xl mx-auto px-6 py-8">
       <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">EZRD-1564 — busapp Validate-First · Test Steps</h1>
       <p class="text-slate-700 mt-2">Confirm <code class="k">POST /api/v1/mobile/busapp</code> rejects bad payloads with an <strong>immediate 400</strong> (before any downstream call) instead of burning the full ~138s timeout. Valid payloads still proxy through. API test — no UI. Env: prd-UAT, tenant <code class="k">testqa</code>.</p>
+      <div class="expect mt-3"><strong>✓ Verified on UAT:</strong> bad method → <code class="k">400 B2E5D741</code> (0.15s) · bad url → <code class="k">400 B2E5D742</code> (0.11s) · null headers → <code class="k">400 B2E5D743</code> (0.11s) · empty body → <code class="k">400 B2E5D741</code> (0.17s) · health <code class="k">200</code>. Invalid input rejected in ~0.1s, not ~138s.</div>
     </div>
   </header>
 
@@ -59,7 +60,7 @@
       <h2 class="text-lg font-bold text-slate-950 mb-2">Auth — read this first</h2>
       <p class="text-slate-700 mb-2">ezd-core gates <code class="k">/api/v1/mobile/busapp</code> with a <strong>server token</strong>, not the driver login token. There are <strong>two</strong> distinct credentials:</p>
       <ul class="text-slate-700 space-y-1">
-        <li>• <strong>ezd-core server token</strong> — sent in the <code class="k">token</code> request header. This is what gets you past ezd-core's auth gate. It's the <code class="k">EZRD_SERVER_TOKENS_MOBILE</code> secret (ESO/Secrets Manager) for the env. <strong>Without it → 401 before validation runs.</strong></li>
+        <li>• <strong>ezd-core server token</strong> — sent in the <code class="k">token</code> request header. This is what gets you past ezd-core's auth gate. For prd-UAT it's the <code class="k">EZRD_SERVER_TOKEN</code> key in Secrets Manager secret <code class="k">ezrd/uat/ezd-core</code>. <strong>Without it → 401 before validation runs.</strong></li>
         <li>• <strong>Driver login token</strong> — goes in the request <em>body</em> under <code class="k">headers.token</code>; ezd-core forwards it to the downstream ezrouting. Only needed for the "valid payload" case to proxy through.</li>
       </ul>
       <div class="warn mt-3 text-slate-800 text-sm"><strong>Heads-up on the Bruno collection:</strong> as written it puts the <em>driver login token</em> in the <code class="k">token</code> header — that returns 401 at ezd-core's gate and never reaches the validation. Set the <code class="k">token</code> header / env var to the <strong>server token</strong> for cases 3–12 to actually run. (Verified: a driver JWT and the mobile UUID both 401.)</li></div>
@@ -68,7 +69,10 @@
     <!-- Step 1: creds -->
     <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
       <h2 class="text-lg font-bold text-slate-950 mb-3">1 · Get the credentials</h2>
-      <p class="text-slate-700 mb-2"><strong>Server token (required for all busapp cases):</strong> pull <code class="k">EZRD_SERVER_TOKENS_MOBILE</code> for the env from Secrets Manager / ESO. Call it <code class="k">&lt;SVRTOK&gt;</code>.</p>
+      <p class="text-slate-700 mb-2"><strong>Server token (required for all busapp cases):</strong> pull it from Secrets Manager with the <code class="k">uat</code> SSO profile (account 806100285832). Call it <code class="k">&lt;SVRTOK&gt;</code>:</p>
+      <pre>aws sso login --profile uat
+aws secretsmanager get-secret-value --profile uat --region us-east-1 \
+  --secret-id ezrd/uat/ezd-core --query SecretString --output text | jq -r '.EZRD_SERVER_TOKEN'</pre>
       <p class="text-slate-700 mb-2"><strong>Driver login token (only for the valid-proxy case):</strong> log in with SD360 driver creds — copy <code class="k">token</code> from the response, call it <code class="k">&lt;DRVTOK&gt;</code>:</p>
       <pre>curl -s https://uat.pathwiserouting.com/login/busapp \
   -H 'Content-Type: application/json' \
