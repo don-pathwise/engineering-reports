@@ -33,7 +33,7 @@
     <div class="max-w-3xl mx-auto px-6 py-8">
       <div class="badge mb-3">✓ Verified on UAT</div>
       <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">EZRD-1564 — busapp Validate-First · Test Steps</h1>
-      <p class="text-slate-700 mt-2">Confirm <code class="k">POST /api/v1/mobile/busapp</code> rejects bad payloads with an immediate <strong>400</strong> instead of hanging the full ~138s. Needs AWS UAT access (SSO profile <code class="k">uat</code>, account 806100285832) to pull the server token.</p>
+      <p class="text-slate-700 mt-2">Confirm <code class="k">POST /api/v1/mobile/busapp</code> rejects bad payloads with an immediate <strong>400</strong> instead of hanging the full ~138s. Needs AWS UAT access (SSO profile <code class="k">uat</code>, account <code class="k">&lt;ACCOUNT&gt;</code>) to pull the server token.</p>
     </div>
   </header>
 
@@ -48,14 +48,14 @@
     <!-- Step 2 -->
     <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
       <h2 class="text-lg font-bold text-slate-950 mb-3">Step 2 · Pull the server token + run the checks</h2>
-      <p class="text-slate-700 text-sm mb-2">Paste the whole block. The token goes in the <code class="k">token</code> header — that's what authenticates to ezd-core (not a driver login token).</p>
+      <p class="text-slate-700 text-sm mb-2">Paste the whole block. Replace <code class="k">&lt;MOBILE_TOKEN&gt;</code> with the value from the Jira ticket (EZRD-1564). The server token goes in the <code class="k">token</code> header — that's what authenticates to ezd-core (not a driver login token).</p>
       <pre>TOKEN=$(aws secretsmanager get-secret-value --profile uat --region us-east-1 \
   --secret-id ezrd/uat/ezd-core --query SecretString --output text \
   | jq -r '.EZRD_SERVER_TOKEN' | cut -d, -f1)
 
 CORE=https://core.ezd-uat.runpathwise.com/api/v1/mobile/busapp
 H=(-H "Content-Type: application/json" -H "client: testqa" -H "app: busapp" \
-   -H "mobile: 363DC37D-2509-4E65-8D6A-F5C155DEBDD8" -H "token: $TOKEN")
+   -H "mobile: &lt;MOBILE_TOKEN&gt;" -H "token: $TOKEN")
 
 curl -s -o /dev/null -w "health        -> HTTP %{http_code}\n" \
   https://core.ezd-uat.runpathwise.com/health
