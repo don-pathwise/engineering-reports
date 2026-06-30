@@ -19,116 +19,76 @@
     body { color: rgb(15 23 42); }
     code.k { font-family:'JetBrains Mono',monospace; background:rgb(226 232 240); padding:.08rem .35rem; border-radius:.25rem; font-size:.85em; word-break:break-all; }
     .main-card { box-shadow: 0 1px 3px rgba(15,23,42,.08); }
-    ol.steps { counter-reset: s; }
-    ol.steps > li { counter-increment: s; position: relative; padding-left: 2rem; margin-bottom:.4rem; }
-    ol.steps > li::before { content: counter(s); position:absolute; left:0; top:.05rem; width:1.4rem; height:1.4rem; background:rgb(186 230 253); color:rgb(7 89 133); border-radius:9999px; font-size:.8rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
     .expect { background:rgb(236 253 245); border-left:4px solid rgb(16 185 129); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
-    .warn { background:rgb(255 247 237); border-left:4px solid rgb(234 88 12); padding:.6rem .9rem; border-radius:.3rem; }
     pre { font-family:'JetBrains Mono',monospace; background:rgb(15 23 42); color:rgb(226 232 240); padding:.9rem 1rem; border-radius:.5rem; overflow-x:auto; font-size:.82rem; line-height:1.5; }
     table { width:100%; border-collapse:collapse; font-size:.9rem; }
     th { background:rgb(226 232 240); text-align:left; padding:.5rem .7rem; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; }
     td { padding:.5rem .7rem; border-top:1px solid rgb(226 232 240); vertical-align:top; }
+    .badge { display:inline-flex; align-items:center; gap:.4rem; padding:.25rem .7rem; border-radius:9999px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; background:rgb(220 252 231); color:rgb(6 95 70); border:1px solid rgb(110 231 183); }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans antialiased">
 
   <header class="bg-white border-b-2 border-slate-300">
-    <div class="max-w-4xl mx-auto px-6 py-8">
+    <div class="max-w-3xl mx-auto px-6 py-8">
+      <div class="badge mb-3">✓ Verified on UAT</div>
       <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">EZRD-1564 — busapp Validate-First · Test Steps</h1>
-      <p class="text-slate-700 mt-2">Confirm <code class="k">POST /api/v1/mobile/busapp</code> rejects bad payloads with an <strong>immediate 400</strong> (before any downstream call) instead of burning the full ~138s timeout. Valid payloads still proxy through. API test — no UI. Env: prd-UAT, tenant <code class="k">testqa</code>.</p>
-      <div class="expect mt-3"><strong>✓ Verified on UAT:</strong> bad method → <code class="k">400 B2E5D741</code> (0.15s) · bad url → <code class="k">400 B2E5D742</code> (0.11s) · null headers → <code class="k">400 B2E5D743</code> (0.11s) · empty body → <code class="k">400 B2E5D741</code> (0.17s) · health <code class="k">200</code>. Invalid input rejected in ~0.1s, not ~138s.</div>
+      <p class="text-slate-700 mt-2">Confirm <code class="k">POST /api/v1/mobile/busapp</code> rejects bad payloads with an immediate <strong>400</strong> instead of hanging the full ~138s. Needs AWS UAT access (SSO profile <code class="k">uat</code>, account 806100285832) to pull the server token.</p>
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-6 py-8 space-y-5">
+  <main class="max-w-3xl mx-auto px-6 py-8 space-y-5">
 
-    <!-- targets -->
+    <!-- Step 1 -->
     <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
-      <h2 class="text-lg font-bold text-slate-950 mb-2">Hosts (prd-UAT)</h2>
-      <ul class="text-slate-700 space-y-1">
-        <li>• <strong>ezd-core API (the fix is here):</strong> <code class="k">https://core.ezd-uat.runpathwise.com</code> &nbsp;<span class="text-slate-500 text-sm">(EKS — the variant the Argo ApplicationSet deploys)</span></li>
-        <li>• <strong>Endpoint:</strong> <code class="k">POST /api/v1/mobile/busapp</code></li>
-        <li>• <strong>Health:</strong> <code class="k">GET https://core.ezd-uat.runpathwise.com/health</code></li>
-        <li>• <strong>Login (driver token):</strong> <code class="k">POST https://uat.pathwiserouting.com/login/busapp</code></li>
-        <li>• <strong>Tenant / client:</strong> <code class="k">testqa</code></li>
-      </ul>
-      <p class="text-slate-600 text-sm mt-3"><strong>Legacy fallback:</strong> if this env is still served by the EC2 fleet (there was a cutover + rollback), use <code class="k">https://core.ezd-uat-ec2.runpathwise.com</code> instead. The definitive source is the SD360 build's <code class="k">BASE_URL</code> (in <code class="k">SafeDriver360/.env</code>).</p>
+      <h2 class="text-lg font-bold text-slate-950 mb-3">Step 1 · Log in to AWS</h2>
+      <pre>aws sso login --profile uat</pre>
     </section>
 
-    <!-- AUTH — important -->
-    <section class="bg-white border-2 border-orange-300 rounded-xl main-card p-6">
-      <h2 class="text-lg font-bold text-slate-950 mb-2">Auth — read this first</h2>
-      <p class="text-slate-700 mb-2">ezd-core gates <code class="k">/api/v1/mobile/busapp</code> with a <strong>server token</strong>, not the driver login token. There are <strong>two</strong> distinct credentials:</p>
-      <ul class="text-slate-700 space-y-1">
-        <li>• <strong>ezd-core server token</strong> — sent in the <code class="k">token</code> request header. This is what gets you past ezd-core's auth gate. For prd-UAT it's the <code class="k">EZRD_SERVER_TOKEN</code> key in Secrets Manager secret <code class="k">ezrd/uat/ezd-core</code>. <strong>Without it → 401 before validation runs.</strong></li>
-        <li>• <strong>Driver login token</strong> — goes in the request <em>body</em> under <code class="k">headers.token</code>; ezd-core forwards it to the downstream ezrouting. Only needed for the "valid payload" case to proxy through.</li>
-      </ul>
-      <div class="warn mt-3 text-slate-800 text-sm"><strong>Heads-up on the Bruno collection:</strong> as written it puts the <em>driver login token</em> in the <code class="k">token</code> header — that returns 401 at ezd-core's gate and never reaches the validation. Set the <code class="k">token</code> header / env var to the <strong>server token</strong> for cases 3–12 to actually run. (Verified: a driver JWT and the mobile UUID both 401.)</li></div>
+    <!-- Step 2 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">Step 2 · Pull the server token + run the checks</h2>
+      <p class="text-slate-700 text-sm mb-2">Paste the whole block. The token goes in the <code class="k">token</code> header — that's what authenticates to ezd-core (not a driver login token).</p>
+      <pre>TOKEN=$(aws secretsmanager get-secret-value --profile uat --region us-east-1 \
+  --secret-id ezrd/uat/ezd-core --query SecretString --output text \
+  | jq -r '.EZRD_SERVER_TOKEN' | cut -d, -f1)
+
+CORE=https://core.ezd-uat.runpathwise.com/api/v1/mobile/busapp
+H=(-H "Content-Type: application/json" -H "client: testqa" -H "app: busapp" \
+   -H "mobile: 363DC37D-2509-4E65-8D6A-F5C155DEBDD8" -H "token: $TOKEN")
+
+curl -s -o /dev/null -w "health        -> HTTP %{http_code}\n" \
+  https://core.ezd-uat.runpathwise.com/health
+
+for d in \
+ '{"method":"INVALID_METHOD","url":"/api/routes/mine","headers":{},"data":{}}' \
+ '{"method":"GET","url":"/routes/mine","headers":{},"data":{}}' \
+ '{"method":"GET","url":"/api/routes/mine","headers":null,"data":{}}' \
+ '{}'; do
+  curl -s -w "HTTP %{http_code}  %{time_total}s  " "${H[@]}" -d "$d" "$CORE"; echo
+done</pre>
     </section>
 
-    <!-- Step 1: creds -->
+    <!-- Step 3 -->
     <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
-      <h2 class="text-lg font-bold text-slate-950 mb-3">1 · Get the credentials</h2>
-      <p class="text-slate-700 mb-2"><strong>Server token (required for all busapp cases):</strong> pull it from Secrets Manager with the <code class="k">uat</code> SSO profile (account 806100285832). Call it <code class="k">&lt;SVRTOK&gt;</code>:</p>
-      <pre>aws sso login --profile uat
-aws secretsmanager get-secret-value --profile uat --region us-east-1 \
-  --secret-id ezrd/uat/ezd-core --query SecretString --output text | jq -r '.EZRD_SERVER_TOKEN'</pre>
-      <p class="text-slate-700 mb-2"><strong>Driver login token (only for the valid-proxy case):</strong> log in with SD360 driver creds — copy <code class="k">token</code> from the response, call it <code class="k">&lt;DRVTOK&gt;</code>:</p>
-      <pre>curl -s https://uat.pathwiserouting.com/login/busapp \
-  -H 'Content-Type: application/json' \
-  -H 'mobile: 363DC37D-2509-4E65-8D6A-F5C155DEBDD8' \
-  -H 'app: busapp' \
-  -d '{"username":"&lt;sd360-driver&gt;","password":"&lt;password&gt;"}'</pre>
-      <div class="expect"><strong>Expect:</strong> 200 with a JSON <code class="k">token</code>. (For testqa the driver user is <code class="k">testqadriverpathwise@yopmail.com</code>.)</div>
-    </section>
-
-    <!-- Step 2: run via bruno -->
-    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
-      <h2 class="text-lg font-bold text-slate-950 mb-3">2 · Run the suite (Bruno)</h2>
-      <p class="text-slate-700 mb-2">Collection: <a class="text-sky-700 underline" href="https://github.com/TransActComm/ezrd-api-tests/pull/65">ezrd-api-tests#65</a>, folder <code class="k">ezd-core/</code>. Override the host + set <code class="k">token</code> to the <strong>server token</strong>:</p>
-      <pre>cd ezrd-api-tests/ezd-core
-bru run . --env mwm-uat \
-  --env-var 'coreHost=https://core.ezd-uat.runpathwise.com' \
-  --env-var 'loginHost=https://uat.pathwiserouting.com' \
-  --env-var 'client=testqa' \
-  --env-var 'token=&lt;SVRTOK&gt;'</pre>
-      <div class="expect"><strong>Expect:</strong> health 2/2 pass; cases 3–12 pass. <span class="text-slate-600">(If <code class="k">token</code> is a driver login token instead, the validation cases 401 — see the auth note.)</span></div>
-    </section>
-
-    <!-- Step 3: matrix -->
-    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
-      <h2 class="text-lg font-bold text-slate-950 mb-3">3 · What each case sends &amp; expects</h2>
-      <p class="text-slate-700 mb-3 text-sm">Each request: <code class="k">POST https://core.ezd-uat.runpathwise.com/api/v1/mobile/busapp</code>, headers <code class="k">client: testqa</code>, <code class="k">app: busapp</code>, <code class="k">mobile: 363DC37D-…</code>, <code class="k">token: &lt;SVRTOK&gt;</code>. Body varies:</p>
+      <h2 class="text-lg font-bold text-slate-950 mb-3">Step 3 · Expected output</h2>
       <div style="overflow-x:auto">
       <table>
-        <thead><tr><th>Case</th><th>Body sent</th><th>Expect</th></tr></thead>
+        <thead><tr><th>Request</th><th>Expected</th></tr></thead>
         <tbody>
-          <tr><td>1–2 Health</td><td><em>GET /health (no auth)</em></td><td>200, body <code class="k">{status:'ok'}</code></td></tr>
-          <tr><td>3–4 Bad method</td><td><code class="k">{"method":"INVALID_METHOD","url":"/api/routes/mine","headers":{},"data":{}}</code></td><td>400 <code class="k">B2E5D741</code>, returned immediately</td></tr>
-          <tr><td>5–6 Bad URL</td><td><code class="k">{"method":"GET","url":"/routes/mine",...}</code> (no <code class="k">/api/</code> prefix)</td><td>400 <code class="k">B2E5D742</code>, immediately</td></tr>
-          <tr><td>7–8 Null headers</td><td><code class="k">{"method":"GET","url":"/api/routes/mine","headers":null,"data":{}}</code></td><td>400 <code class="k">B2E5D743</code>, immediately</td></tr>
-          <tr><td>9–10 Empty body</td><td><code class="k">{}</code></td><td>400 (no method → <code class="k">B2E5D741</code>), immediately</td></tr>
-          <tr><td>11–12 Valid</td><td><code class="k">{"method":"GET","url":"/api/routes/mine","headers":{"token":"&lt;DRVTOK&gt;"},"data":{}}</code></td><td><strong>Not</strong> 400 from validator and <strong>not</strong> 5xx — passes validation, proxies to ezrouting</td></tr>
+          <tr><td>health</td><td>HTTP <code class="k">200</code></td></tr>
+          <tr><td>bad method</td><td>HTTP <code class="k">400</code> · <code class="k">{"errcode":"B2E5D741","message":"Invalid method"}</code></td></tr>
+          <tr><td>bad url (no /api/)</td><td>HTTP <code class="k">400</code> · <code class="k">{"errcode":"B2E5D742","message":"Invalid url"}</code></td></tr>
+          <tr><td>null headers</td><td>HTTP <code class="k">400</code> · <code class="k">{"errcode":"B2E5D743","message":"Invalid headers"}</code></td></tr>
+          <tr><td>empty body</td><td>HTTP <code class="k">400</code> · <code class="k">{"errcode":"B2E5D741","message":"Invalid method"}</code></td></tr>
         </tbody>
       </table>
       </div>
-      <div class="expect"><strong>Key result (the fix):</strong> every invalid case returns 400 <strong>right away</strong> (well under the old ~138s timeout). Before the fix these hung for the full downstream timeout before failing.</div>
+      <div class="expect"><strong>PASS</strong> = every 400 returns in <strong>well under 1s</strong> (~0.1s). That's the fix: invalid input rejected before any downstream call, instead of hanging ~138s.</div>
+      <p class="text-slate-600 text-sm mt-3"><strong>If you get <code class="k">401 Unauthorized</code>:</strong> the token didn't load — re-run Step 1, then re-paste Step 2. <strong>If a request hangs:</strong> wrong host — try <code class="k">core.ezd-uat-ec2.runpathwise.com</code>.</p>
     </section>
 
-    <!-- manual single check -->
-    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
-      <h2 class="text-lg font-bold text-slate-950 mb-3">4 · Manual spot-check (curl)</h2>
-      <p class="text-slate-700 mb-2">Bad method — should come back instantly with a 400:</p>
-      <pre>curl -s -w '\n%{http_code}  %{time_total}s\n' \
-  https://core.ezd-uat.runpathwise.com/api/v1/mobile/busapp \
-  -H 'Content-Type: application/json' -H 'client: testqa' \
-  -H 'app: busapp' -H 'mobile: 363DC37D-2509-4E65-8D6A-F5C155DEBDD8' \
-  -H 'token: &lt;SVRTOK&gt;' \
-  -d '{"method":"INVALID_METHOD","url":"/api/routes/mine","headers":{},"data":{}}'</pre>
-      <div class="expect"><strong>Expect:</strong> <code class="k">{"errcode":"B2E5D741","message":"Invalid method"}</code>, HTTP 400, <code class="k">time_total</code> a fraction of a second (not ~138s). <span class="text-slate-600">(Wrong/absent server token → <code class="k">401 Unauthorized</code> before validation.)</span></div>
-    </section>
-
-    <div class="text-slate-500 text-sm text-center pt-4">EZRD-1564 · fix ezrd-mono#196 · tests ezrd-api-tests#65 · prd-UAT (testqa) · core.ezd-uat.runpathwise.com</div>
+    <div class="text-slate-500 text-sm text-center pt-2">EZRD-1564 · fix ezrd-mono#196 · prd-UAT (testqa) · core.ezd-uat.runpathwise.com</div>
 
   </main>
 </body>
