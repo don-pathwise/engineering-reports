@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EZRD-1564 · busapp Validate-First — Test Steps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: {
+      sans: ['Inter','ui-sans-serif','system-ui','sans-serif'],
+      mono: ['JetBrains Mono','ui-monospace','monospace'],
+    }}}};
+  </script>
+  <style>
+    html { font-size: 16px; }
+    body { color: rgb(15 23 42); }
+    code.k { font-family:'JetBrains Mono',monospace; background:rgb(226 232 240); padding:.08rem .35rem; border-radius:.25rem; font-size:.85em; word-break:break-all; }
+    .main-card { box-shadow: 0 1px 3px rgba(15,23,42,.08); }
+    ol.steps { counter-reset: s; }
+    ol.steps > li { counter-increment: s; position: relative; padding-left: 2rem; margin-bottom:.4rem; }
+    ol.steps > li::before { content: counter(s); position:absolute; left:0; top:.05rem; width:1.4rem; height:1.4rem; background:rgb(186 230 253); color:rgb(7 89 133); border-radius:9999px; font-size:.8rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .expect { background:rgb(236 253 245); border-left:4px solid rgb(16 185 129); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
+    pre { font-family:'JetBrains Mono',monospace; background:rgb(15 23 42); color:rgb(226 232 240); padding:.9rem 1rem; border-radius:.5rem; overflow-x:auto; font-size:.82rem; line-height:1.5; }
+    table { width:100%; border-collapse:collapse; font-size:.9rem; }
+    th { background:rgb(226 232 240); text-align:left; padding:.5rem .7rem; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; }
+    td { padding:.5rem .7rem; border-top:1px solid rgb(226 232 240); vertical-align:top; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <header class="bg-white border-b-2 border-slate-300">
+    <div class="max-w-4xl mx-auto px-6 py-8">
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">EZRD-1564 — busapp Validate-First · Test Steps</h1>
+      <p class="text-slate-700 mt-2">Confirm <code class="k">POST /api/v1/mobile/busapp</code> rejects bad payloads with an <strong>immediate 400</strong> (before any downstream call) instead of burning the full ~138s timeout. Valid payloads still proxy through. API test — no UI.</p>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-8 space-y-5">
+
+    <!-- targets -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-2">UAT targets</h2>
+      <ul class="text-slate-700 space-y-1">
+        <li>• <strong>Endpoint:</strong> <code class="k">POST https://core.ezd-uat.runpathwise.com/api/v1/mobile/busapp</code></li>
+        <li>• <strong>Health:</strong> <code class="k">GET https://core.ezd-uat.runpathwise.com/health</code></li>
+        <li>• <strong>Login (for token):</strong> <code class="k">POST https://ezr-uat.runpathwise.com/login/busapp</code></li>
+        <li>• <strong>Client:</strong> <code class="k">mwm</code></li>
+      </ul>
+      <p class="text-slate-600 text-sm mt-3">The validation tests require a <strong>SD360 driver token</strong>. Without it the endpoint rejects before validation, so those cases are skipped. Health checks need no auth.</p>
+    </section>
+
+    <!-- Step 1: token -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">1 · Get a driver token</h2>
+      <p class="text-slate-700 mb-2">POST to login with SD360 driver creds (username/password <em>or</em> a <code class="k">&lt;tenant&gt;;&lt;code&gt;</code> QR string). Copy <code class="k">token</code> from the response.</p>
+      <pre>curl -s https://ezr-uat.runpathwise.com/login/busapp \
+  -H 'Content-Type: application/json' \
+  -H 'mobile: 363DC37D-2509-4E65-8D6A-F5C155DEBDD8' \
+  -H 'app: busapp' \
+  -d '{"username":"&lt;sd360-driver&gt;","password":"&lt;password&gt;"}'</pre>
+      <div class="expect"><strong>Expect:</strong> 200 with a JSON <code class="k">token</code>. Use it as <code class="k">&lt;TOKEN&gt;</code> below.</div>
+    </section>
+
+    <!-- Step 2: run via bruno -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">2 · Run the suite (Bruno — fastest)</h2>
+      <p class="text-slate-700 mb-2">Collection: <a class="text-sky-700 underline" href="https://github.com/TransActComm/ezrd-api-tests/pull/65">ezrd-api-tests#65</a>, folder <code class="k">ezd-core/</code>.</p>
+      <pre>cd ezrd-api-tests/ezd-core
+bru run . --env mwm-uat \
+  --env-var 'username=&lt;sd360-driver&gt;' \
+  --env-var 'password=&lt;password&gt;'
+# or, instead of username/password:  --env-var 'qrcode=&lt;tenant&gt;;&lt;code&gt;'</pre>
+      <div class="expect"><strong>Expect:</strong> all 12 cases (C_1564_1–12) pass. Without creds, the 2 health checks pass and the validation cases skip (don't fail).</div>
+    </section>
+
+    <!-- Step 3: matrix -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">3 · What each case sends &amp; expects</h2>
+      <p class="text-slate-700 mb-3 text-sm">Each request goes to <code class="k">POST …/api/v1/mobile/busapp</code> with headers <code class="k">client: mwm</code>, <code class="k">app: busapp</code>, <code class="k">mobile: 363DC37D-…</code>, <code class="k">token: &lt;TOKEN&gt;</code>. Body varies:</p>
+      <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Case</th><th>Body sent</th><th>Expect</th></tr></thead>
+        <tbody>
+          <tr><td>1–2 Health</td><td><em>GET /health (no auth)</em></td><td>200, body <code class="k">{status:'ok'}</code></td></tr>
+          <tr><td>3–4 Bad method</td><td><code class="k">{"method":"INVALID_METHOD","url":"/api/routes/mine","headers":{...},"data":{}}</code></td><td>400 <code class="k">B2E5D741</code>, returned immediately</td></tr>
+          <tr><td>5–6 Bad URL</td><td><code class="k">{"method":"GET","url":"/routes/mine",...}</code> (no <code class="k">/api/</code> prefix)</td><td>400 <code class="k">B2E5D742</code>, immediately</td></tr>
+          <tr><td>7–8 Null headers</td><td><code class="k">{"method":"GET","url":"/api/routes/mine","headers":null,"data":{}}</code></td><td>400 <code class="k">B2E5D743</code>, immediately</td></tr>
+          <tr><td>9–10 Empty body</td><td><code class="k">{}</code></td><td>400 (no method → <code class="k">B2E5D741</code>), immediately</td></tr>
+          <tr><td>11–12 Valid</td><td><code class="k">{"method":"GET","url":"/api/routes/mine","headers":{"token":"&lt;TOKEN&gt;"},"data":{}}</code></td><td><strong>Not</strong> 400 from validator and <strong>not</strong> 5xx — passes validation, proxies to ezrouting</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="expect"><strong>Key result (the fix):</strong> every invalid case returns 400 <strong>right away</strong> (well under the old ~138s timeout). Before the fix these hung for the full downstream timeout before failing.</div>
+    </section>
+
+    <!-- manual single check -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">4 · Manual spot-check (curl)</h2>
+      <p class="text-slate-700 mb-2">Bad method — should come back instantly with a 400:</p>
+      <pre>curl -s -w '\n%{http_code}  %{time_total}s\n' \
+  https://core.ezd-uat.runpathwise.com/api/v1/mobile/busapp \
+  -H 'Content-Type: application/json' -H 'client: mwm' \
+  -H 'app: busapp' -H 'mobile: 363DC37D-2509-4E65-8D6A-F5C155DEBDD8' \
+  -H 'token: &lt;TOKEN&gt;' \
+  -d '{"method":"INVALID_METHOD","url":"/api/routes/mine","headers":{"token":"&lt;TOKEN&gt;"},"data":{}}'</pre>
+      <div class="expect"><strong>Expect:</strong> <code class="k">{"errcode":"B2E5D741","message":"Invalid method"}</code>, HTTP 400, <code class="k">time_total</code> a fraction of a second (not ~138s).</div>
+    </section>
+
+    <div class="text-slate-500 text-sm text-center pt-4">EZRD-1564 · fix ezrd-mono#196 · tests ezrd-api-tests#65 · UAT (mwm-uat)</div>
+
+  </main>
+</body>
+</html>
