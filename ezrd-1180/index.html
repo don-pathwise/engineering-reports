@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EZRD-1180 · Nearest stops outside the walk zone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: {
+      sans: ['Inter','ui-sans-serif','system-ui','sans-serif'],
+      mono: ['JetBrains Mono','ui-monospace','monospace'],
+    }}}};
+  </script>
+  <style>
+    html { font-size: 17px; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    .step-number { font-variant-numeric: tabular-nums; }
+    .badge-num {
+      width: 3rem; height: 3rem; border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.06);
+    }
+    .main-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
+    code.k {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: rgb(226 232 240); color: rgb(15 23 42);
+      padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em; white-space: nowrap;
+    }
+    .owz { display:inline-block; background:rgb(249 115 22); color:#fff; font-size:0.6rem; font-weight:700; letter-spacing:0.03em; padding:0.1rem 0.45rem; border-radius:0.25rem; vertical-align:middle; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+<header class="border-b-2 border-slate-300 bg-white">
+  <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+    <div class="inline-flex items-center gap-2 rounded-full bg-sky-100 text-sky-900 border border-sky-300 px-3 py-1 text-xs font-bold tracking-wider uppercase mb-5">
+      <span class="w-2 h-2 rounded-full bg-sky-600"></span> Feature · Add Bus Schedule
+    </div>
+    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-4">EZRD-1180 — Nearest stops outside the walk zone</h1>
+    <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+      On the <strong>Add Bus Schedule</strong> screen, EZRouting now automatically surfaces the nearest stops
+      <em>beyond a student's walk zone</em> — tagged <span class="owz">Outside Walk Zone</span> — whenever the in-zone
+      options don't fill the view. No hidden “Show 5 More” click. Below: what it looks like, and how to verify it on a dev tenant.
+    </p>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
+
+  <!-- What this delivers + screenshot -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">What this delivers</div>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Out-of-zone stops surface on their own</h2>
+        <p class="text-slate-700 leading-relaxed">
+          For an <strong>unrouted</strong> student (whose search runs “FROM Any”), opening
+          <em>Search &amp; Add Bus Schedule</em> now shows the in-zone stops <strong>plus</strong> the nearest stops beyond
+          the walk zone, filling the visible list automatically. Two changes make it work:
+        </p>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4 mb-7">
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
+          <div class="text-emerald-900 font-bold text-sm mb-1">Discoverability</div>
+          <p class="text-slate-700 text-sm leading-relaxed">Out-of-zone stops auto-fill the view when in-zone options fall short — instead of being hidden behind repeated “Show 5 More” clicks that flipped an invisible switch.</p>
+        </div>
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
+          <div class="text-emerald-900 font-bold text-sm mb-1">Bug fix underneath</div>
+          <p class="text-slate-700 text-sm leading-relaxed">The gather read stop coordinates from the wrong field, so out-of-zone stops were silently dropped on real data. Fixed — the nearest-stops search now returns results.</p>
+        </div>
+      </div>
+
+      <div class="text-xs font-semibold tracking-wider uppercase text-slate-500 mb-2">What it looks like</div>
+      <figure class="border-2 border-slate-300 rounded-xl overflow-hidden">
+        <img src="./add-bus-schedule-outside-walk-zone.png"
+             alt="Add Bus Schedule panel for an unrouted student: in-zone routes with no tag, plus nearest stops tagged Outside Walk Zone at 1.7 and 2.3 miles."
+             class="w-full block" />
+      </figure>
+      <figcaption class="text-slate-600 text-sm mt-3 leading-relaxed">
+        The <em>Add Bus Schedule</em> panel for an unrouted student. Routes 1–3 are in-zone (no tag); Routes 4–5 are tagged
+        <span class="owz">Outside Walk Zone</span> at 1.7 and 2.3 mi — all present the moment the panel opens, sorted by distance,
+        with “Show 5 More” to page further. (Dev tenant, synthetic test data.)
+      </figcaption>
+    </div>
+  </section>
+
+  <!-- How to test: prereqs -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="mb-5">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-slate-700">How to test — before you start</div>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Prerequisites (dev)</h2>
+      </div>
+      <ul class="space-y-2 text-slate-700">
+        <li class="flex gap-3"><span class="text-slate-500 font-bold">›</span><span>The <strong>ezrd-1180</strong> branch is deployed to the dev tenant you'll test on.</span></li>
+        <li class="flex gap-3"><span class="text-slate-500 font-bold">›</span><span>You're logged in with an <strong>admin / config</strong> role (needed to edit Settings).</span></li>
+        <li class="flex gap-3"><span class="text-slate-500 font-bold">›</span><span>The tenant has routes with trips in the <strong>active school year</strong> (top-right selector). Out-of-zone stops come from trips serving the student's school — a school with no active trips shows nothing.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Step 1 -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">1</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">Set up the condition</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Shrink the walk zone</h2>
+          <p class="text-slate-700 leading-relaxed">Making the walk zone small means most nearby stops count as <em>outside</em> it, so the student has few in-zone options and the out-of-zone list fills the view.</p>
+        </div>
+      </div>
+      <ol class="space-y-3 text-slate-700 pl-1">
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">a.</span><span>Open the menu (<strong>☰</strong>, top-left) → <strong>Settings</strong> → <strong>General</strong>.</span></li>
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">b.</span><span>Find <strong>“Default Maximum Walking Distance (ft)”</strong> and <strong>note the current value</strong> (default <code class="k">1000</code>) for Step 5.</span></li>
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">c.</span><span>Change it to a small value — <strong>100</strong> works well.</span></li>
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">d.</span><span>Click <strong>Save</strong> (green button, top-left).</span></li>
+      </ol>
+      <div class="bg-sky-100 border-2 border-sky-300 rounded-xl p-4 mt-5">
+        <p class="text-slate-800 text-sm leading-relaxed"><strong class="text-sky-900">Per-grade override:</strong> if the student's grade has its own <em>Max Walk Distance</em> (Settings → <strong>Grade</strong> → that grade), it overrides the default — set it small too, or tick <strong>“Use default max walk distance.”</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 2 -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">2</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">Choose the subject</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Pick an unrouted student</h2>
+          <p class="text-slate-700 leading-relaxed">Only <strong>unrouted</strong> students take the “FROM Any” (vague) search — the path that surfaces out-of-zone stops. A routed student matches their existing stop exactly and never shows out-of-zone options, whatever the walk zone.</p>
+        </div>
+      </div>
+      <ol class="space-y-3 text-slate-700 pl-1">
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">a.</span><span>Go to <strong>Students</strong> (top nav).</span></li>
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">b.</span><span>Open <strong>Filters ▾ → Bus Schedules</strong> and choose the <strong>unrouted / not-assigned</strong> option (or use <strong>Advanced Search</strong>).</span></li>
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">c.</span><span>Open a student and confirm the header shows the red <span class="owz" style="background:rgb(220 38 38)">Unrouted</span> tag.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Step 3 -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">3</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">Run the search</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Open Search &amp; Add Bus Schedule</h2>
+        </div>
+      </div>
+      <ol class="space-y-3 text-slate-700 pl-1">
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">a.</span><span>On the student record, expand the <strong>Bus Schedules</strong> section.</span></li>
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">b.</span><span>Click <strong>+ SEARCH &amp; ADD BUS SCHEDULE</strong>. The panel opens and searches automatically; the header reads <strong>“FROM Any TO &lt;school&gt;.”</strong></span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Step 4 -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">4</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">The check</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Verify out-of-zone stops auto-appear</h2>
+        </div>
+      </div>
+      <ul class="space-y-3 text-slate-700 pl-1">
+        <li class="flex gap-3"><span class="text-emerald-600 font-bold">✓</span><span><strong>Pass:</strong> the AM (and PM) section shows rows tagged <span class="owz">Outside Walk Zone</span> <strong>without clicking anything</strong> (like the screenshot above).</span></li>
+        <li class="flex gap-3"><span class="text-slate-500 font-bold">•</span><span><strong>SHOW 5 MORE</strong> pages through additional out-of-zone stops; the <strong>ALL / Show Top 3</strong> toggle changes how many show initially.</span></li>
+        <li class="flex gap-3"><span class="text-rose-600 font-bold">✗</span><span><strong>Regression (old behavior):</strong> out-of-zone rows appear only <em>after</em> clicking SHOW 5 MORE, and the first view is bare or “NO ROUTE FOUND” despite nearby stops — means the fix isn't in effect.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Step 5 -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-5">
+        <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">5</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">Clean up</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Restore the walk zone</h2>
+          <p class="text-slate-700 leading-relaxed">Don't leave the dev tenant with a tiny walk zone — it changes routing behavior for everyone on it.</p>
+        </div>
+      </div>
+      <ol class="space-y-3 text-slate-700 pl-1">
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">a.</span><span>Settings → General → set <strong>“Default Maximum Walking Distance”</strong> back to the noted value (default <code class="k">1000</code>) → <strong>Save</strong>.</span></li>
+        <li class="flex gap-3"><span class="text-purple-700 font-bold">b.</span><span>Revert any per-grade override you changed in Step 1.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Gotchas -->
+  <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+    <div class="flex items-start gap-4">
+      <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+      <div>
+        <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-3">Gotchas &amp; troubleshooting</div>
+        <ul class="space-y-2.5 text-slate-800 leading-relaxed">
+          <li><strong>Setting didn't take effect?</strong> Config is cached ~10 minutes server-side. A save should apply to the next search; if not, wait a couple minutes and search again.</li>
+          <li><strong>No “Outside Walk Zone” rows at all?</strong> Most likely the student is <em>routed</em> (needs an unrouted student — Step 2), the school has no active trips in the selected year, or the walk zone wasn't lowered/saved.</li>
+          <li><strong>Rare: view looks under-filled but nothing auto-appears.</strong> The auto-fill triggers on in-zone <em>stop</em> count; a student with several nearby stops that don't produce rows may need one “SHOW 5 MORE” click. Not a failure — click once.</li>
+          <li><strong>Units:</strong> the field is <strong>feet</strong> on imperial tenants (meters otherwise). 100 ft ≈ 30 m.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="text-slate-500 text-sm text-center pt-6">EZRD-1180 · EZRouting — Add Bus Schedule (addagenda) · frontend + backend, no DB or CLI needed</div>
+
+</main>
+</body>
+</html>
