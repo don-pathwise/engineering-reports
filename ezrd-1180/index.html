@@ -44,7 +44,9 @@
     <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
       On the <strong>Add Bus Schedule</strong> screen, EZRouting now automatically surfaces the nearest stops
       <em>beyond a student's walk zone</em> — tagged <span class="owz">Outside Walk Zone</span> — whenever the in-zone
-      options don't fill the view. No hidden “Show 5 More” click. Below: what it looks like, and how to verify it on a dev tenant.
+      options don't fill the view. No hidden “Show 5 More” click. It's a <strong>per-district setting</strong>, on by
+      default; a district can turn it off in Settings and its panel returns to the exact prior behavior. Below: what it
+      looks like, and how to verify it on a dev tenant.
     </p>
   </div>
 </header>
@@ -80,13 +82,14 @@
       <div class="text-xs font-semibold tracking-wider uppercase text-slate-500 mb-2">What it looks like</div>
       <figure class="border-2 border-slate-300 rounded-xl overflow-hidden">
         <img src="./add-bus-schedule-outside-walk-zone.png"
-             alt="Add Bus Schedule panel for an unrouted student: in-zone routes with no tag, plus nearest stops tagged Outside Walk Zone at 1.7 and 2.3 miles."
+             alt="Add Bus Schedule panel for an unrouted student: near stops with no tag, plus nearest stops tagged Outside Walk Zone, above a Top 10 / Top 3 switch."
              class="w-full block" />
       </figure>
       <figcaption class="text-slate-600 text-sm mt-3 leading-relaxed">
-        The <em>Add Bus Schedule</em> panel for an unrouted student. Routes 1–3 are in-zone (no tag); Routes 4–5 are tagged
-        <span class="owz">Outside Walk Zone</span> at 1.7 and 2.3 mi — all present the moment the panel opens, sorted by distance,
-        with “Show 5 More” to page further. (Dev tenant, synthetic test data.)
+        The <em>Add Bus Schedule</em> panel for an unrouted student. The near stops carry no tag; farther stops are tagged
+        <span class="owz">Outside Walk Zone</span> — all present the moment the panel opens, sorted by distance, with
+        <strong>SHOW 5 MORE</strong> to page further. The results-count switch reads <strong>Top 10 / Top 3</strong> and the
+        map checkbox reads “Show all stops regardless of walking distance…” (the on-wording). (Dev tenant, synthetic test data.)
       </figcaption>
     </div>
   </section>
@@ -105,6 +108,7 @@
         <li class="flex gap-3"><span class="text-slate-500 font-bold">›</span><span>The <strong>ezrd-1180</strong> branch is deployed to the dev tenant you'll test on.</span></li>
         <li class="flex gap-3"><span class="text-slate-500 font-bold">›</span><span>You're logged in with an <strong>admin / config</strong> role (needed to edit Settings).</span></li>
         <li class="flex gap-3"><span class="text-slate-500 font-bold">›</span><span>The tenant has routes with trips in the <strong>active school year</strong> (top-right selector). Out-of-zone stops come from trips serving the student's school — a school with no active trips shows nothing.</span></li>
+        <li class="flex gap-3"><span class="text-slate-500 font-bold">›</span><span>The setting <strong>“Include stops outside walking distance in bus schedule search”</strong> (Settings → General) is <strong>on</strong> — it's on by default, so leave it unless you're testing the opt-out.</span></li>
       </ul>
     </div>
   </section>
@@ -180,7 +184,7 @@
       </div>
       <ul class="space-y-3 text-slate-700 pl-1">
         <li class="flex gap-3"><span class="text-emerald-600 font-bold">✓</span><span><strong>Pass:</strong> the AM (and PM) section shows rows tagged <span class="owz">Outside Walk Zone</span> <strong>without clicking anything</strong> (like the screenshot above).</span></li>
-        <li class="flex gap-3"><span class="text-slate-500 font-bold">•</span><span><strong>SHOW 5 MORE</strong> pages through additional out-of-zone stops; the <strong>ALL / Show Top 3</strong> toggle changes how many show initially.</span></li>
+        <li class="flex gap-3"><span class="text-slate-500 font-bold">•</span><span><strong>SHOW 5 MORE</strong> pages through additional out-of-zone stops; the <strong>Top 10 / Top 3</strong> switch changes how many show initially. (An opted-out district shows the old <strong>ALL / Show Top 3 options</strong> switch with no SHOW 5 MORE — the pre-1180 panel.)</span></li>
         <li class="flex gap-3"><span class="text-rose-600 font-bold">✗</span><span><strong>Regression (old behavior):</strong> out-of-zone rows appear only <em>after</em> clicking SHOW 5 MORE, and the first view is bare or “NO ROUTE FOUND” despite nearby stops — means the fix isn't in effect.</span></li>
       </ul>
     </div>
@@ -213,7 +217,8 @@
         <ul class="space-y-2.5 text-slate-800 leading-relaxed">
           <li><strong>Setting didn't take effect?</strong> Config is cached ~10 minutes server-side. A save should apply to the next search; if not, wait a couple minutes and search again.</li>
           <li><strong>No “Outside Walk Zone” rows at all?</strong> Most likely the student is <em>routed</em> (needs an unrouted student — Step 2), the school has no active trips in the selected year, or the walk zone wasn't lowered/saved.</li>
-          <li><strong>Rare: view looks under-filled but nothing auto-appears.</strong> The auto-fill triggers on in-zone <em>stop</em> count; a student with several nearby stops that don't produce rows may need one “SHOW 5 MORE” click. Not a failure — click once.</li>
+          <li><strong>No out-of-zone rows even though the view is short?</strong> The auto-fill decides on the number of result <em>rows</em> the router builds (not distinct stop count) and gathers only when a vague AM/PM schedule is genuinely short of the target — so a student whose in-zone stops already fill the list correctly shows none.</li>
+          <li><strong>Nothing changes for a whole district?</strong> Check the per-district setting (Settings → General → “Include stops outside walking distance…”). If it's off, that district is opted out and sees the pre-1180 panel by design.</li>
           <li><strong>Units:</strong> the field is <strong>feet</strong> on imperial tenants (meters otherwise). 100 ft ≈ 30 m.</li>
         </ul>
       </div>
