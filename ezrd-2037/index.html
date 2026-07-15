@@ -67,8 +67,8 @@
             <tbody class="divide-y divide-slate-200">
               <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#e0e0e0;color:#333">Pending</span></td><td class="px-4 py-3 text-slate-700">Awaiting admin review</td><td class="px-4 py-3 text-slate-600">SSC submits (unchanged)</td></tr>
               <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span></td><td class="px-4 py-3 text-slate-700">Accepted, <strong>no</strong> transportation review needed</td><td class="px-4 py-3 text-slate-600">Accept, when the change doesn’t need review</td></tr>
-              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#ffcc80;color:#7f4b00">Processing</span> <span class="text-slate-400 text-xs">new</span></td><td class="px-4 py-3 text-slate-700">Accepted, transportation review <strong>pending</strong></td><td class="px-4 py-3 text-slate-600">Accept, when the change <strong>needs review</strong></td></tr>
-              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#bbdefb;color:#0d47a1">Completed</span> <span class="text-slate-400 text-xs">new</span></td><td class="px-4 py-3 text-slate-700">Transportation reviewed — routing resolved <span class="text-slate-500">(terminal)</span></td><td class="px-4 py-3 text-slate-600">“I have reviewed the transportation…” checked + saved</td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span> <span class="text-slate-400 text-xs">new</span></td><td class="px-4 py-3 text-slate-700">Accepted, transportation review <strong>pending</strong></td><td class="px-4 py-3 text-slate-600">Accept, when the change <strong>needs review</strong></td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#e1bee7;color:#6a1b9a">Completed</span> <span class="text-slate-400 text-xs">new</span></td><td class="px-4 py-3 text-slate-700">Transportation reviewed — routing resolved <span class="text-slate-500">(terminal)</span></td><td class="px-4 py-3 text-slate-600">“I have reviewed the transportation…” checked + saved</td></tr>
               <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#ffcdd2;color:#b71c1c">Declined</span></td><td class="px-4 py-3 text-slate-700">Rejected</td><td class="px-4 py-3 text-slate-600">Decline (unchanged)</td></tr>
             </tbody>
           </table>
@@ -86,7 +86,7 @@
           </div>
           <h2 class="text-2xl font-bold text-slate-950 mb-2">What makes a request go to Processing</h2>
           <p class="text-slate-700 leading-relaxed">
-            One test decides it: <strong>does accepting this request need a transportation review?</strong> (In code, <code class="k">needsTransportationReview()</code>.) If yes → <span class="tag" style="background:#ffcc80;color:#7f4b00">Processing</span>. If no → <span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span>. This is exactly what the <strong>Transportation Review Needed</strong> ⚠️ column in the queue already flags.
+            One test decides it: <strong>does accepting this request need a transportation review?</strong> (In code, <code class="k">needsTransportationReview()</code>.) If yes → <span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span>. If no → <span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span>. This is exactly what the <strong>Transportation Review Needed</strong> ⚠️ column in the queue already flags.
           </p>
         </div>
 
@@ -172,7 +172,7 @@
                 <td class="px-4 py-3 font-semibold text-slate-800">School change ⚠️</td>
                 <td class="px-4 py-3 text-slate-700">1</td>
                 <td class="px-4 py-3 text-slate-600"><strong>John Adams</strong> (student ID 228990) — the ⚠️ row on page 1</td>
-                <td class="px-4 py-3"><span class="tag" style="background:#ffcc80;color:#7f4b00">Processing</span></td>
+                <td class="px-4 py-3"><span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span></td>
               </tr>
               <tr class="align-top">
                 <td class="px-4 py-3 font-semibold text-slate-800">Withdrawal</td>
@@ -219,7 +219,7 @@
           <li>On the <strong>John Adams</strong> row, click <strong>Accept</strong> and confirm.</li>
           <li>Open the student: Students → search <strong>Adams, John</strong> → open his <strong>Student Details</strong>.</li>
           <li>Expand <strong>Change Request History</strong> at the bottom.</li>
-          <li><strong>Expected:</strong> status reads <span class="tag" style="background:#ffcc80;color:#7f4b00">Processing</span> (orange), and the red “<em>I have reviewed the transportation for this student…</em>” card is showing on the General tab, unchecked.</li>
+          <li><strong>Expected:</strong> status reads <span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span> (blue), and the red “<em>I have reviewed the transportation for this student…</em>” card is showing on the General tab, unchecked.</li>
         </ol>
       </div>
     </section>
@@ -234,7 +234,7 @@
         <ol class="space-y-2 text-slate-700 leading-relaxed list-decimal ml-5">
           <li>On John Adams’ <strong>General</strong> tab, check “<em>I have reviewed the transportation…</em>” and click <strong>Save</strong>.</li>
           <li>Re-open <strong>Change Request History</strong>.</li>
-          <li><strong>Expected:</strong> status now reads <span class="tag" style="background:#bbdefb;color:#0d47a1">Completed</span> (blue), and the review card/checkbox is <strong>gone</strong> (can’t be undone from the UI).</li>
+          <li><strong>Expected:</strong> status now reads <span class="tag" style="background:#e1bee7;color:#6a1b9a">Completed</span> (purple), and the review card/checkbox is <strong>gone</strong> (can’t be undone from the UI).</li>
           <li>Click <strong>View</strong> on the row → the detail panel header reads <strong>Completed</strong>.</li>
         </ol>
       </div>
@@ -258,7 +258,7 @@
           <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">5</div>
           <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">SSC view (optional)</div><h2 class="text-2xl font-bold text-slate-950 mb-2">Pills + status filter for the Student Support Coordinator</h2></div>
         </div>
-        <p class="text-slate-700 leading-relaxed">Signed in as an <strong>SSC user</strong>, the homepage list of submitted requests shows the new <span class="tag" style="background:#ffcc80;color:#7f4b00">Processing</span> / <span class="tag" style="background:#bbdefb;color:#0d47a1">Completed</span> pills, and the <strong>Status</strong> filter dropdown includes “Processing” and “Completed.” (Needs the SSC role; the admin views in Steps 2–4 are the quickest check.)</p>
+        <p class="text-slate-700 leading-relaxed">Signed in as an <strong>SSC user</strong>, the homepage list of submitted requests shows the new <span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span> / <span class="tag" style="background:#e1bee7;color:#6a1b9a">Completed</span> pills, and the <strong>Status</strong> filter dropdown includes “Processing” and “Completed.” (Needs the SSC role; the admin views in Steps 2–4 are the quickest check.)</p>
       </div>
     </section>
 
@@ -268,7 +268,7 @@
         <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
         <div>
           <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Want to test more trigger types?</div>
-          <p class="text-slate-800 text-lg leading-relaxed">testqa only has the one qualifying request today. To exercise the other triggers you can either (a) turn on <code class="k">newStudent</code> / <code class="k">withdrawal</code> under the ⚙️ Transportation Review Settings — then the 189 pending new/withdrawal requests would all go to Processing on accept — or (b) create a fresh request with an address change or a transportation request. Say the word and I’ll set either up. Also: pill colors are provisional (orange/blue) — confirm against Grace’s design PNGs on the ticket.</p>
+          <p class="text-slate-800 text-lg leading-relaxed">testqa only has the one qualifying request today. To exercise the other triggers you can either (a) turn on <code class="k">newStudent</code> / <code class="k">withdrawal</code> under the ⚙️ Transportation Review Settings — then the 189 pending new/withdrawal requests would all go to Processing on accept — or (b) create a fresh request with an address change or a transportation request. Say the word and I’ll set either up. Also: pill colors match the design (Processing blue, Completed purple).</p>
         </div>
       </div>
     </section>
@@ -281,7 +281,7 @@
           <h2 class="text-2xl font-bold text-slate-950 mb-2">What’s confirmed on this branch</h2>
         </div>
         <ul class="space-y-2 text-slate-700 leading-relaxed list-disc ml-5">
-          <li><strong>Rendering, live in Chrome on testqa:</strong> Processing (orange) and Completed (blue) render in the student <em>Change Request History</em>; the request <em>detail panel</em> shows the new status header; the admin <em>New/Change Requests History</em> loads with pills and no crash — the history views that would previously have broken on the new values.</li>
+          <li><strong>Rendering, live in Chrome on testqa:</strong> Processing (blue) and Completed (purple) render in the student <em>Change Request History</em>; the request <em>detail panel</em> shows the new status header; the admin <em>New/Change Requests History</em> loads with pills and no crash — the history views that would previously have broken on the new values.</li>
           <li><strong>Backend logic, unit-tested (148 tests green):</strong> single &amp; batch approve set Processing only when a transportation review is needed (else Accepted); confirming the review flips the student’s Processing requests to Completed; the supersede sweep is guarded so it never touches Processing/Completed rows.</li>
         </ul>
       </div>
