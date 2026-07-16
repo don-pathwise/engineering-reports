@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EZRD-2049 — Lock SSC Change Requests: Test Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: {
+      sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+    }}}};
+  </script>
+  <style>
+    html { font-size: 17px; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    .step-number { font-variant-numeric: tabular-nums; }
+    .badge-num { width: 3rem; height: 3rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; box-shadow: 0 1px 0 rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.06); }
+    .pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.75rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border-width: 1px; }
+    .main-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
+    code.k { font-family: 'JetBrains Mono', ui-monospace, monospace; background: rgb(226 232 240); color: rgb(15 23 42); padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em; white-space: nowrap; }
+    code.k.wrap { white-space: normal; word-break: break-all; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <header class="border-b-2 border-slate-300 bg-white">
+    <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+      <div class="inline-flex items-center gap-2 rounded-full bg-rose-100 text-rose-900 border border-rose-300 px-3 py-1 text-xs font-bold uppercase tracking-wider mb-5">
+        <span class="w-2 h-2 rounded-full bg-rose-600"></span> P1 · Clark · Ready for QA
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950">EZRD-2049 — Lock SSC Change Requests After Submission</h1>
+      <p class="mt-5 text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+        Test plan for the change that freezes a Student Support Coordinator's change requests the moment they submit. Once submitted, a request is read-only; a correction becomes a new, independent request — so a transportation operator reviewing a request never sees its data change underneath them.
+      </p>
+      <p class="mt-4 text-sm text-slate-500">
+        Jira: EZRD-2049 · Epic EZRD-1820 (2026 B2S) · implements ROUT-77 · PR: ezrd-mono #454 · Tenant: <code class="k">testqa</code>
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
+
+    <!-- Background -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-slate-700">Background</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">What changed and why</h2>
+          <p class="text-slate-700 leading-relaxed">A Student Support Coordinator (SSC — the "Super Parent" role) submits change requests for the students they support. Previously they could keep editing a request after submitting it, and the save quietly overwrote the same request row — so an operator mid-review saw the data change. This work locks a submitted request and routes any correction into a separate new request.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="bg-rose-50 border-2 border-rose-200 rounded-xl p-5">
+            <div class="text-rose-900 font-bold text-sm uppercase tracking-wider mb-2">Before</div>
+            <p class="text-slate-800 leading-relaxed">Reopening a student with a pending request showed the request in an editable form; re-submitting updated the same request in place. The SSC could change a request already under review.</p>
+          </div>
+          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
+            <div class="text-emerald-900 font-bold text-sm uppercase tracking-wider mb-2">After</div>
+            <p class="text-slate-800 leading-relaxed">A submitted request is read-only. To make changes the SSC clicks <strong>“Submit a new request,”</strong> which creates a separate request. Both appear independently on the admin side. Regular parents are unchanged.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Setup -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Setup</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Before you start</h2>
+        </div>
+        <ul class="space-y-2 text-slate-700 leading-relaxed list-disc pl-5">
+          <li>Sign in to the <code class="k">testqa</code> tenant as a <strong>Student Support Coordinator</strong> (Super Parent, role 4). The SSC landing page is titled <em>“Search and Create Student Change Request”</em> and can search all students.</li>
+          <li>Have a second sign-in available as a <strong>tenant admin</strong> to check the change-request queue (Settings → Change Requests), and optionally a <strong>regular parent</strong> account for the regression check.</li>
+          <li>Pick any student to work with (examples below use one student throughout).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Test steps -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-8">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-purple-800">Walkthrough</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Test steps</h2>
+          <p class="text-slate-700 leading-relaxed">Run these in order as the SSC unless noted.</p>
+        </div>
+
+        <div class="space-y-6">
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-900 mb-1">Submit a change request</h3>
+              <p class="text-slate-700 leading-relaxed">Open a student, change a field (e.g. a contact phone number), and click <strong>Submit</strong>. Expect a <em>“Change request submitted”</em> confirmation.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-900 mb-1">Reopen the student — verify it is locked</h3>
+              <p class="text-slate-700 leading-relaxed mb-2">Go back to the home page and open the same student again. Confirm all of:</p>
+              <ul class="space-y-1.5 text-slate-700 list-disc pl-5">
+                <li>Every section (General Information, Addresses, Contacts, Transportation) shows as <strong>plain read-only text</strong> — no input boxes, dropdowns, or enabled checkboxes.</li>
+                <li>The top bar has <strong>no “Submit”</strong> and <strong>no “Change Location on Map.”</strong></li>
+                <li>A <strong>“Submit a new request”</strong> action <em>is</em> present.</li>
+                <li>The submitted request appears under <strong>Change Request History</strong> with status <em>Pending</em>.</li>
+                <li>No extra banner or tooltip explaining the lock — the read-only state speaks for itself.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-900 mb-1">Submit a correction as a new request</h3>
+              <p class="text-slate-700 leading-relaxed">Click <strong>“Submit a new request.”</strong> The form becomes editable again, populated from the student’s <em>current</em> data (not your pending change). Change a field and click <strong>Submit</strong> → expect the confirmation. The form should then <strong>re-lock</strong> on its own (no page reload needed).</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">4</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-900 mb-1">Confirm two independent requests</h3>
+              <p class="text-slate-700 leading-relaxed">Expand <strong>Change Request History</strong> — both requests appear as separate Pending rows. Then, as a <strong>tenant admin</strong>, open <strong>Settings → Change Requests</strong>: both requests for that student are listed as <strong>separate rows</strong>, each with its own View / Accept / Decline. Neither overwrote the other.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">5</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-900 mb-1">Transportation is locked too</h3>
+              <p class="text-slate-700 leading-relaxed">Using a student that <em>has</em> a transportation request on a pending change, confirm that while locked the transportation method/session dropdowns, weekday checkboxes, notes, and any “other site” fields are all read-only, the per-row delete icon is hidden, and “Add Transportation” is hidden.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">6</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-900 mb-1">Regression — regular parent unaffected</h3>
+              <p class="text-slate-700 leading-relaxed">Sign in as a <strong>regular parent</strong> with a pending request for their child. Confirm the form is still <strong>editable</strong> and re-submitting updates the same request in place (unchanged behavior).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Expected results / AC map -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Acceptance criteria</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">What “pass” looks like</h2>
+        </div>
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+          <table class="w-full text-sm min-w-[720px]">
+            <colgroup><col class="w-10"><col class="w-[42%]"><col></colgroup>
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+                <th class="text-left px-4 py-3"></th>
+                <th class="text-left px-4 py-3">Acceptance criterion</th>
+                <th class="text-left px-4 py-3">Verified by</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3">Submitted request read-only, any status</td><td class="px-4 py-3 text-slate-700">Step 2, Step 5</td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3">SSC can view but not modify</td><td class="px-4 py-3 text-slate-700">Step 2 (history)</td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3">No edit control / no extra messaging</td><td class="px-4 py-3 text-slate-700">Step 2</td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3">Correction = new request; admin shows both</td><td class="px-4 py-3 text-slate-700">Step 3, Step 4</td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3">Existing requests lock retroactively</td><td class="px-4 py-3 text-slate-700">Step 2 (pre-existing request locks on open)</td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3">Regular parents unaffected</td><td class="px-4 py-3 text-slate-700">Step 6</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Notes -->
+    <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+      <div class="flex items-start gap-4">
+        <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+        <div>
+          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Notes &amp; scope</div>
+          <ul class="text-slate-800 leading-relaxed list-disc pl-5 space-y-1">
+            <li>Scope is the SSC change-request form for existing students. Regular-parent editing and the new-student registration flow are intentionally unchanged.</li>
+            <li>Locking is based on live state (a pending request exists), so existing requests lock automatically on deploy — no data migration.</li>
+            <li>Sits alongside EZRD-2037 (Processing/Completed statuses); the lock is status-agnostic.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="text-slate-500 text-sm text-center pt-6">EZRD-2049 · ezrd-mono/apps/ezrouting · test plan for QA</div>
+  </main>
+</body>
+</html>
