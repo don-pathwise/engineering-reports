@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EZRD-2059 — Move Trips Conflict Highlighting — Testing Walkthrough</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+      }},
+    };
+  </script>
+  <style>
+    html { font-size: 17px; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    .step-number { font-variant-numeric: tabular-nums; }
+    .badge-num {
+      width: 3rem; height: 3rem; border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.06);
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.75rem; border-radius: 9999px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-width: 1px;
+    }
+    .main-card {
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    code.k {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: rgb(226 232 240); color: rgb(15 23 42);
+      padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em;
+      white-space: nowrap;
+    }
+    code.k.wrap { white-space: normal; word-break: break-all; }
+    .swatch { display:inline-block; width:1rem; height:1rem; border-radius:0.25rem; vertical-align:-2px; border:1px solid rgba(0,0,0,0.15); }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+<header class="border-b-2 border-slate-300 bg-white">
+  <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+    <span class="pill bg-purple-100 text-purple-900 border-purple-300 mb-5">
+      <span class="w-2 h-2 rounded-full bg-purple-600"></span>
+      In Review · PR #436
+    </span>
+    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950">
+      Move Trips — Conflict Highlighting
+    </h1>
+    <div class="text-lg font-semibold text-slate-500 mt-1 mb-4">EZRD-2059 · Testing Walkthrough</div>
+    <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+      How to verify the redesigned conflict view in the <strong>Move Trips</strong> tools —
+      salmon rows, stacked overlap lanes, the candycane merged block, the collapse/expand
+      toggle, and the conflict reasons in the hover tooltip. Environment-agnostic: run it on
+      whatever environment carries the PR branch.
+    </p>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
+
+  <!-- SCOPE -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-sky-800">What's under test</div>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">A front-end redesign, not a detection fix</h2>
+        <p class="text-slate-700 leading-relaxed">
+          The underlying conflict <em>detection</em> (overlap decoupled from the deadhead pass,
+          stale-flag reset, trip-ends carried inline on the paginated wire) already shipped separately
+          in <strong>EZRD-2137 (#395)</strong>. What this ticket delivers is the <strong>visual conflict
+          model</strong>. So this walkthrough is about what you <em>see</em>, not whether a conflict is
+          computed.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-rose-50 border-2 border-rose-200 rounded-xl p-5">
+          <div class="text-rose-900 font-bold text-sm tracking-wider uppercase mb-2">The one rule to remember</div>
+          <p class="text-slate-800 leading-relaxed">
+            A row fills <strong>salmon</strong> (<span class="swatch" style="background:#ffc0c1"></span>
+            <code class="k">#ffc0c1</code>) when <strong>any</strong> of three checks trips:
+            <strong>overlap</strong>, <strong>insufficient deadhead</strong> (too close to the previous
+            trip), or <strong>bell-time violation</strong>. Every salmon row shows a red
+            <strong>"!"</strong> marker.
+          </p>
+        </div>
+        <div class="bg-sky-50 border-2 border-sky-200 rounded-xl p-5">
+          <div class="text-sky-900 font-bold text-sm tracking-wider uppercase mb-2">Only overlaps add lanes</div>
+          <p class="text-slate-800 leading-relaxed">
+            Overlapping trips <strong>stack into lanes</strong> (row grows taller), and at
+            <strong>5+ concurrent</strong> they collapse into one hatched <strong>candycane</strong>
+            block with a count badge. Deadhead and bell-time conflicts stay
+            <strong>single-lane</strong> — they color the row and show the marker, but don't stack.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEFORE YOU START -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-slate-700">Before you start</div>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Two places the conflict view appears</h2>
+        <p class="text-slate-700 leading-relaxed">
+          Both are reached from the <strong>Operations</strong> dropdown. Test both — they share the
+          layout math but render through different components.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl p-5">
+          <div class="text-slate-800 font-bold mb-1">1 · Move Trips (between routes)</div>
+          <p class="text-slate-700 leading-relaxed text-[0.95rem]">
+            From the full <strong>Routes</strong> list → <strong>Operations → Move Trips</strong>.
+            The slide-out gantt panel. Interactive — you can <strong>drag</strong> trips between routes.
+          </p>
+        </div>
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl p-5">
+          <div class="text-slate-800 font-bold mb-1">2 · Move Trips to Other Routes (single route)</div>
+          <p class="text-slate-700 leading-relaxed text-[0.95rem]">
+            From a single route → <strong>Operations → Move Trips to Other Routes</strong>. Its
+            <strong>"Preview Edits"</strong> tab is <strong>read-only</strong> (no drag) and shows the
+            same conflict view — <em>overlap + deadhead only, no bell-time</em>.
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-5">
+        <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Reference data</div>
+        <p class="text-slate-800 leading-relaxed">
+          On the <code class="k">testqa</code> district, known conflict examples are
+          <strong>West Elementary</strong> (overlapping trips) and <strong>West Alternative</strong>
+          (bell-time conflict). Any district with overlapping or tightly-spaced trips will do — the
+          steps below don't depend on a specific tenant.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WALKTHROUGH -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="mb-8">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-purple-800">The walkthrough</div>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Step through each behavior</h2>
+        <p class="text-slate-700 leading-relaxed">
+          Each step is an <strong>action</strong> and the <strong>expected result</strong>. Do these in
+          the <em>Move Trips (between routes)</em> panel first, then repeat the relevant ones in the
+          <em>Preview Edits</em> modal (Step 9).
+        </p>
+      </div>
+
+      <div class="space-y-7">
+
+        <!-- 1 -->
+        <div class="flex items-start gap-4">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
+          <div class="flex-1 pt-0.5">
+            <div class="font-bold text-slate-900 mb-1">Cold-open visibility <span class="text-slate-500 font-medium">(the original bug)</span></div>
+            <p class="text-slate-700 leading-relaxed">Open <strong>Move Trips</strong> on a district that has a known conflict. <strong>Do not</strong> hover or mouse over any row first.</p>
+            <div class="mt-2 text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-[0.95rem]"><strong>Expected:</strong> conflicting rows are already salmon with a "!" marker the instant the panel renders — no mouseover / warm-up needed.</div>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="flex items-start gap-4">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
+          <div class="flex-1 pt-0.5">
+            <div class="font-bold text-slate-900 mb-1">Overlap → stacked lanes (2–4 concurrent)</div>
+            <p class="text-slate-700 leading-relaxed">Find (or create, by dragging a trip so its time overlaps another on the same route) a row with 2–4 overlapping trips.</p>
+            <div class="mt-2 text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-[0.95rem]"><strong>Expected:</strong> the row grows taller; overlapping trips stack into <strong>top-aligned lanes</strong>; non-overlapping trips share a lane; row fills salmon; "!" marker present.</div>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="flex items-start gap-4">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
+          <div class="flex-1 pt-0.5">
+            <div class="font-bold text-slate-900 mb-1">Overlap → candycane merged block (5+ concurrent)</div>
+            <p class="text-slate-700 leading-relaxed">Build a 5+ overlap (see <strong>Constructing a 5+ overlap</strong> below), then look at that row.</p>
+            <div class="mt-2 text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-[0.95rem]"><strong>Expected:</strong> the overlap renders as <strong>one hatched candycane block</strong> with a <strong>count badge</strong> (e.g. "5"). <strong>Click it</strong> → it expands into the individual stacked lanes.</div>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="flex items-start gap-4">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">4</div>
+          <div class="flex-1 pt-0.5">
+            <div class="font-bold text-slate-900 mb-1">Collapse / Expand overlaps toggle</div>
+            <p class="text-slate-700 leading-relaxed">On any row with an overlap (2+), use the blue <strong>Collapse overlaps / Expand overlaps</strong> pill in the row header.</p>
+            <div class="mt-2 text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-[0.95rem]"><strong>Expected:</strong> "Collapse overlaps" folds the lanes into a candycane and flips the pill to "Expand overlaps"; "Expand overlaps" restores the individual lanes. State is per-row.</div>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="flex items-start gap-4">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">5</div>
+          <div class="flex-1 pt-0.5">
+            <div class="font-bold text-slate-900 mb-1">Deadhead conflict (too close to previous trip)</div>
+            <p class="text-slate-700 leading-relaxed">Find a route where two consecutive trips are spaced closer than the travel time between them.</p>
+            <div class="mt-2 text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-[0.95rem]"><strong>Expected:</strong> row is salmon, single-lane (no stacking), "!" marker on the later trip. Hovering shows <strong>Insufficient Deadhead — need N min</strong> in the tooltip.</div>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="flex items-start gap-4">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">6</div>
+          <div class="flex-1 pt-0.5">
+            <div class="font-bold text-slate-900 mb-1">Bell-time conflict</div>
+            <p class="text-slate-700 leading-relaxed">Find a route whose drop-off/pick-up violates a school's bell time (e.g. West Alternative on testqa).</p>
+            <div class="mt-2 text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-[0.95rem]"><strong>Expected:</strong> row is salmon, single-lane, "!" marker. Tooltip shows <strong>Bell Time Conflict</strong>. <em>(A school with no bell time set must NOT be flagged — that was a false-positive we fixed.)</em></div>
+          </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="flex items-start gap-4">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">7</div>
+          <div class="flex-1 pt-0.5">
+            <div class="font-bold text-slate-900 mb-1">Conflict reasons in the hover tooltip</div>
+            <p class="text-slate-700 leading-relaxed">Hover a conflicting trip.</p>
+            <div class="mt-2 text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-[0.95rem]"><strong>Expected:</strong> below a divider at the bottom of the tooltip, the reason(s) render — <strong>Overlapping Trips</strong>, <strong>Insufficient Deadhead</strong>, and/or <strong>Bell Time Conflict</strong>. A trip with multiple conflicts lists all of them.</div>
+          </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="flex items-start gap-4">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">8</div>
+          <div class="flex-1 pt-0.5">
+            <div class="font-bold text-slate-900 mb-1">Drag ergonomics</div>
+            <p class="text-slate-700 leading-relaxed">Drag a trip within/between routes; also click a trip without moving it; and drag the <em>last</em> conflicting trip off a conflicting route.</p>
+            <div class="mt-2 text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-[0.95rem]"><strong>Expected:</strong> no tooltip pops mid-drag; a tiny (sub-3px) wiggle counts as a click, not a move; when the last conflicting trip leaves a route, that row's salmon <strong>clears</strong> (no stale highlight). The salmon updates live as trips move in/out of conflict.</div>
+          </div>
+        </div>
+
+        <!-- 9 -->
+        <div class="flex items-start gap-4">
+          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">9</div>
+          <div class="flex-1 pt-0.5">
+            <div class="font-bold text-slate-900 mb-1">Preview Edits modal (read-only parity)</div>
+            <p class="text-slate-700 leading-relaxed">From a single route → <strong>Operations → Move Trips to Other Routes</strong>, move a trip, then open the <strong>Preview Edits</strong> tab.</p>
+            <div class="mt-2 text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-[0.95rem]"><strong>Expected:</strong> the same conflict view — salmon rows, stacked lanes / candycane, "!" markers, tooltip reasons — but <strong>read-only</strong> (no drag). It shows <strong>overlap + deadhead</strong> conflicts; <strong>bell-time is intentionally not shown</strong> here. Deadhead salmon should appear even though it resolves a moment after the panel opens (async).</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSTRUCTING A 5+ OVERLAP -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-amber-800">Setup aside</div>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Constructing a 5+ overlap (for the candycane)</h2>
+        <p class="text-slate-700 leading-relaxed">
+          Seed data rarely has five trips running at the same instant, so you'll usually need to build
+          one. The candycane appears at <strong>5+ concurrent</strong> trips (four or fewer just stack
+          into lanes).
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="flex items-start gap-3">
+          <div class="badge-num bg-amber-200 text-amber-900 step-number flex-shrink-0" style="width:2rem;height:2rem;font-size:0.9rem">1</div>
+          <p class="text-slate-700 leading-relaxed pt-1">Pick a destination route and note the start time of one of its trips.</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="badge-num bg-amber-200 text-amber-900 step-number flex-shrink-0" style="width:2rem;height:2rem;font-size:0.9rem">2</div>
+          <p class="text-slate-700 leading-relaxed pt-1">Drag trips from other routes onto that route so that <strong>five or more</strong> of them are running during the same window (overlapping in time). The easiest way is to pile several short trips that all start at roughly the same time.</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="badge-num bg-amber-200 text-amber-900 step-number flex-shrink-0" style="width:2rem;height:2rem;font-size:0.9rem">3</div>
+          <p class="text-slate-700 leading-relaxed pt-1">Once peak concurrency hits 5, the stacked lanes collapse into a single hatched candycane block with a "5" (or higher) count badge. Click it to expand, use the pill to collapse again.</p>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-slate-50 border-2 border-slate-300 rounded-xl p-5">
+        <div class="text-slate-800 font-bold text-sm tracking-wider uppercase mb-1">Boundary check</div>
+        <p class="text-slate-700 leading-relaxed">
+          At exactly <strong>4</strong> concurrent trips you should see <strong>4 stacked lanes</strong>,
+          not a candycane. At <strong>5</strong>, it should merge. That 4→5 boundary is the specific
+          threshold to confirm.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGRESSION -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Regression checks</div>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Two things surfaced in code review</h2>
+        <p class="text-slate-700 leading-relaxed">Quick sanity checks on the two fixes made during review of PR #436.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
+          <div class="text-emerald-900 font-bold mb-1">Duration formatting</div>
+          <p class="text-slate-800 leading-relaxed text-[0.95rem]">In tooltips, a duration near a minute boundary must read cleanly (e.g. <strong>"1h 0m"</strong>), never <strong>"1h 60m"</strong> or <strong>"60m"</strong>.</p>
+        </div>
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
+          <div class="text-emerald-900 font-bold mb-1">Zero-duration / co-located trips</div>
+          <p class="text-slate-800 leading-relaxed text-[0.95rem]">Two trips at the same instant (same start = end) must still <strong>split into separate lanes</strong> and stay hoverable — neither one hidden behind the other.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIGN-OFF -->
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-slate-700">Sign-off</div>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Checklist</h2>
+      </div>
+
+      <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+        <table class="w-full text-sm min-w-[640px]">
+          <colgroup>
+            <col class="w-10">
+            <col>
+            <col class="w-[34%]">
+          </colgroup>
+          <thead>
+            <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+              <th class="text-left px-4 py-3"></th>
+              <th class="text-left px-4 py-3">Check</th>
+              <th class="text-left px-4 py-3">Expected</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">Conflicts show on cold open</td><td class="px-4 py-3 text-slate-600">Salmon + marker without mouseover</td></tr>
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">2–4 overlap stacks into lanes</td><td class="px-4 py-3 text-slate-600">Row grows, top-aligned lanes</td></tr>
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">5+ overlap = candycane + count</td><td class="px-4 py-3 text-slate-600">Click expands to lanes</td></tr>
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">Collapse/Expand pill</td><td class="px-4 py-3 text-slate-600">Toggles lanes ↔ candycane, per row</td></tr>
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">Deadhead conflict</td><td class="px-4 py-3 text-slate-600">Single-lane salmon, "need N min"</td></tr>
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">Bell-time conflict</td><td class="px-4 py-3 text-slate-600">Flagged; unset bell time NOT flagged</td></tr>
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">Tooltip reasons</td><td class="px-4 py-3 text-slate-600">Reason(s) at tooltip bottom</td></tr>
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">Drag ergonomics + salmon clears</td><td class="px-4 py-3 text-slate-600">No mid-drag tooltip; stale highlight clears</td></tr>
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">Preview Edits parity (read-only)</td><td class="px-4 py-3 text-slate-600">Overlap + deadhead, no bell-time, no drag</td></tr>
+            <tr class="align-top"><td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td><td class="px-4 py-3 text-slate-700">Duration + zero-duration regressions</td><td class="px-4 py-3 text-slate-600">No "1h 60m"; co-located trips split</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="text-slate-500 text-sm text-center pt-6">
+    Sources: PR #436 (ezrd-mono) · EZRD-2059 · related detection fix EZRD-2137 (#395)
+  </div>
+
+</main>
+</body>
+</html>
