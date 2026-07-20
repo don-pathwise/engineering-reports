@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EZRD-1653 · Route Split Stops Leak — Test Steps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: {
+      sans: ['Inter','ui-sans-serif','system-ui','sans-serif'],
+      mono: ['JetBrains Mono','ui-monospace','monospace'],
+    }}}};
+  </script>
+  <style>
+    html { font-size: 16px; }
+    body { color: rgb(15 23 42); }
+    code.k { font-family:'JetBrains Mono',monospace; background:rgb(226 232 240); padding:.08rem .35rem; border-radius:.25rem; font-size:.85em; }
+    .main-card { box-shadow: 0 1px 3px rgba(15,23,42,.08); }
+    ol.steps { counter-reset: s; }
+    ol.steps > li { counter-increment: s; position: relative; padding-left: 2rem; margin-bottom:.4rem; }
+    ol.steps > li::before { content: counter(s); position:absolute; left:0; top:.05rem; width:1.4rem; height:1.4rem; background:rgb(186 230 253); color:rgb(7 89 133); border-radius:9999px; font-size:.8rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .expect { background:rgb(236 253 245); border-left:4px solid rgb(16 185 129); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
+    .warnbox { background:rgb(255 251 235); border-left:4px solid rgb(217 119 6); padding:.7rem 1rem; border-radius:.3rem; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <header class="bg-white border-b-2 border-slate-300">
+    <div class="max-w-4xl mx-auto px-6 py-8">
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">EZRD-1653 — Route Split Stops Leak · Test Steps</h1>
+      <p class="text-slate-700 mt-2">When a route is split across two or more buses in Trip Preparation, one destination bus ends up showing the <strong>other</strong> bus's stops (and the whole original route) with wrong timing. This confirms the fix. Test on a <strong>dev</strong> test tenant (e.g. <code class="k">testqa</code>) after the fix is deployed.</p>
+      <p class="text-slate-500 text-sm mt-2 font-mono">EZRD-1653 · fix in ezrd-mono#509 · reporting tenant per the Jira ticket</p>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-8 space-y-5">
+
+    <!-- What / why -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-2">What was wrong</h2>
+      <p class="text-slate-700 mb-3">A dispatcher split one route across two buses (e.g. Bus&nbsp;5 → half to Bus&nbsp;3, half to Bus&nbsp;6). It looked correct in EZDistrict, but the driver tablets (SD360) and parent apps showed one of the destination buses carrying <strong>all</strong> of the original route's stops — its own share <em>plus</em> the other bus's share — with incorrect stop times. No error appeared anywhere; a silent failure.</p>
+      <h2 class="text-lg font-bold text-slate-950 mb-2 mt-4">Root cause (confirmed against production data)</h2>
+      <p class="text-slate-700">This is a <strong>write-side data-integrity</strong> bug, not a sync/transport failure. The split persisted a destination trip that contained the <em>other</em> destination's stops as <strong>unflagged duplicates</strong> — its own stops correctly tagged as "moved here," plus the other bus's stops left in as plain, un-tagged copies. Everything downstream then faithfully rendered those extra stops. (The originally-suspected causes — a missing EZD→EZR token, the routing-side new-trip filter, and the tablet render path — were each checked and ruled out against the data.)</p>
+    </section>
+
+    <!-- Why one tenant -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-2">Why it was only seen for one client</h2>
+      <p class="text-slate-700 mb-2">It is <strong>workflow-specific, not tenant-specific</strong> — nothing about the reporting district's data triggered it:</p>
+      <ul class="text-slate-700 space-y-1.5">
+        <li>• The everyday operation is moving stops to <strong>one</strong> new trip — that path is clean and unaffected.</li>
+        <li>• This bug only appears when splitting <strong>one route across two or more buses</strong> in a single break-up. That is a much less common operation, so most tenants never hit the path. (It needs a second destination for stops to bleed into.)</li>
+        <li>• It is amplified by <strong>repeating</strong> the split on the same buses: the destination's stop list is read from accumulating change data, so a later split can start from a base that already contains the other bus's stops. The reporting customer recreated it several times.</li>
+      </ul>
+      <p class="text-slate-600 text-sm mt-3">Implication: any tenant doing the same multi-destination-split workflow is exposed — worth spot-checking other tenants' split data separately from this code fix.</p>
+    </section>
+
+    <!-- The fix -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-2">The fix</h2>
+      <p class="text-slate-700">In the Trip Prep break-up flow, each destination trip's computed stop list is now filtered to drop any stop the break-up plan assigned to a <strong>different</strong> destination that has leaked onto this one. Stops legitimately moved to this trip (and the trip's own stops) are always kept, so nothing valid is removed.</p>
+    </section>
+
+    <!-- Verification status -->
+    <section class="bg-white border-2 border-amber-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-2">⚠ Verification status — read first</h2>
+      <div class="warnbox text-slate-800">The fix was landed on code analysis, <strong>not</strong> a reproduced run — the affected service could not be exercised in a local sandbox. <strong>This test session is the first live verification.</strong> Please also confirm the trigger conditions (single split vs. requiring a repeat) and flag if the customer's case actually came from the manual "move stops to a new trip" flow rather than the "Break up trip" tool — that path would need a follow-up.</div>
+    </section>
+
+    <!-- Setup -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-2">Setup</h2>
+      <ul class="text-slate-700 space-y-1">
+        <li>• Environment: <strong>dev</strong>, EZDistrict → <strong>Trip Preparation</strong>, a test tenant (e.g. <code class="k">testqa</code>).</li>
+        <li>• A <strong>source</strong> route whose trip has several stops (~10+).</li>
+        <li>• At least <strong>two other buses</strong> to receive the split halves.</li>
+      </ul>
+    </section>
+
+    <!-- Scenario 1 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">1 · Split one route across two buses <span class="text-emerald-700 text-sm font-semibold">(main fix)</span></h2>
+      <ol class="steps text-slate-700">
+        <li>Trip Preparation → open the source route's trip → <strong>Break up trip</strong>.</li>
+        <li>Assign roughly <strong>half</strong> the stops to <strong>Bus A</strong> and the other <strong>half</strong> to <strong>Bus B</strong> (two destinations in the one break-up). Save.</li>
+        <li>Open <strong>Bus A</strong>'s resulting trip, then <strong>Bus B</strong>'s, on the driver/SD360 read view (and a parent app if handy).</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> each bus shows <strong>only its own assigned stops</strong> (plus any school/depot anchor), with the correct post-split times. <strong>Neither</strong> bus shows the other's stops or the full original route.<br><span class="text-slate-600 text-sm">Pre-fix failure: one destination shows its share <em>plus</em> the other bus's stops (≈ the whole original route) with wrong timing.</span></div>
+    </section>
+
+    <!-- Scenario 2 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">2 · Repeat the split on the same buses <span class="text-slate-500 text-sm font-semibold">(accumulation)</span></h2>
+      <ol class="steps text-slate-700">
+        <li>Perform a second break-up affecting the same source/destination buses (as the customer did).</li>
+        <li>Re-check each destination bus's stops.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> still clean — no build-up of the other bus's stops across repeated splits.</div>
+    </section>
+
+    <!-- Scenario 3 -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">3 · Split affects AM and PM <span class="text-slate-500 text-sm font-semibold">(both sessions)</span></h2>
+      <ol class="steps text-slate-700">
+        <li>Split both an AM trip and a PM trip across two buses.</li>
+        <li>Check each destination for both sessions.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> AM and PM each show only the correct per-bus stops and timing.</div>
+    </section>
+
+    <!-- Scenario 4 regression -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">4 · Move stops to a single new trip <span class="text-slate-500 text-sm font-semibold">(regression)</span></h2>
+      <ol class="steps text-slate-700">
+        <li>Use the ordinary "move stops to a new trip" flow — one source, one destination.</li>
+      </ol>
+      <div class="expect"><strong>Expect:</strong> the destination shows only the moved stops — unchanged from before (this path was already correct and must not regress).</div>
+    </section>
+
+    <!-- Data spot check -->
+    <section class="bg-white border-2 border-slate-300 rounded-xl main-card p-6">
+      <h2 class="text-lg font-bold text-slate-950 mb-3">5 · Data spot-check <span class="text-slate-500 text-sm font-semibold">(optional, engineering)</span></h2>
+      <p class="text-slate-700">In the test tenant's trip-change records for the split date, each destination trip's stops should be <strong>only</strong> its own moved-in stops (plus anchors). There should be <strong>no</strong> un-tagged stops that belong to the other destination bus.</p>
+    </section>
+
+    <div class="text-slate-500 text-sm text-center pt-4">EZRD-1653 · fix in ezrd-mono#509 · verify on dev</div>
+
+  </main>
+</body>
+</html>
