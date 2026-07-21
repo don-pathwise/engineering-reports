@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EZRD-2019 — Support "Exempt from Eligibility Recalculation" in Student CSV Import</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --brand:#2563eb; }
+    body { font-family:'Inter',system-ui,sans-serif; }
+    code,pre,.mono { font-family:'JetBrains Mono',ui-monospace,monospace; }
+    .badge-num { display:inline-flex; align-items:center; justify-content:center;
+      width:1.75rem; height:1.75rem; border-radius:9999px; font-weight:700; font-size:.8rem; }
+    .tab-btn[aria-selected="true"] { background:#fff; color:#0f172a; border-color:#cbd5e1; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+    .tab-btn[aria-selected="false"] { background:transparent; color:#64748b; border-color:transparent; }
+    .tab-panel[hidden] { display:none; }
+    pre { white-space:pre; overflow-x:auto; }
+    code:not(pre code){ background:#f1f5f9; padding:.05rem .35rem; border-radius:.35rem; font-size:.85em; }
+    .chip{ display:inline-block; font-size:.7rem; font-weight:600; padding:.1rem .5rem; border-radius:9999px; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+  <div class="max-w-5xl mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <header class="mb-6">
+      <div class="flex flex-wrap items-center gap-3 mb-2">
+        <span class="mono text-sm font-semibold text-blue-600">EZRD-2019</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Story</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-100 text-violet-800">In Review</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">P1 · Critical</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 mono">ezrd-mono / apps/ezrouting</span>
+      </div>
+      <h1 class="text-2xl font-extrabold text-slate-900">Support "Exempt from Eligibility Recalculation" in Student CSV Import</h1>
+      <p class="mono text-xs text-slate-500 mt-1">
+        repo: ezrd-mono &nbsp;·&nbsp; branch: feat/EZRD-2019-exempt-recalc-csv-import
+      </p>
+      <p class="text-xs text-slate-500 mt-1">Epic EZRD-1820 (2026 Back-To-School) · customer-requested self-service enhancement</p>
+    </header>
+
+    <!-- Tab bar -->
+    <div role="tablist" aria-label="Ticket sections"
+         class="flex flex-wrap gap-1 p-1 bg-slate-200/60 rounded-xl mb-6">
+      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="true"  aria-controls="panel-overview" id="tab-overview">1 · Overview</button>
+      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-plan"     id="tab-plan">2 · Plan</button>
+      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-done"     id="tab-done">3 · What Was Done</button>
+      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-test"     id="tab-test">4 · Local Test (testqa)</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-panel space-y-4">
+      <div class="bg-white border-2 border-slate-200 rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="badge-num bg-blue-100 text-blue-700">?</span>
+          <h2 class="text-lg font-bold text-slate-900">What this ticket is asking for</h2>
+        </div>
+        <p class="mb-3">A transportation coordinator wants to bulk-set the <strong>"Exempt from Eligibility Recalculation"</strong> flag on students through the <strong>student CSV import</strong>, instead of toggling it one student at a time. The field already exists on the individual student record (added in <strong>EZRD-1657</strong>) and there was a one-off backend script for a single district (<strong>EZRD-2006</strong>); this story is the permanent, self-service version wired into the normal import.</p>
+
+        <div class="rounded-xl bg-amber-50 border border-amber-200 p-4 my-4">
+          <p class="text-sm font-semibold text-amber-900 mb-1">Key implementation fact</p>
+          <p class="text-sm text-amber-900">"Exempt from Eligibility Recalculation" is <strong>not a column on the student table</strong>. It is the API/model field <code>exemptFromEligibilityRecalc</code>, physically stored as the <code>locked</code> column in <code>ed_eligibilitystudent</code> (the row with <code>categoryId = 0</code>) — internally the "rider-lock". All writes go through the shared <code>@transactcomm/eligibility-lock</code> package (<code>setRiderLock</code>). So the import cannot just set a field on the student object; it must make a second, dual write into the eligibility domain after the student is saved.</p>
+        </div>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Acceptance criteria</h3>
+        <ul class="list-disc pl-6 space-y-1 text-sm">
+          <li>Column is available as a mappable column in the student CSV import.</li>
+          <li>Present &amp; <strong>true</strong> → flag checked on the matching student after import.</li>
+          <li>Present &amp; <strong>false</strong> → flag unchecked after import.</li>
+          <li><strong>Absent from the file</strong> → existing value preserved; no data overwritten.</li>
+          <li>Post-import behaves identically to a manual toggle — recalc respects the flag.</li>
+          <li>Import validation surfaces a clear error for an unrecognized value.</li>
+        </ul>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Where the code lives</h3>
+        <table class="w-full text-sm border-collapse">
+          <tbody class="align-top">
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">FE column list + row build</td><td class="py-1.5 mono text-xs">ui/src/settings/import/import.student.js — <code>baseFields</code> (L9-41), <code>createStudentRecord()</code> (L147)</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">FE boolean parse</td><td class="py-1.5 mono text-xs">ui/src/settings/import/import.common.js — <code>parseBoolean()</code> (L34-37)</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">FE module gate precedent</td><td class="py-1.5 mono text-xs">settings.eligibilityEnabled — student/details/general.js (L110), student/list/global-edit.js (L158)</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">BE import endpoint</td><td class="py-1.5 mono text-xs">POST /api/import/students → app/import/controller.js (L111) → app/import/import-student.js <code>importStudents()</code> (L30)</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">BE per-student save</td><td class="py-1.5 mono text-xs">app/import/import-student.js <code>save()</code> (L209-230)</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">Existing dual-write pattern to mirror</td><td class="py-1.5 mono text-xs">app/student/api.js — single-save (L741-760), batch (L799-858), eligLock wiring (L88-98)</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">Rider-lock writer</td><td class="py-1.5 mono text-xs">packages/eligibility-lock/src/eligibility-lock.js — <code>setRiderLock()</code></td></tr>
+            <tr><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">Recalc respects flag</td><td class="py-1.5 mono text-xs">apps/ezd-eligibility/app/eligibility/calculate.js (L143-206, filters <code>!riderLocked</code>)</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Current (baseline) state — what "broken" means here</h3>
+        <p class="text-sm">This is a <strong>feature, not a bug</strong>, so the "broken state" to verify locally is the <em>absence</em> of the capability: today <code>baseFields</code> has no exempt column, and the import <code>save()</code> path never touches the rider-lock. The only existing CSV route for this flag is the separate one-off CLI <code>app/cli-tools/import-student-eligibility-exempt.js</code>. We'll confirm the missing column in the import UI before implementing.</p>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Affected tenants</h3>
+        <p class="text-sm">Eligibility-enabled districts (customer-requested). Verified on a test tenant.</p>
+      </div>
+    </section>
+
+    <!-- PLAN -->
+    <section id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" class="tab-panel space-y-4" hidden>
+      <div class="bg-white border-2 border-slate-200 rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="badge-num bg-violet-100 text-violet-700">→</span>
+          <h2 class="text-lg font-bold text-slate-900">Implementation plan</h2>
+        </div>
+
+        <div class="rounded-xl bg-violet-50 border border-violet-200 p-4 mb-4">
+          <p class="text-sm font-semibold text-violet-900 mb-1">Two decisions to confirm first (ticket's open questions)</p>
+          <ol class="list-decimal pl-5 text-sm text-violet-900 space-y-1">
+            <li><strong>Accepted boolean tokens.</strong> Recommend: true = <code>true/t/yes/y/1</code>, false = <code>false/f/no/n/0</code> (case-insensitive); empty cell = leave that student's flag unchanged; anything else = validation error. This is a superset of the existing <code>parseBoolean</code> (which accepts <code>y/t/yes/true</code>) plus explicit false + <code>1/0</code> (common in CSV exports).</li>
+            <li><strong>Module gating.</strong> Recommend: only expose the column when <code>settings.eligibilityEnabled</code> is on, matching EZRD-1657's treatment of the field. Non-eligibility tenants never see it and no stray <code>ed_eligibilitystudent</code> rows get created.</li>
+          </ol>
+        </div>
+
+        <h3 class="font-bold text-slate-900 mb-2">Ordered steps</h3>
+        <ol class="list-decimal pl-6 space-y-2 text-sm">
+          <li><strong>Verify broken state (pre-implementation).</strong> In a running environment on the base branch, open the student CSV import for an eligibility-enabled tenant and confirm there is no "Exempt from Eligibility Recalculation" mappable column. Screenshot as the baseline.</li>
+          <li><strong>BE — add rider-lock dual write to the import save path</strong> (<code>app/import/import-student.js</code>). Instantiate <code>eligLock</code> via <code>createEligibilityLock({...})</code> exactly as <code>app/student/api.js</code> does (knexModel primary/replica pool + <code>shared.timestamp</code>). In <code>save()</code>, after the student is created/updated, when <code>!context.sandboxId</code> and <code>typeof student.exemptFromEligibilityRecalc === 'boolean'</code>, call <code>eligLock.setRiderLock(context, { studentId: student.id, semesterId: context.semesterId || 0, locked: student.exemptFromEligibilityRecalc })</code> — best-effort (try/catch → <code>datadog.logEzrWarn</code>, never fail the student save), and write a best-effort per-student <code>audit.log</code> only when <code>changed</code>. Undefined ⇒ skipped ⇒ preserved (the absent-column AC).</li>
+          <li><strong>FE — recognize the column</strong> (<code>ui/src/settings/import/import.student.js</code>). Add <code>'Exempt from Eligibility Recalculation'</code> to <code>baseFields</code>, <em>gated</em> on <code>eligibilityEnabled</code> (inject the settings model; add the field in <code>attached()</code> so it also flows into <code>dataFields</code>/auto-map). In <code>createStudentRecord()</code>, set <code>result.exemptFromEligibilityRecalc</code> from a new strict parse: mapped + recognized ⇒ <code>true/false</code>; mapped + empty ⇒ <code>undefined</code> (preserve that row); mapped + unrecognized ⇒ mark invalid; unmapped ⇒ <code>undefined</code>.</li>
+          <li><strong>FE — validation error</strong> (<code>parseAndValidate()</code>). When a row's cell is unrecognized, push a clear row error (e.g. <em>"Unrecognized value for Exempt from Eligibility Recalculation: 'maybe' (use true/false)"</em>) so it shows in the existing errors list and blocks import, and do not send a value for that row.</li>
+          <li><strong>FE — strict parse helper</strong> (<code>ui/src/settings/import/import.common.js</code>). Add a helper returning <code>true | false | undefined | INVALID</code> per decision 1, reusing the existing token style. Leave the lenient <code>parseBoolean</code> untouched (other columns depend on it).</li>
+          <li><strong>Tests (TDD, backend).</strong> New <code>test/unit/import/import-student.spec.js</code> mirroring <code>import-vehicle.spec.js</code>: mock <code>@transactcomm/eligibility-lock</code> + <code>student</code> module; assert (a) true ⇒ <code>setRiderLock locked:true</code>, (b) false ⇒ <code>locked:false</code>, (c) undefined ⇒ <code>setRiderLock</code> not called, (d) sandbox context ⇒ not called, (e) <code>setRiderLock</code> throw ⇒ student save still succeeds (<code>error === null</code>).</li>
+          <li><strong>Verify fixed state locally</strong> (Gate 2). Re-run the import on <code>testqa</code> with a small CSV covering true / false / omitted / bad-value rows; confirm the flag on each student record + preserved omissions + the validation error.</li>
+        </ol>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Test strategy</h3>
+        <p class="text-sm">Backend save path is pure logic with mockable deps → <strong>TDD</strong> in the CI-safe <code>unit</code> project (red → green). The FE lives in the Aurelia <code>ui</code> toolchain, whose specs are not in the CI-safe set and historically won't load in isolation; the new strict-parse helper is pure, so I'll unit-test it if the ui-unit harness runs, otherwise fall back to the local <code>testqa</code> walkthrough and say so.</p>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Risks / unknowns</h3>
+        <ul class="list-disc pl-6 space-y-1 text-sm">
+          <li><code>validate()</code> merges existing students via <code>shared.copy(oldRec, student)</code>; confirm an <code>undefined</code> exempt value doesn't clobber and that the value survives onto <code>oldRec</code> for the <code>save()</code> write (expected: undefined ⇒ skip; boolean ⇒ carried).</li>
+          <li>The redundant <code>student.error = []</code> reset inside <code>parseAndValidate</code> — ensure the validation error is pushed where it isn't wiped.</li>
+          <li>Exact settings-model injection token for the import view (mirror <code>global-edit.js</code>); confirm during implementation.</li>
+        </ul>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Out of scope</h3>
+        <ul class="list-disc pl-6 space-y-1 text-sm">
+          <li>The v3 lean student path and single/batch save (already ship the flag via EZRD-1657).</li>
+          <li>The one-off CLI <code>import-student-eligibility-exempt.js</code> (left as-is).</li>
+          <li>Any change to how recalculation consumes the flag (unchanged by design).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WHAT WAS DONE -->
+    <section id="panel-done" role="tabpanel" aria-labelledby="tab-done" class="tab-panel space-y-4" hidden>
+      <div class="bg-white border-2 border-slate-200 rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="badge-num bg-emerald-100 text-emerald-700">✓</span>
+          <h2 class="text-lg font-bold text-slate-900">What was implemented</h2>
+        </div>
+
+        <p class="mb-3 text-sm">Backend built <strong>test-first</strong> (6 unit tests red → green). Frontend follows the existing import conventions; its Aurelia toolchain is outside the CI-safe test set, so it's verified via the local <code>testqa</code> walkthrough (next tab).</p>
+
+        <h3 class="font-bold text-slate-900 mb-2">File-by-file</h3>
+        <div class="space-y-3 text-sm">
+          <div class="rounded-lg border border-slate-200 p-3">
+            <p class="mono text-xs font-semibold text-emerald-700">app/import/import-student.js <span class="chip bg-emerald-100 text-emerald-800">backend</span></p>
+            <ul class="list-disc pl-5 mt-1 space-y-1">
+              <li>Instantiated <code>eligLock = createEligibilityLock({...})</code> with ezrouting's own knex pool + <code>shared.timestamp</code> — byte-for-byte the same wiring as <code>app/student/api.js</code>.</li>
+              <li>New <code>applyExemptFromEligibilityRecalc(context, student)</code>, called at the end of <code>save()</code>. Writes the rider-lock via <code>eligLock.setRiderLock</code> only when <code>!sandbox &amp;&amp; !student.error &amp;&amp; student.id &amp;&amp; typeof exempt === 'boolean'</code>. Best-effort: failures go to <code>datadog.logEzrWarn</code> and never set <code>student.error</code>. Per-student <code>audit.log</code> written only when the value actually changed.</li>
+              <li><strong>Preserve-on-omit</strong> falls out naturally: an omitted column ⇒ <code>exemptFromEligibilityRecalc</code> undefined ⇒ the write is skipped.</li>
+            </ul>
+          </div>
+          <div class="rounded-lg border border-slate-200 p-3">
+            <p class="mono text-xs font-semibold text-blue-700">ui/src/settings/import/import.common.js <span class="chip bg-blue-100 text-blue-800">frontend</span></p>
+            <ul class="list-disc pl-5 mt-1 space-y-1">
+              <li>Added <code>parseStrictBoolean(str)</code> + exported <code>INVALID_BOOLEAN</code> sentinel. Recognized true = <code>true/t/yes/y/1</code>, false = <code>false/f/no/n/0</code> (case-insensitive); empty ⇒ <code>undefined</code> (preserve that row); unrecognized ⇒ sentinel. The lenient <code>parseBoolean</code> is left untouched for the other columns.</li>
+            </ul>
+          </div>
+          <div class="rounded-lg border border-slate-200 p-3">
+            <p class="mono text-xs font-semibold text-blue-700">ui/src/settings/import/import.student.js <span class="chip bg-blue-100 text-blue-800">frontend</span></p>
+            <ul class="list-disc pl-5 mt-1 space-y-1">
+              <li>New <code>attached()</code> override: fetches <code>/api/admin/settings</code> via the view's existing <code>Api</code>, and pushes the <code>Exempt from Eligibility Recalculation</code> column into <code>baseFields</code> <em>only</em> when <code>eligibilityEnabled</code> — before <code>super.attached()</code> so it flows into <code>dataFields</code>, the chip list, and header auto-mapping. Fails closed (column hidden) if the settings read errors.</li>
+              <li><code>createStudentRecord()</code>: parses the column via <code>parseStrictBoolean</code> (unmapped ⇒ undefined ⇒ preserve).</li>
+              <li><code>parseAndValidate()</code>: an <code>INVALID_BOOLEAN</code> cell pushes a clear row error and blocks the import; removed a redundant <code>error = []</code> reset that would otherwise wipe that error.</li>
+            </ul>
+          </div>
+          <div class="rounded-lg border border-slate-200 p-3">
+            <p class="mono text-xs font-semibold text-emerald-700">test/unit/import/import-student.spec.js <span class="chip bg-emerald-100 text-emerald-800">new · TDD</span></p>
+            <ul class="list-disc pl-5 mt-1 space-y-1">
+              <li>true ⇒ setRiderLock locked:true · false ⇒ locked:false · omitted ⇒ not called (preserve) · sandbox ⇒ not called · changed ⇒ audited · setRiderLock throws ⇒ student save still succeeds. <strong>6/6 green.</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Verification so far</h3>
+        <ul class="list-disc pl-6 space-y-1 text-sm">
+          <li><strong>Broken state confirmed locally</strong> on <code>testqa</code> before coding — the student import listed no exempt column.</li>
+          <li><strong>Backend unit:</strong> 6/6 new tests pass; whole-suite diff vs pristine = <strong>+6 passing, 0 new failures</strong> (the 84 pre-existing failures are environmental BullMQ-mock issues, unrelated).</li>
+          <li><strong>Lint:</strong> my added backend lines are clean (file stays in <code>.eslintignore</code> for its legacy body).</li>
+          <li><strong>FE verified in a running environment on this branch</strong>: <code>parseStrictBoolean</code> returns true for <code>true/y/1</code>, false for <code>false/n/0</code>, undefined for empty, and the INVALID_BOOLEAN symbol for <code>maybe</code>. Driving the real <code>matchFields → createStudentRecord → parseAndValidate</code> path on a 4-row CSV: EX-TRUE⇒true, EX-FALSE⇒false, EX-BLANK⇒undefined (preserve), EX-BAD⇒row error + import blocked. The column auto-maps and its chip renders when <code>eligibilityEnabled</code> is on.</li>
+          <li><strong>Gating confirmed:</strong> the column is hidden for a tenant without the eligibility module and appears once <code>eligibilityEnabled</code> is on — <code>eligibilityEnabled</code> is derived from the ezdistrict module configuration, not a per-import setting.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- LOCAL TEST -->
+    <section id="panel-test" role="tabpanel" aria-labelledby="tab-test" class="tab-panel space-y-4" hidden>
+      <div class="bg-white border-2 border-slate-200 rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="badge-num bg-orange-100 text-orange-700">▶</span>
+          <h2 class="text-lg font-bold text-slate-900">Verify locally on testqa</h2>
+        </div>
+
+        <div class="rounded-xl bg-orange-50 border border-orange-200 p-4 mb-4 text-sm text-orange-900">
+          <p class="font-semibold mb-1">Prerequisite: an eligibility-enabled tenant</p>
+          <p>The column is gated on <code>settings.eligibilityEnabled</code>. Use a tenant that has the eligibility module on — confirm by opening any student: the "Exempt from Eligibility Recalculation" checkbox is visible on the General tab. On a tenant without the module, the column is intentionally hidden.</p>
+        </div>
+
+        <h3 class="font-bold text-slate-900 mb-2">1 · Prep a small CSV covering every AC</h3>
+        <pre class="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs mono">Student Id,First Name,Last Name,Exempt from Eligibility Recalculation
+EX-TRUE,Ada,Exempt,true
+EX-FALSE,Boole,Clear,false
+EX-BLANK,Cara,Keep,          &larr; empty cell = leave this student unchanged
+EX-BAD,Dee,Bad,maybe         &larr; unrecognized = validation error</pre>
+        <p class="text-xs text-slate-500 mt-1">Pre-set EX-FALSE's flag ON and EX-BLANK's flag ON in the UI first, so "clear" and "preserve" are observable.</p>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">2 · Run the import</h3>
+        <ol class="list-decimal pl-6 space-y-1 text-sm">
+          <li>Open the app for an eligibility-enabled tenant → <strong>Settings → Import</strong> (<code>#/settings/import</code>).</li>
+          <li>Data type → <strong>STUDENTS</strong>. Confirm the allowed-fields chips now include <strong>Exempt from Eligibility Recalculation</strong> (the fix — contrast with the Overview baseline).</li>
+          <li>Browse to the CSV. Confirm the header auto-maps to the new column.</li>
+          <li>Validate. <strong>Expected:</strong> a row error on <code>EX-BAD</code> — <em>"Unrecognized value for 'Exempt from Eligibility Recalculation' — use true/false…"</em> — and the import is blocked until fixed.</li>
+          <li>Remove/fix the bad row, re-validate, import.</li>
+        </ol>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">3 · Expected vs. actual (per AC)</h3>
+        <table class="w-full text-sm border-collapse">
+          <thead><tr class="text-left border-b-2 border-slate-200"><th class="py-1.5 pr-4">Student</th><th class="py-1.5 pr-4">CSV value</th><th class="py-1.5">Expected flag after import</th></tr></thead>
+          <tbody class="align-top">
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 mono">EX-TRUE</td><td class="py-1.5 pr-4">true</td><td class="py-1.5">☑ checked</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 mono">EX-FALSE</td><td class="py-1.5 pr-4">false</td><td class="py-1.5">☐ unchecked (was on → cleared)</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 mono">EX-BLANK</td><td class="py-1.5 pr-4">(empty)</td><td class="py-1.5">☑ unchanged (preserved on)</td></tr>
+            <tr><td class="py-1.5 pr-4 mono">(column omitted entirely)</td><td class="py-1.5 pr-4">—</td><td class="py-1.5">every student's existing value preserved</td></tr>
+          </tbody>
+        </table>
+        <p class="text-sm mt-2">Verify each student's flag on the General tab. Also confirm the student audit trail shows "Exempt from Eligibility Recalculation set to on/off (CSV import)" for the rows that changed, and that eligibility recalculation still skips the exempt students (same as a manual toggle).</p>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">4 · Teardown</h3>
+        <p class="text-sm">Delete the test students created for this run.</p>
+      </div>
+    </section>
+
+    <footer class="mt-8 pt-6 text-xs text-slate-400 mono">generated by chew-ticket · EZRD-2019</footer>
+  </div>
+
+  <script>
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const panels = [...document.querySelectorAll('[role="tabpanel"]')];
+    function select(tab) {
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+      panels.forEach(p => { p.hidden = (p.id !== tab.getAttribute('aria-controls')); });
+      history.replaceState(null, '', '#' + tab.id.replace('tab-', ''));
+    }
+    tabs.forEach(t => t.addEventListener('click', () => select(t)));
+    const hash = location.hash.replace('#', '');
+    const initial = document.getElementById('tab-' + hash);
+    if (initial) select(initial);
+  </script>
+</body>
+</html>
