@@ -208,12 +208,16 @@ var recid = await db(context).insert('INSERT INTO address SET ?', addr); // inse
           <li><strong>Tab B</strong> (still stale — shows only P1): change any field, or just press <strong>Save</strong>. This is the save that used to re-introduce a second primary.</li>
         </ol>
 
-        <h3 class="font-bold text-slate-900 mt-4 mb-2">3 · Confirm in the UI</h3>
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">3 · Confirm in the UI — the student's edit page</h3>
+        <p class="text-sm mb-2">The definitive, environment-independent signal is on the student itself:</p>
         <ol class="list-decimal pl-6 space-y-1 text-sm">
-          <li>Reopen the student (fresh) and expand <strong>Addresses</strong>. <strong>Expected:</strong> exactly <strong>one</strong> address shows <strong>Primary</strong> checked (the newest, P2); P1 is present but not primary.</li>
-          <li>Go to the <strong>Students</strong> list. <strong>Expected:</strong> the student appears <strong>once</strong> — no duplicate row — and the visible row count matches the header total (a page of 50 shows 50 distinct students, not 51).</li>
+          <li>Reopen the student (fresh) and expand <strong>Addresses</strong>. <strong>Expected (fixed):</strong> exactly <strong>one</strong> address shows <strong>Primary</strong> checked; the others are present but unchecked. On a broken build you'd instead see <strong>two or more addresses with Primary checked</strong> — the guard is what collapses that back to one.</li>
         </ol>
-        <p class="text-sm mt-3 text-slate-600">Both checks are visible entirely in the app — the address editor shows a single Primary, and the paginated list stops over-delivering.</p>
+
+        <div class="rounded-xl bg-amber-50 border border-amber-200 p-4 my-4 text-sm text-amber-900">
+          <p class="font-semibold mb-1">Don't rely on the students list to show a duplicate</p>
+          <p>A duplicated list row only appears where the read-side fix (PR #252) is <strong>not</strong> deployed. Where #252 is live (prod today), the list already collapses each student to one row via its <code>MIN(id)</code> primary-address join — so a student with multiple primaries still shows <strong>once</strong> in the list, and the condition is only visible on the edit page (multiple Primary checkboxes). The read-side fix hides the symptom; this PR removes the source. Use the edit-page Primary count as the check.</p>
+        </div>
 
         <h3 class="font-bold text-slate-900 mt-4 mb-2">4 · Teardown</h3>
         <p class="text-sm">Remove the test address P2 (and any test student) created for the run.</p>
