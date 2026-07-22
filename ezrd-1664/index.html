@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EZRD-1664 · UAT Verification — Stop addresses intermittently ungeocoded</title>
+  <meta name="description" content="UAT verification report for EZRD-1664: stop addresses intermittently ungeocoded during Show Students. Fix confirmed live on UAT via a deterministic session-mismatch test, with one open question on private stops." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+      }},
+    };
+  </script>
+  <style>
+    html { font-size: 17px; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    .step-number { font-variant-numeric: tabular-nums; }
+    .badge-num {
+      width: 3rem; height: 3rem; border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.06);
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.75rem; border-radius: 9999px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-width: 1px;
+    }
+    .main-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
+    code.k {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: rgb(226 232 240); color: rgb(15 23 42);
+      padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em;
+      white-space: nowrap;
+    }
+    code.k.wrap { white-space: normal; word-break: break-all; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <header class="border-b-2 border-slate-300 bg-white">
+    <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+      <div class="flex flex-wrap items-center gap-2 mb-5">
+        <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          Primary fix verified on UAT
+        </span>
+        <span class="pill bg-amber-100 text-amber-900 border-amber-300">1 open question</span>
+      </div>
+      <div class="text-sm font-bold tracking-wider uppercase text-slate-500 mb-2">EZRD-1664 · UAT Verification Report</div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-4">Stop addresses intermittently ungeocoded</h1>
+      <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+        On the Routes tab, assigning students intermittently flipped correctly-geocoded stops to a red
+        "ungeocoded" warning and hid them from the stop list; a refresh restored them. This report covers how we
+        confirmed the fix is live on UAT, how we verified it in the <code class="k">testqa</code> tenant, the result,
+        and one secondary observation worth a decision before it clears hardening.
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
+
+    <!-- Verdict -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Verdict</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">The reported bug is fixed on UAT</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
+            <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Confirmed fixed</div>
+            <p class="text-slate-800 leading-relaxed">
+              With the active session deliberately different from a route's own session — the exact condition that
+              caused the bug — every stop that loads stays fully geocoded. No red "ungeocoded" icons, no refresh needed.
+            </p>
+          </div>
+          <div class="bg-amber-50 border-2 border-amber-200 rounded-xl p-5">
+            <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-2">Open question</div>
+            <p class="text-slate-800 leading-relaxed">
+              Under the same mismatch, a <strong>private</strong> stop referenced by the route disappears from the stop
+              list (it's present under the matching session). Fixed for shared stops; the private-stop path may still be
+              scoped to the active session. One decision needed — see below.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Defect & fix -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">The defect &amp; the fix</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Root cause: stops loaded under the wrong session</h2>
+          <p class="text-slate-700 leading-relaxed">
+            The Routes tab filters by <em>date</em>, so a route can be viewed while the top session picker is on a
+            <em>different</em> school session. When loading a route's stops, the server looked up each stop's address
+            under the <strong>selected session</strong> instead of the <strong>route's own session</strong>. When the two
+            didn't match, the per-session address row wasn't found and the stop rendered as ungeocoded — until a refresh
+            reset things.
+          </p>
+        </div>
+        <div class="bg-sky-50 border-2 border-sky-200 rounded-xl p-5">
+          <div class="text-sky-900 font-bold text-sm tracking-wider uppercase mb-2">The fix — PR #520 (EZRD-1664)</div>
+          <p class="text-slate-800 leading-relaxed">
+            The route-expand path now hydrates stops and their addresses under the <strong>route's own</strong>
+            <code class="k wrap">(sandboxId, semesterId)</code>, not the request/session context. A session mismatch can no
+            longer blank a stop's address. Confirmed display-only — no stop data was ever lost.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deployment check -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-amber-800">Pre-flight — is it actually on UAT?</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">We verified the fix is in the deployed UAT build first</h2>
+          <p class="text-slate-700 leading-relaxed">
+            "Hardening in UAT" doesn't always mean the code is live, so before testing we checked the running UAT image
+            against the fix's merge commit. First pass looked like it wasn't deployed — that turned out to be a stale
+            local gitops checkout. Against the current UAT image, the fix <strong>is</strong> included.
+          </p>
+        </div>
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+          <table class="w-full text-sm min-w-[560px]">
+            <colgroup><col class="w-[30%]"><col><col class="w-24"></colgroup>
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+                <th class="text-left px-4 py-3">Item</th>
+                <th class="text-left px-4 py-3">Detail</th>
+                <th class="text-left px-4 py-3">Result</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Fix merged</td><td class="px-4 py-3">PR #520 → merge <code class="k">e22f453f3</code></td><td class="px-4 py-3">✅</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">UAT image</td><td class="px-4 py-3">Tag <code class="k">uat-9c3be52</code></td><td class="px-4 py-3">live</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Fix in UAT image?</td><td class="px-4 py-3">Merge commit is an ancestor of the UAT tag's commit</td><td class="px-4 py-3 text-emerald-800 font-bold">Yes</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- How we verified -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-purple-800">How we verified</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">A deterministic session mismatch on testqa</h2>
+          <p class="text-slate-700 leading-relaxed">
+            The original bug is <em>intermittent</em>, so instead of chasing it we recreated its precondition on purpose:
+            view a route while a <em>different</em> session is selected, and confirm every stop stays geocoded. Fixture:
+            the testqa route <strong>"Activity Bus – Alternative Route A Test"</strong>, which belongs to the
+            <strong>2026&nbsp;~&nbsp;2027</strong> session and runs into the summer, so it can be viewed under
+            <strong>Summer 2026</strong> too.
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
+            <div class="flex-1 pt-1"><p class="text-slate-800 leading-relaxed"><strong>Baseline (matching session).</strong> Session picker on 2026~2027, opened the route, read every stop. All 16 stops geocoded, 0 ungeocoded.</p></div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
+            <div class="flex-1 pt-1"><p class="text-slate-800 leading-relaxed"><strong>Forced the mismatch.</strong> Switched the session picker to Summer 2026 while the route's own session stayed 2026~2027 — the exact condition that used to blank stop addresses.</p></div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
+            <div class="flex-1 pt-1"><p class="text-slate-800 leading-relaxed"><strong>Re-read the route under the mismatch</strong> and compared stop-by-stop against the baseline.</p></div>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl p-5 mt-6">
+          <div class="text-slate-700 font-bold text-sm tracking-wider uppercase mb-2">Method note</div>
+          <p class="text-slate-800 leading-relaxed">
+            The v3 Routes UI renders through an encrypted channel, so we read verification data directly from the live
+            application state (the decrypted objects the UI itself renders) rather than from screenshots — giving an
+            exact per-stop geocoded status for the route under each session.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Result</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Stops stay geocoded under the mismatch</h2>
+        </div>
+
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto mb-5">
+          <table class="w-full text-sm min-w-[620px]">
+            <colgroup><col class="w-[34%]"><col><col></colgroup>
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+                <th class="text-left px-4 py-3"></th>
+                <th class="text-left px-4 py-3">Baseline · matching session</th>
+                <th class="text-left px-4 py-3">Test · mismatched session</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Session selected</td><td class="px-4 py-3">2026 ~ 2027</td><td class="px-4 py-3">Summer 2026</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Route's own session</td><td class="px-4 py-3">2026 ~ 2027</td><td class="px-4 py-3">2026 ~ 2027</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Mismatch?</td><td class="px-4 py-3">no</td><td class="px-4 py-3 font-bold text-emerald-800">yes</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Stops hydrated / geocoded</td><td class="px-4 py-3">16 / 16</td><td class="px-4 py-3 font-bold">15 / 15</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Ungeocoded (red icon)</td><td class="px-4 py-3">0</td><td class="px-4 py-3 font-bold text-emerald-800">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-white border-2 border-slate-300 rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold text-emerald-900 tabular-nums">15 / 15</div>
+            <div class="text-xs text-slate-600 mt-1 uppercase tracking-wider">geocoded under mismatch</div>
+          </div>
+          <div class="bg-white border-2 border-slate-300 rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold text-emerald-900 tabular-nums">0</div>
+            <div class="text-xs text-slate-600 mt-1 uppercase tracking-wider">red ungeocoded icons</div>
+          </div>
+          <div class="bg-white border-2 border-slate-300 rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold text-emerald-900 tabular-nums">0</div>
+            <div class="text-xs text-slate-600 mt-1 uppercase tracking-wider">refreshes needed</div>
+          </div>
+        </div>
+
+        <p class="text-slate-700 leading-relaxed mt-5">
+          Pre-fix, the mismatched-session case is exactly what flipped stops to the red ungeocoded warning. On the current
+          UAT build every stop that loads resolves under the route's own session and stays geocoded — the reported
+          symptom is gone.
+        </p>
+      </div>
+    </section>
+
+    <!-- Secondary finding -->
+    <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+      <div class="flex items-start gap-4">
+        <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+        <div>
+          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Secondary finding — private stop disappears under the mismatch</div>
+          <p class="text-slate-800 text-lg leading-relaxed">
+            Under the mismatched session the route references <strong>16</strong> stops but only <strong>15</strong>
+            hydrate — the missing one is a <strong>private</strong> stop, which is present under the matching session.
+            So the reported red-icon symptom is fixed for shared stops, but a private stop still <em>disappears</em> from
+            the route's stop list under a session mismatch, which matches the ticket's "stops disappear from the list"
+            wording. It looks like the fix's route-session scoping covers shared stops while the private-stop fetch path
+            may still key off the active session.
+          </p>
+          <p class="text-slate-800 text-lg leading-relaxed mt-3">
+            <strong>Decision needed:</strong> confirm whether private-stop session scoping is intentional or a missed
+            case, before this fully clears hardening. It's a separate observation and does not affect the primary
+            pass/fail above.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recommendation -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-slate-700">Recommendation</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Where this leaves the ticket</h2>
+        </div>
+        <ul class="space-y-3 text-slate-800 leading-relaxed">
+          <li class="flex items-start gap-3"><span class="text-emerald-600 font-bold flex-shrink-0 pt-0.5">✓</span><span>Primary defect (stops flipping to ungeocoded under a session mismatch) is <strong>verified fixed</strong> on UAT.</span></li>
+          <li class="flex items-start gap-3"><span class="text-amber-600 font-bold flex-shrink-0 pt-0.5">?</span><span>Route owner / author to confirm the <strong>private-stop</strong> behavior under a session mismatch — intended scoping, or a follow-up.</span></li>
+          <li class="flex items-start gap-3"><span class="text-slate-400 font-bold flex-shrink-0 pt-0.5">•</span><span>The intermittent "Show Students" trigger was not force-reproduced; the deterministic mismatch above exercises the same code path directly and is the stronger check.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="text-slate-500 text-sm text-center pt-6">
+      EZRD-1664 · fix PR #520 (merge <code class="k">e22f453f3</code>) · verified on UAT image <code class="k">uat-9c3be52</code> · tenant testqa
+    </div>
+
+  </main>
+
+<!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
+<style data-report-enhanced>
+  .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 60;
+    background: rgb(2 132 199); transition: width .1s linear; }
+  .anchor-h { position: relative; }
+  .anchor-link { position: absolute; left: -1.15rem; top: 0.12em; opacity: 0; text-decoration: none;
+    color: rgb(148 163 184); font-weight: 600; transition: opacity .12s ease; }
+  .anchor-h:hover .anchor-link, .anchor-link:focus { opacity: 1; }
+  .anchor-link:hover { color: rgb(37 99 235); }
+  @media (max-width: 640px) { .anchor-link { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .reading-progress { transition: none; } }
+  @media print {
+    .reading-progress, .no-print, .anchor-link { display: none !important; }
+    html { font-size: 11.5pt; }
+    body { background: #fff !important; }
+    .main-card, [class*="shadow"] { box-shadow: none !important; }
+    [class*="sticky"] { position: static !important; }
+    section, .main-card, tr, pre, figure { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    [class*="overflow-"] { overflow: visible !important; }
+    table { min-width: 0 !important; width: 100% !important; font-size: 9pt; }
+    pre { white-space: pre-wrap !important; overflow-wrap: anywhere; }
+    a { text-decoration: none; }
+  }
+</style>
+<div class="reading-progress no-print" aria-hidden="true"></div>
+<script data-report-enhanced>
+(function () {
+  if (window.__reportEnhanced) return; window.__reportEnhanced = true;
+  var bar = document.querySelector('.reading-progress'), ticking = false;
+  function upd() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    var top = h.scrollTop || document.body.scrollTop;
+    if (bar) bar.style.width = (max > 0 ? (top / max) * 100 : 0) + '%';
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { requestAnimationFrame(upd); ticking = true; }
+  }, { passive: true });
+  window.addEventListener('resize', upd); upd();
+
+  var used = {};
+  function slug(t) {
+    return t.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'section';
+  }
+  document.querySelectorAll('main h2, section h2').forEach(function (h) {
+    if (h.querySelector('.anchor-link')) return;
+    var id = h.id;
+    if (!id) { id = slug(h.textContent); while (used[id] || document.getElementById(id)) id += '-x'; h.id = id; }
+    used[id] = true;
+    h.classList.add('anchor-h');
+    var a = document.createElement('a');
+    a.className = 'anchor-link'; a.href = '#' + id; a.textContent = '#';
+    a.setAttribute('aria-label', 'Link to this section');
+    h.insertBefore(a, h.firstChild);
+  });
+})();
+</script>
+</body>
+</html>
