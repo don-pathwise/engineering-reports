@@ -1,0 +1,5 @@
+Student Id,First Name,Last Name,Exempt from Eligibility Recalculation
+EX-TRUE,Ada,Exempt,true
+EX-FALSE,Boole,Clear,false
+EX-BLANK,Cara,Keep,
+EX-BAD,Dee,Bad,maybe

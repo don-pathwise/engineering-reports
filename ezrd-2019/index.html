@@ -46,7 +46,7 @@
       <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="true"  aria-controls="panel-overview" id="tab-overview">1 · Overview</button>
       <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-plan"     id="tab-plan">2 · Plan</button>
       <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-done"     id="tab-done">3 · What Was Done</button>
-      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-test"     id="tab-test">4 · Local Test (testqa)</button>
+      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-test"     id="tab-test">4 · Verify the Fix</button>
     </div>
 
     <!-- OVERVIEW -->
@@ -199,7 +199,7 @@
       <div class="bg-white border-2 border-slate-200 rounded-2xl p-6">
         <div class="flex items-center gap-3 mb-3">
           <span class="badge-num bg-orange-100 text-orange-700">▶</span>
-          <h2 class="text-lg font-bold text-slate-900">Verify locally on testqa</h2>
+          <h2 class="text-lg font-bold text-slate-900">Verify the fix</h2>
         </div>
 
         <div class="rounded-xl bg-orange-50 border border-orange-200 p-4 mb-4 text-sm text-orange-900">
@@ -208,6 +208,7 @@
         </div>
 
         <h3 class="font-bold text-slate-900 mb-2">1 · Prep a small CSV covering every AC</h3>
+        <p class="text-sm mb-2">Download the ready-made sample: <a href="exempt-recalc-sample.csv" download class="font-semibold text-blue-600 hover:underline">exempt-recalc-sample.csv</a> &nbsp;(arrows below are annotations, not part of the file):</p>
         <pre class="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs mono">Student Id,First Name,Last Name,Exempt from Eligibility Recalculation
 EX-TRUE,Ada,Exempt,true
 EX-FALSE,Boole,Clear,false
