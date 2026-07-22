@@ -1,25 +1,445 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Engineering Reports</title>
-<style>body{font-family:-apple-system,sans-serif;max-width:600px;margin:4rem auto;color:#e6edf3;background:#0d1117;padding:2rem;}a{color:#58a6ff;}h1{font-size:1.4rem;}</style>
-</head><body>
-<h1>Engineering Reports</h1>
-<ul>
-<li><a href="ezrd-976/">EZRD-976 — GPS Ingestion Simulation Report</a></li>
-<li><a href="ezrd-1276/">EZRD-1276 — Student Record Save Latency Spike Findings</a>
-	<ul><li><a href="ezrd-1276/post-save-waterfall.html">Post-Save Waterfall Analysis</a></li><li><a href="export-student-buses-eks/">export-student-buses — EKS Migration Plan</a>
-	<ul><li><a href="export-student-buses-eks/export-student-buses-flow.html">Legacy Data Flow (companion)</a></li></ul>
-</li>
-</ul>
-</li>
-<li><a href="ezrd-1462/">EZRD-1462 — export-student-buses EKS Migration: Cutover Status &amp; AWS Env Reference</a></li>
-<li><a href="legacy-cron-audit/">Legacy Cron Output Audit — EKS Cutover Parity &amp; Failure Detection</a></li>
-<li><a href="ezrd-1341/">EZRD-1341 — Duplicate Route Fix: UAT Test Steps</a></li>
-<li><a href="ezrd-1564/">EZRD-1564 — busapp Validate-First: UAT Test Steps</a></li>
-<li><a href="ezrd-1180/">EZRD-1180 — Add Bus Schedule: Nearest Stops Outside Walk Zone</a></li>
-<li><a href="ezrd-2037/">EZRD-2037 — Processing/Completed Statuses: testqa Test Plan</a></li>
-<li><a href="ezrd-2059/">EZRD-2059 — Move Trips Conflict Highlighting: Testing Walkthrough</a></li>
-<li><a href="ezrd-2049/">EZRD-2049 — Lock SSC Change Requests After Submission: Test Plan</a></li>
-<li><a href="ezrd-1653/">EZRD-1653 — Route Split Stops Leak: Root Cause &amp; Test Steps</a></li>
-<li><a href="ezrd-2019/">EZRD-2019 — Exempt from Eligibility Recalculation in Student CSV Import: Breakdown &amp; Test Plan</a></li>
-</ul>
-</body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engineering Reports · Pathwise</title>
+  <meta name="description" content="Published engineering reports for the Pathwise / EZRouting platform — test plans, root-cause findings, and migration references." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+      }},
+    };
+  </script>
+  <style>
+    html { font-size: 17px; scroll-behavior: smooth; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+
+    .main-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
+
+    code.k, .mono-chip {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: rgb(226 232 240); color: rgb(15 23 42);
+      padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em;
+      white-space: nowrap;
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.28rem 0.7rem; border-radius: 9999px;
+      font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-width: 1px; white-space: nowrap;
+    }
+
+    /* Ticket badge — the strong left anchor of every row */
+    .ticket {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-weight: 600; font-size: 0.8rem; letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Report row: honest directory affordance, not a marketing card grid */
+    .report-row { transition: background-color .16s ease, transform .16s ease; }
+    .report-row:hover { background: rgb(248 250 252); }
+    .report-row:focus-visible { outline: 2px solid rgb(37 99 235); outline-offset: -2px; border-radius: 0.5rem; }
+    .report-row .chevron { transition: transform .18s cubic-bezier(0.22,1,0.36,1), color .16s ease; }
+    .report-row:hover .chevron { transform: translateX(3px); color: rgb(51 65 85); }
+
+    /* Filter chips */
+    .chip {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.4rem 0.85rem; border-radius: 9999px;
+      font-size: 0.82rem; font-weight: 600;
+      border: 1px solid rgb(203 213 225); background: white; color: rgb(51 65 85);
+      cursor: pointer; transition: all .15s ease; user-select: none;
+    }
+    .chip:hover { border-color: rgb(148 163 184); background: rgb(248 250 252); }
+    .chip[aria-pressed="true"] { background: rgb(15 23 42); color: white; border-color: rgb(15 23 42); }
+    .chip .count { font-variant-numeric: tabular-nums; opacity: .7; font-weight: 500; }
+    .chip[aria-pressed="true"] .count { opacity: .85; }
+
+    /* Search field */
+    .search-wrap { position: relative; }
+    .search-input {
+      width: 100%; padding: 0.7rem 2.5rem 0.7rem 2.75rem;
+      border: 2px solid rgb(203 213 225); border-radius: 0.9rem;
+      background: white; font-size: 0.95rem; color: rgb(15 23 42);
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .search-input::placeholder { color: rgb(100 116 139); }
+    .search-input:focus { outline: none; border-color: rgb(37 99 235); box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
+    .kbd {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 600;
+      padding: 0.1rem 0.4rem; border-radius: 0.35rem;
+      border: 1px solid rgb(203 213 225); background: rgb(248 250 252); color: rgb(100 116 139);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .report-row, .chevron, .chip, .search-input { transition: none !important; }
+    }
+
+    /* Print / PDF: strip interactive chrome, black ink, clean page breaks */
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; color: black !important; }
+      .main-card { box-shadow: none !important; }
+      section, .report-row { break-inside: avoid; }
+      a { color: black !important; text-decoration: none; }
+      .report-row a[href]::after { content: " (" attr(href) ")"; font-size: 0.7em; color: #555; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <!-- ===== Hero ===== -->
+  <header class="border-b-2 border-slate-300 bg-white">
+    <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+      <div>
+        <span class="pill bg-sky-100 text-sky-900 border-sky-300 mb-5">
+          <span class="w-2 h-2 rounded-full bg-sky-600"></span>
+          Pathwise · EZRouting Platform
+        </span>
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950" style="text-wrap: balance;">
+          Engineering Reports
+        </h1>
+        <p class="mt-4 text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+          Self-contained references for the EZRouting platform — UAT test plans, root-cause
+          findings, and migration/infrastructure docs. Each report is written to be read on
+          screen, printed for review, and acted on directly.
+        </p>
+        <p class="mt-5 text-sm text-slate-600 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span><strong id="totalCount" class="text-slate-900 font-bold tabular-nums">13</strong> reports</span>
+          <span class="text-slate-400">·</span>
+          <span>3 categories</span>
+          <span class="text-slate-400">·</span>
+          <span>published to <code class="k">don-pathwise.github.io/engineering-reports</code></span>
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Controls (sticky) ===== -->
+  <div class="no-print sticky top-0 z-30 bg-slate-100/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-6 py-4">
+      <div class="flex flex-col lg:flex-row lg:items-center gap-3">
+        <div class="search-wrap flex-1">
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <input id="search" type="search" class="search-input" placeholder="Search by ticket, title, or keyword…" autocomplete="off" aria-label="Search reports" />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 kbd" aria-hidden="true">/</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by category">
+          <button class="chip" data-filter="all" aria-pressed="true">All <span class="count">13</span></button>
+          <button class="chip" data-filter="test" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Test Plans <span class="count">7</span></button>
+          <button class="chip" data-filter="rootcause" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-purple-500"></span>Root Cause <span class="count">3</span></button>
+          <button class="chip" data-filter="infra" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-sky-500"></span>Migration &amp; Infra <span class="count">3</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Report directory ===== -->
+  <main class="max-w-6xl mx-auto px-6 py-10 space-y-6">
+
+    <!-- Test Plans & Walkthroughs -->
+    <section class="report-group bg-white border-2 border-slate-300 rounded-2xl main-card" data-category="test">
+      <div class="px-7 sm:px-9 pt-7 sm:pt-8 pb-2">
+        <div class="flex items-center gap-3 mb-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Test Plans &amp; Walkthroughs</div>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed ml-[1.375rem]">Step-by-step UAT verification for shipped and in-flight changes.</p>
+      </div>
+      <ul class="divide-y divide-slate-200">
+        <!-- rows injected/authored below -->
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2008/">
+            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2008</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Duplicate Primary Student Addresses Fan Out the Student List</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">A student saved with more than one "primary" address showed up twice in the paginated student list. Write-path guard so a student keeps exactly one primary — breakdown + how to verify.</span>
+            </span>
+            <span class="pill bg-amber-100 text-amber-900 border-amber-300 mt-0.5 hidden sm:inline-flex">In Testing</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2059/">
+            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2059</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Move Trips — Conflict Highlighting</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Verify the redesigned conflict view: salmon rows, stacked overlap lanes, the candycane merged block, and the collapse/expand toggle.</span>
+            </span>
+            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Walkthrough</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2049/">
+            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2049</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Lock SSC Change Requests After Submission</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Freeze a Student Support Coordinator's change requests the moment they submit; the request is read-only afterward.</span>
+            </span>
+            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Plan</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2037/">
+            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2037</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Processing / Completed Statuses (SSC Requests)</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">New Processing and Completed statuses for SSC New/Change Requests. Accepting a request that needs a transportation review now moves it to Processing.</span>
+            </span>
+            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Plan</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2019/">
+            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2019</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Exempt from Eligibility Recalculation in CSV Import</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Support an "exempt from recalc" flag in the student CSV import so flagged students keep their assignments. Breakdown + test plan.</span>
+            </span>
+            <span class="pill bg-amber-100 text-amber-900 border-amber-300 mt-0.5 hidden sm:inline-flex">In Review</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1564/">
+            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1564</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">busapp Validate-First</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Confirm <code class="k">POST /api/v1/mobile/busapp</code> rejects bad payloads with an immediate 400 instead of hanging for ~138s.</span>
+            </span>
+            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Steps</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1341/">
+            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1341</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Duplicate Route Fix</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Confirm that approving a route matching an existing driverless route merges into it (no duplicate) and fills in the driver. Tenant: testqa.</span>
+            </span>
+            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Steps</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1180/">
+            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1180</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Add Bus Schedule — Nearest Stops Outside Walk Zone</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">EZRouting now surfaces the nearest stops beyond a student's walk zone, tagged <em>Outside Walk Zone</em>, on the Add Bus Schedule screen.</span>
+            </span>
+            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Steps</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Root Cause & Findings -->
+    <section class="report-group bg-white border-2 border-slate-300 rounded-2xl main-card" data-category="rootcause">
+      <div class="px-7 sm:px-9 pt-7 sm:pt-8 pb-2">
+        <div class="flex items-center gap-3 mb-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-purple-800">Root Cause &amp; Findings</div>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed ml-[1.375rem]">Investigations: where a bug comes from, and the evidence behind the fix.</p>
+      </div>
+      <ul class="divide-y divide-slate-200">
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1653/">
+            <span class="ticket text-purple-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1653</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Route Split Stops Leak</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">When a route is split across buses in Trip Preparation, one destination bus shows the other bus's stops. Root cause + test steps.</span>
+            </span>
+            <span class="pill bg-rose-100 text-rose-900 border-rose-300 mt-0.5 hidden sm:inline-flex">Root Cause</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1276/">
+            <span class="ticket text-purple-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1276</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Student Record Save Latency Spike</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Where the save-latency spike comes from on the student record path, with a post-save request waterfall.</span>
+              <span class="mt-1.5 flex flex-wrap gap-2 text-xs">
+                <a href="ezrd-1276/post-save-waterfall.html" class="inline-flex items-center gap-1 text-purple-700 hover:text-purple-900 hover:underline font-medium" onclick="event.stopPropagation()">↳ Post-Save Waterfall Analysis</a>
+              </span>
+            </span>
+            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Spike Findings</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-976/">
+            <span class="ticket text-purple-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-976</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">GPS Ingestion Simulation</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Simulating the GPS ingestion path — including the dropped-coordinate warning — to reproduce and characterize the behavior.</span>
+            </span>
+            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Report</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Migration & Infrastructure -->
+    <section class="report-group bg-white border-2 border-slate-300 rounded-2xl main-card" data-category="infra">
+      <div class="px-7 sm:px-9 pt-7 sm:pt-8 pb-2">
+        <div class="flex items-center gap-3 mb-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Migration &amp; Infrastructure</div>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed ml-[1.375rem]">EKS cutover plans, environment references, and legacy-parity strategy.</p>
+      </div>
+      <ul class="divide-y divide-slate-200">
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="export-student-buses-eks/">
+            <span class="ticket text-sky-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EKS Flow</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">export-student-buses — Proposed EKS Flow</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">One new module inside the existing <code class="k">crons-worker</code> pod; config and secrets move into source control. Same 30-min cadence for every client.</span>
+              <span class="mt-1.5 flex flex-wrap gap-2 text-xs">
+                <a href="export-student-buses-eks/export-student-buses-flow.html" class="inline-flex items-center gap-1 text-sky-700 hover:text-sky-900 hover:underline font-medium" onclick="event.stopPropagation()">↳ Legacy Data Flow (companion)</a>
+              </span>
+            </span>
+            <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300 mt-0.5 hidden sm:inline-flex">Proposed</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1462/">
+            <span class="ticket text-sky-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1462</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">export-student-buses EKS Migration — Cutover &amp; Env Reference</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Migrating the legacy 201-invocation crond launcher (30-min Mon–Fri) to a single BullMQ queue in the EKS crons-worker pod. Cutover status + AWS env reference.</span>
+            </span>
+            <span class="pill bg-sky-100 text-sky-900 border-sky-300 mt-0.5 hidden sm:inline-flex">Reference</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="legacy-cron-audit/">
+            <span class="ticket text-sky-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">Cron Audit</span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-semibold text-slate-950">Legacy Cron Output Audit — Parity Validation</span>
+              <span class="block text-sm text-slate-600 leading-snug mt-0.5">For each of the 22 legacy cron entries still on the EC2 host: what it produces, where output lands, and how to validate EKS parity.</span>
+            </span>
+            <span class="pill bg-amber-100 text-amber-900 border-amber-300 mt-0.5 hidden sm:inline-flex">Draft</span>
+            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Empty state (search with no matches) -->
+    <div id="noResults" class="hidden text-center py-16">
+      <div class="text-slate-400 text-4xl mb-3">⌕</div>
+      <p class="text-slate-700 font-semibold text-lg">No reports match “<span id="noResultsTerm" class="text-slate-900"></span>”</p>
+      <p class="text-slate-500 text-sm mt-1">Try a ticket number (e.g. <code class="k">2059</code>) or a keyword like <code class="k">cutover</code>.</p>
+      <button id="clearSearch" class="chip mt-4 mx-auto">Clear search</button>
+    </div>
+
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 pb-12 pt-2">
+    <div class="text-slate-500 text-sm text-center">
+      Internal engineering references · Pathwise K-12 Transportation ·
+      <a href="https://github.com/don-pathwise/engineering-reports" class="text-slate-600 hover:text-slate-900 hover:underline">source</a>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      // ----- Search + category filter -----
+      var search = document.getElementById('search');
+      var chips = Array.prototype.slice.call(document.querySelectorAll('.chip[data-filter]'));
+      var groups = Array.prototype.slice.call(document.querySelectorAll('.report-group'));
+      var rows = Array.prototype.slice.call(document.querySelectorAll('.report-row'));
+      var noResults = document.getElementById('noResults');
+      var noResultsTerm = document.getElementById('noResultsTerm');
+      var clearBtn = document.getElementById('clearSearch');
+      var activeFilter = 'all';
+
+      rows.forEach(function (r) {
+        r.dataset.haystack = (r.textContent || '').toLowerCase().replace(/\s+/g, ' ');
+      });
+
+      function apply() {
+        var q = (search.value || '').trim().toLowerCase();
+        var anyVisible = false;
+
+        groups.forEach(function (group) {
+          var cat = group.dataset.category;
+          var catOK = activeFilter === 'all' || activeFilter === cat;
+          var groupRows = Array.prototype.slice.call(group.querySelectorAll('.report-row'));
+          var visibleInGroup = 0;
+
+          groupRows.forEach(function (row) {
+            var textOK = !q || row.dataset.haystack.indexOf(q) !== -1;
+            var show = catOK && textOK;
+            row.closest('li').style.display = show ? '' : 'none';
+            if (show) visibleInGroup++;
+          });
+
+          group.style.display = visibleInGroup > 0 ? '' : 'none';
+          if (visibleInGroup > 0) anyVisible = true;
+        });
+
+        if (!anyVisible) {
+          noResults.classList.remove('hidden');
+          noResultsTerm.textContent = q || activeFilter;
+        } else {
+          noResults.classList.add('hidden');
+        }
+      }
+
+      search.addEventListener('input', apply);
+
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          activeFilter = chip.dataset.filter;
+          chips.forEach(function (c) { c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'); });
+          apply();
+        });
+      });
+
+      clearBtn.addEventListener('click', function () {
+        search.value = '';
+        activeFilter = 'all';
+        chips.forEach(function (c) { c.setAttribute('aria-pressed', c.dataset.filter === 'all' ? 'true' : 'false'); });
+        apply();
+        search.focus();
+      });
+
+      // "/" focuses search; Escape clears it
+      document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && document.activeElement !== search) {
+          e.preventDefault();
+          search.focus();
+        } else if (e.key === 'Escape' && document.activeElement === search && search.value) {
+          search.value = '';
+          apply();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

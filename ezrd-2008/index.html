@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EZRD-2008 — Duplicate primary student addresses fan out the v3 paginated student list</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --brand:#2563eb; }
+    body { font-family:'Inter',system-ui,sans-serif; }
+    code,pre,.mono { font-family:'JetBrains Mono',ui-monospace,monospace; }
+    .badge-num { display:inline-flex; align-items:center; justify-content:center;
+      width:1.75rem; height:1.75rem; border-radius:9999px; font-weight:700; font-size:.8rem; }
+    .tab-btn[aria-selected="true"] { background:#fff; color:#0f172a; border-color:#cbd5e1; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+    .tab-btn[aria-selected="false"] { background:transparent; color:#64748b; border-color:transparent; }
+    .tab-panel[hidden] { display:none; }
+    pre { white-space:pre; overflow-x:auto; }
+    code:not(pre code){ background:#f1f5f9; padding:.05rem .35rem; border-radius:.35rem; font-size:.85em; }
+    .chip{ display:inline-block; font-size:.7rem; font-weight:600; padding:.1rem .5rem; border-radius:9999px; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+  <div class="max-w-5xl mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <header class="mb-6">
+      <div class="flex flex-wrap items-center gap-3 mb-2">
+        <span class="mono text-sm font-semibold text-blue-600">EZRD-2008</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Defect</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">In Testing</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">P3 · Medium</span>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 mono">ezrd-mono / apps/ezrouting</span>
+      </div>
+      <h1 class="text-2xl font-extrabold text-slate-900">Duplicate primary student addresses fan out the v3 paginated student list</h1>
+      <p class="mono text-xs text-slate-500 mt-1">
+        repo: ezrd-mono &nbsp;·&nbsp; branch: fix/EZRD-2008-student-primary-address-guard &nbsp;·&nbsp; PR #517
+      </p>
+      <p class="text-xs text-slate-500 mt-1">Read-side fix already merged (PR #252). This is the write-path guard that stops the duplicate primaries from being created.</p>
+    </header>
+
+    <!-- Tab bar -->
+    <div role="tablist" aria-label="Ticket sections"
+         class="flex flex-wrap gap-1 p-1 bg-slate-200/60 rounded-xl mb-6">
+      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="true"  aria-controls="panel-overview" id="tab-overview">1 · Overview</button>
+      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-plan"     id="tab-plan">2 · Plan</button>
+      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-done"     id="tab-done">3 · What Was Done</button>
+      <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-test"     id="tab-test">4 · Verify the Fix</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-panel space-y-4">
+      <div class="bg-white border-2 border-slate-200 rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="badge-num bg-blue-100 text-blue-700">?</span>
+          <h2 class="text-lg font-bold text-slate-900">What this ticket is about</h2>
+        </div>
+        <p class="mb-3">The v3 student grid asks the API for one page of students — <code>POST /api/v3/students/page</code> with <code>{ page: 1, pageSize: 50 }</code>. Sometimes it returns <strong>more rows than it asked for</strong> (e.g. 51 for a page size of 50). The extra rows are the <strong>same student twice</strong> — identical id, differing only by <code>primaryAddressId</code>. The grid shows a duplicate and the visible row count disagrees with the header total (<code>totalCount</code>, computed from the distinct id list, stays correct).</p>
+        <p class="mb-3">The cause is a data-quality problem: a student can end up with more than one <code>address</code> row flagged <code>recordType=1, isPrimary=1</code>. Pagination is applied to the <em>distinct student-id list</em> first, then each id is hydrated; the primary-address join assumed one primary per student (1:1) but was actually 1-to-many, so each extra primary <strong>fanned</strong> the student into an additional row <em>after</em> the page had been sized.</p>
+
+        <div class="grid sm:grid-cols-2 gap-3 my-4">
+          <div class="rounded-xl bg-emerald-50 border border-emerald-200 p-4">
+            <p class="text-xs font-bold uppercase tracking-wide text-emerald-700 mb-1">Read side — already fixed</p>
+            <p class="text-sm text-slate-700">PR #252 replaced the plain equality join with a correlated <code>MIN(id)</code> subquery, so the list picks exactly one deterministic primary per student and never over-delivers, regardless of data quality. Merged to <code>main</code>; uat/prd await operator promotion.</p>
+          </div>
+          <div class="rounded-xl bg-rose-50 border border-rose-200 p-4">
+            <p class="text-xs font-bold uppercase tracking-wide text-rose-700 mb-1">Write side — this PR</p>
+            <p class="text-sm text-slate-700">Nothing stopped the app from <em>creating</em> a second primary. A concurrent edit in another tab, or a double-submit, appended another <code>isPrimary=1</code> row. The read-side fix hides the symptom; this guard removes the source.</p>
+          </div>
+        </div>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Write-path root cause (verified)</h3>
+        <p class="text-sm mb-2"><code>createAddress</code> (<code>apps/ezrouting/app/address/address.js</code>) has a "delete existing rows first" guard, but it fires <strong>only for school/stop</strong> records (<code>recordType 2/4</code>):</p>
+        <pre class="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs mono">// student (recordType=1) skips this entirely
+if (addr.recordType == 2 || addr.recordType == 4)
+    await db(context).delete('DELETE FROM address WHERE ... recordId=?', ...);
+var recid = await db(context).insert('INSERT INTO address SET ?', addr); // inserts as-is</pre>
+        <p class="text-sm mt-2">So for a student, <code>createAddress</code> never demotes an existing primary and never dedupes — it just appends. It is reached from <strong>two</strong> interactive entry points: <code>_saveStudentAddress</code> (the student save) and the generic address-create endpoint. A durable prevention already exists elsewhere and is what we mirror: the change-request approve path demotes existing primaries (<code>UPDATE address SET isPrimary=0 WHERE recordType=1 AND recordId=?</code>) before inserting.</p>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Where the code lives</h3>
+        <table class="w-full text-sm border-collapse">
+          <tbody class="align-top">
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">Read-side fix (merged, #252)</td><td class="py-1.5 mono text-xs">apps/ezrouting/app/v3/student/student.model.js — <code>getStudentsByIds</code> (MIN(id) primary-address subquery)</td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">Write-path bug + fix</td><td class="py-1.5 mono text-xs">apps/ezrouting/app/address/address.js — <code>createAddress</code></td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">Interactive caller (student save)</td><td class="py-1.5 mono text-xs">apps/ezrouting/app/student/index.js — <code>_saveStudentAddress</code></td></tr>
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">Interactive caller (generic endpoint)</td><td class="py-1.5 mono text-xs">apps/ezrouting/app/address/index.js — address create</td></tr>
+            <tr><td class="py-1.5 pr-4 font-semibold whitespace-nowrap">Safe pattern mirrored</td><td class="py-1.5 mono text-xs">apps/ezrouting/app/changerequest/approve.js — primary demotion before insert</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Data-integrity scope</h3>
+        <p class="text-sm">A read-only sweep found the duplicate-primary condition across roughly two dozen tenants (a few thousand students), heavily concentrated in two districts. There are two independent write paths: the <strong>interactive</strong> path (re-save / double-submit) fixed here, and a <strong>systemic</strong> pattern at one large district traced to the SIS datasync route (which goes through the change-request approve path, not <code>createAddress</code>) — that one is under separate investigation and is not addressed by this PR. Existing duplicate rows are a separate data-cleanup task.</p>
+      </div>
+    </section>
+
+    <!-- PLAN -->
+    <section id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" class="tab-panel space-y-4" hidden>
+      <div class="bg-white border-2 border-slate-200 rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="badge-num bg-violet-100 text-violet-700">→</span>
+          <h2 class="text-lg font-bold text-slate-900">Implementation plan</h2>
+        </div>
+
+        <h3 class="font-bold text-slate-900 mb-2">Approach</h3>
+        <p class="text-sm mb-3">Add the guard <strong>inside <code>createAddress</code></strong> rather than in a caller: it is the single choke point covering both interactive callers, and it sits right beside the existing school/stop delete guard. Before the insert, for a student (<code>recordType===1</code>) whose new row is primary, demote any existing primary for that student in the same scope — mirroring the change-request approve path.</p>
+
+        <pre class="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs mono">if (addr.recordType === 1 &amp;&amp; addr.isPrimary)
+    await db(context).update(
+        'UPDATE address SET isPrimary=0 WHERE recordType=1 AND recordId=? AND sandboxId=? AND semesterId=?',
+        [addr.recordId, addr.sandboxId, addr.semesterId]);</pre>
+        <p class="text-sm mt-2">Scoped to <code>(recordId, sandboxId, semesterId)</code> — the exact scope the new row lands in (both 0 for students) — which is stricter than the approve path's unscoped demote. Net effect: a student always ends up with exactly one <code>isPrimary=1</code> row, so the list can never fan out.</p>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Deliberately minimal</h3>
+        <p class="text-sm">Demote rather than also dedupe identical rows. Demotion alone kills the fan-out (the read side joins on <code>isPrimary=1</code>); a leftover non-primary row is harmless. Full row-dedup via <code>sameAddress</code> is noted as a possible follow-up, not done here (avoids masking legitimately distinct addresses).</p>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Test strategy — TDD (unit)</h3>
+        <ul class="list-disc pl-6 space-y-1 text-sm">
+          <li>New unit spec mocking the DB wrapper (established pattern in the address test suite), in the CI-safe <code>unit</code> project.</li>
+          <li>Red → green: assert the demotion <code>UPDATE</code> fires <em>before</em> the <code>INSERT</code> for a student primary, scoped to that student.</li>
+          <li>Guard cases: a non-primary student address is not demoted; the school/stop path keeps its existing delete-first behavior.</li>
+        </ul>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">Out of scope</h3>
+        <ul class="list-disc pl-6 space-y-1 text-sm">
+          <li>Promoting the read-side fix (#252) to uat/prd — operator dispatch.</li>
+          <li>Data cleanup of existing duplicate primaries.</li>
+          <li>The systemic datasync case (separate root-cause; routes through the approve path, not <code>createAddress</code>).</li>
+          <li>Row-level dedup via <code>sameAddress</code> in <code>createAddress</code> (possible follow-up).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WHAT WAS DONE -->
+    <section id="panel-done" role="tabpanel" aria-labelledby="tab-done" class="tab-panel space-y-4" hidden>
+      <div class="bg-white border-2 border-slate-200 rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="badge-num bg-emerald-100 text-emerald-700">✓</span>
+          <h2 class="text-lg font-bold text-slate-900">What was implemented</h2>
+        </div>
+
+        <p class="mb-3 text-sm">One focused change in <code>createAddress</code> (8 lines), plus a new unit spec. Built test-first (4 tests red → green).</p>
+
+        <h3 class="font-bold text-slate-900 mb-2">The change</h3>
+        <pre class="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs mono">  if (addr.recordType == 2 || addr.recordType == 4)
+      await db(context).delete('DELETE FROM address WHERE ... recordId=?', [...]);
++ // A student may carry only one primary address; demote any existing primary in
++ // the same scope before inserting a new one so the row never fans out the v3
++ // paginated list. Mirrors the change-request approve path.
++ else if (addr.recordType === 1 &amp;&amp; addr.isPrimary)
++     await db(context).update(
++         'UPDATE address SET isPrimary=0 WHERE recordType=1 AND recordId=? AND sandboxId=? AND semesterId=?',
++         [addr.recordId, addr.sandboxId, addr.semesterId]);
+  var recid = await db(context).insert('INSERT INTO address SET ?', addr);</pre>
+
+        <div class="space-y-3 text-sm mt-4">
+          <div class="rounded-lg border border-slate-200 p-3">
+            <p class="mono text-xs font-semibold text-emerald-700">app/address/address.js <span class="chip bg-emerald-100 text-emerald-800">backend</span></p>
+            <ul class="list-disc pl-5 mt-1 space-y-1">
+              <li>Added the demotion as an <code>else if</code> after the school/stop (2/4) delete branch — so students gain the demotion and the school/stop path is untouched.</li>
+              <li>Single choke point: covers both the student-save path and the generic address-create endpoint.</li>
+              <li>Scoped by <code>(recordId, sandboxId, semesterId)</code> — stricter than the approve path's unscoped demote.</li>
+            </ul>
+          </div>
+          <div class="rounded-lg border border-slate-200 p-3">
+            <p class="mono text-xs font-semibold text-emerald-700">test/unit/address/create-address-student-primary-guard.spec.js <span class="chip bg-emerald-100 text-emerald-800">new · TDD</span></p>
+            <ul class="list-disc pl-5 mt-1 space-y-1">
+              <li>demotes an existing primary <em>before</em> inserting a new student primary (asserts SQL + student scope + call order) · does not demote a non-primary student address · leaves the school/stop delete-first path untouched. <strong>4/4 green.</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">A/B runtime proof — broken vs fixed</h3>
+        <p class="text-sm mb-2">Exercised the real <code>createAddress</code> against a local test tenant, simulating the reported double-submit (the same new primary address sent twice, with no id):</p>
+        <table class="w-full text-sm border-collapse">
+          <thead><tr class="text-left border-b-2 border-slate-200"><th class="py-1.5 pr-4">Code</th><th class="py-1.5">Result of the double-submit</th></tr></thead>
+          <tbody class="align-top">
+            <tr class="border-b border-slate-100"><td class="py-1.5 pr-4 font-semibold">Broken (guard reverted)</td><td class="py-1.5">3 <code>isPrimary=1</code> rows — prior primary kept, two new primaries appended → fan-out</td></tr>
+            <tr><td class="py-1.5 pr-4 font-semibold">Fixed (guard applied)</td><td class="py-1.5">1 <code>isPrimary=1</code> row — prior primary + first insert demoted, only the last row primary</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs text-slate-500 mt-2">Same code path, same input, opposite outcome. Test rows cleaned up afterward.</p>
+      </div>
+    </section>
+
+    <!-- LOCAL TEST -->
+    <section id="panel-test" role="tabpanel" aria-labelledby="tab-test" class="tab-panel space-y-4" hidden>
+      <div class="bg-white border-2 border-slate-200 rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="badge-num bg-orange-100 text-orange-700">▶</span>
+          <h2 class="text-lg font-bold text-slate-900">Verify the fix</h2>
+        </div>
+
+        <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 mb-4 text-sm text-slate-700">
+          <p class="font-semibold text-slate-900 mb-1">Why the test uses two tabs</p>
+          <p>The address editor's Primary control is <strong>radio-like</strong> — checking a new Primary auto-unchecks the others — so you can't get two primaries by toggling within one form. The condition arises from state one form can't see: a <strong>second tab or another user</strong> whose view predates your change. That's the path worth testing, so the steps below drive the student from two tabs and confirm the fix keeps a single primary.</p>
+        </div>
+
+        <h3 class="font-bold text-slate-900 mb-2">1 · Set up</h3>
+        <ol class="list-decimal pl-6 space-y-1 text-sm">
+          <li>Pick a student that already has one primary address — call it <strong>P1</strong>.</li>
+          <li>Open that student in <strong>two browser tabs</strong> (Tab A and Tab B). Both show P1 as the only primary.</li>
+        </ol>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">2 · Drive the two-tab edit</h3>
+        <ol class="list-decimal pl-6 space-y-1 text-sm">
+          <li><strong>Tab A:</strong> Addresses → <strong>Add address</strong> → enter a new address <strong>P2</strong>, check <strong>Primary</strong> → <strong>Save</strong>. Tab A now shows P2 as the primary and P1 demoted.</li>
+          <li><strong>Tab B</strong> (still stale — shows only P1): change any field, or just press <strong>Save</strong>. This is the save that used to re-introduce a second primary.</li>
+        </ol>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">3 · Confirm in the UI</h3>
+        <ol class="list-decimal pl-6 space-y-1 text-sm">
+          <li>Reopen the student (fresh) and expand <strong>Addresses</strong>. <strong>Expected:</strong> exactly <strong>one</strong> address shows <strong>Primary</strong> checked (the newest, P2); P1 is present but not primary.</li>
+          <li>Go to the <strong>Students</strong> list. <strong>Expected:</strong> the student appears <strong>once</strong> — no duplicate row — and the visible row count matches the header total (a page of 50 shows 50 distinct students, not 51).</li>
+        </ol>
+        <p class="text-sm mt-3 text-slate-600">Both checks are visible entirely in the app — the address editor shows a single Primary, and the paginated list stops over-delivering.</p>
+
+        <h3 class="font-bold text-slate-900 mt-4 mb-2">4 · Teardown</h3>
+        <p class="text-sm">Remove the test address P2 (and any test student) created for the run.</p>
+      </div>
+    </section>
+
+    <footer class="mt-8 pt-6 text-xs text-slate-400 mono">generated by chew-ticket · EZRD-2008</footer>
+  </div>
+
+  <script>
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const panels = [...document.querySelectorAll('[role="tabpanel"]')];
+    function select(tab) {
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+      panels.forEach(p => { p.hidden = (p.id !== tab.getAttribute('aria-controls')); });
+      history.replaceState(null, '', '#' + tab.id.replace('tab-', ''));
+    }
+    tabs.forEach(t => t.addEventListener('click', () => select(t)));
+    const hash = location.hash.replace('#', '');
+    const initial = document.getElementById('tab-' + hash);
+    if (initial) select(initial);
+  </script>
+
+<!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
+<style data-report-enhanced>
+  .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 60;
+    background: rgb(2 132 199); transition: width .1s linear; }
+  .anchor-h { position: relative; }
+  .anchor-link { position: absolute; left: -1.15rem; top: 0.12em; opacity: 0; text-decoration: none;
+    color: rgb(148 163 184); font-weight: 600; transition: opacity .12s ease; }
+  .anchor-h:hover .anchor-link, .anchor-link:focus { opacity: 1; }
+  .anchor-link:hover { color: rgb(37 99 235); }
+  @media (max-width: 640px) { .anchor-link { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .reading-progress { transition: none; } }
+  @media print {
+    .reading-progress, .no-print, .anchor-link { display: none !important; }
+    html { font-size: 11.5pt; }
+    body { background: #fff !important; }
+    .main-card, [class*="shadow"] { box-shadow: none !important; }
+    [class*="sticky"] { position: static !important; }
+    section, .main-card, tr, pre, figure { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    [class*="overflow-"] { overflow: visible !important; }
+    table { min-width: 0 !important; width: 100% !important; font-size: 9pt; }
+    pre { white-space: pre-wrap !important; overflow-wrap: anywhere; }
+    a { text-decoration: none; }
+  }
+</style>
+<div class="reading-progress no-print" aria-hidden="true"></div>
+<script data-report-enhanced>
+(function () {
+  if (window.__reportEnhanced) return; window.__reportEnhanced = true;
+  var bar = document.querySelector('.reading-progress'), ticking = false;
+  function upd() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    var top = h.scrollTop || document.body.scrollTop;
+    if (bar) bar.style.width = (max > 0 ? (top / max) * 100 : 0) + '%';
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { requestAnimationFrame(upd); ticking = true; }
+  }, { passive: true });
+  window.addEventListener('resize', upd); upd();
+
+  var used = {};
+  function slug(t) {
+    return t.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'section';
+  }
+  document.querySelectorAll('main h2, section h2').forEach(function (h) {
+    if (h.querySelector('.anchor-link')) return;
+    var id = h.id;
+    if (!id) { id = slug(h.textContent); while (used[id] || document.getElementById(id)) id += '-x'; h.id = id; }
+    used[id] = true;
+    h.classList.add('anchor-h');
+    var a = document.createElement('a');
+    a.className = 'anchor-link'; a.href = '#' + id; a.textContent = '#';
+    a.setAttribute('aria-label', 'Link to this section');
+    h.insertBefore(a, h.firstChild);
+  });
+})();
+</script>
+
+</body>
+</html>
