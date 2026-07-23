@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EZRD-2319 · Route-List Stop-Cache Fix — UAT Verification</title>
+  <meta name="description" content="EZRD-2319: caching the route-only stop list so GET /api/routes stops re-running the vwAllStops view scan on every request. Explainer + UAT verification report." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+      }},
+    };
+  </script>
+  <style>
+    html { font-size: 17px; scroll-behavior: smooth; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    .step-number { font-variant-numeric: tabular-nums; }
+    .badge-num {
+      width: 3rem; height: 3rem; border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.06);
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.75rem; border-radius: 9999px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-width: 1px; white-space: nowrap;
+    }
+    .main-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
+    code.k, .mono-chip {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: rgb(226 232 240); color: rgb(15 23 42);
+      padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em;
+      white-space: nowrap;
+    }
+    code.k.wrap { white-space: normal; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <!-- ===== Hero ===== -->
+  <header class="border-b-2 border-slate-300 bg-white">
+    <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+      <div class="flex flex-wrap items-center gap-2.5 mb-5">
+        <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          Passed UAT hardening
+        </span>
+        <span class="pill bg-slate-100 text-slate-700 border-slate-300">EZRD-2319 · Defect · P3</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950" style="text-wrap: balance;">
+        Route-list stop-cache fix
+      </h1>
+      <p class="mt-4 text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+        After EZRD-2111 removed the Redis fan-out, the route list's residual cost was a heavy
+        MySQL view scan that re-ran on <em>every</em> request. This change caches it. Below is
+        what the fix does, and how it was verified on UAT.
+      </p>
+      <p class="mt-5 text-sm text-slate-600 flex flex-wrap items-center gap-x-2 gap-y-1">
+        <span>Verified on <code class="k">uat.pathwiserouting.com</code></span>
+        <span class="text-slate-400">·</span>
+        <span>tenant <code class="k">testqa</code></span>
+        <span class="text-slate-400">·</span>
+        <span>build <code class="k">477ef62</code></span>
+        <span class="text-slate-400">·</span>
+        <span>2026-07-23</span>
+        <span class="text-slate-400">·</span>
+        <a href="https://pathwise.atlassian.net/browse/EZRD-2319" class="text-sky-700 hover:text-sky-900 hover:underline font-medium">EZRD-2319 ↗</a>
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
+
+    <!-- ===== Background ===== -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Background</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">The residual bottleneck</h2>
+          <p class="text-slate-700 leading-relaxed">
+            EZRD-2111 already cut the route list's per-request Redis traffic from ~2,757 commands
+            down to ~30. With Redis no longer the bottleneck, the remaining cost moved to MySQL.
+          </p>
+        </div>
+
+        <p class="text-slate-700 leading-relaxed mb-4">
+          A single <code class="k">GET /api/routes</code> (the route-list tab) issued dozens of
+          queries, dominated by one scan over the <code class="k">vwAllStops</code> view. The
+          reason it re-ran <em>every</em> time: the route-list path asks for the "stops used in
+          routes" list. The <strong>full-district</strong> stop list was already cached in Redis —
+          but the <strong>route-only</strong> variant skipped the cache entirely, so it re-ran the
+          view plus a tenant-wide subquery on each request. Under the concurrent regression load
+          this tailed toward ~18s and tripped the EZRD-2111 latency guard.
+        </p>
+
+        <div class="bg-sky-100 border-2 border-sky-300 rounded-xl p-5">
+          <div class="text-xs font-bold uppercase tracking-wider text-sky-800 mb-2">The query that re-ran on the hot path</div>
+          <pre class="font-mono text-sm text-slate-900 bg-white rounded-md p-4 border-2 border-sky-300 overflow-x-auto leading-relaxed">SELECT * FROM vwAllStops
+WHERE sandboxId = ? AND semesterId = ?
+  AND id IN (SELECT stopId FROM tripstop JOIN trip JOIN route …)</pre>
+          <p class="text-slate-700 text-sm leading-relaxed mt-3">
+            <code class="k">vwAllStops</code> is a 3-table view (~32 columns). This ran it, plus the
+            <code class="k">IN (subquery)</code>, for the whole route set on every poll.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== The fix ===== -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">The fix</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Cache the route-only stop list too</h2>
+          <p class="text-slate-700 leading-relaxed">
+            The route-only variant already had its own distinct cache key — it just wasn't being
+            written to or read from. The fix caches it like the full-district list, so the hot
+            route-list read no longer re-runs the view scan.
+          </p>
+        </div>
+
+        <p class="text-slate-700 leading-relaxed mb-4">
+          The one subtlety: a route's stop <em>membership</em> changes when trip data changes (not
+          only when the stop's own tables change), and each cached row carries the resolved school
+          name. So the route-only list is invalidated on a <strong>broader set of tables</strong>
+          than the full list — otherwise it could serve a stale route membership or school name:
+        </p>
+
+        <div class="grid sm:grid-cols-2 gap-3 mb-5">
+          <div class="bg-slate-50 border-2 border-slate-300 rounded-xl p-4">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Full-district list · unchanged</div>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="mono-chip">stop</span>
+              <span class="mono-chip">stopextra</span>
+              <span class="mono-chip">address</span>
+            </div>
+          </div>
+          <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-4">
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">Route-only list · now cached + broadened</div>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="mono-chip">stop</span>
+              <span class="mono-chip">stopextra</span>
+              <span class="mono-chip">address</span>
+              <span class="text-emerald-700 font-bold px-1">+</span>
+              <span class="mono-chip">tripstop</span>
+              <span class="mono-chip">trip</span>
+              <span class="mono-chip">route</span>
+              <span class="mono-chip">school</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-5">
+          <div class="flex items-start gap-3">
+            <div class="text-emerald-800 text-xl leading-none flex-shrink-0">✓</div>
+            <p class="text-slate-800 leading-relaxed">
+              <strong>Result shape is unchanged</strong>, so every consumer of the stop list is
+              unaffected. The change is surgical — one function in <code class="k">app/stop/stop.js</code>
+              plus a unit test covering the cross-request cache hit, route-table invalidation, the
+              staleness bust, and full-list no-regression. Shipped as PR&nbsp;#537
+              (<code class="k">2491dc11</code>).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== What was tested ===== -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-slate-600">Verification</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">What was tested</h2>
+          <p class="text-slate-700 leading-relaxed">
+            A caching fix has two things to prove: the caching actually suppresses the scan
+            (performance), and — the real risk — the newly-cached list still <em>invalidates</em>
+            correctly so the UI never shows a stale route.
+          </p>
+        </div>
+        <ul class="space-y-3 text-slate-700 leading-relaxed">
+          <li class="flex gap-3"><span class="text-slate-400 flex-shrink-0 pt-0.5">•</span><span><strong>Environment:</strong> UAT (<code class="k">uat.pathwiserouting.com</code>), tenant <code class="k">testqa</code>. The live build <code class="k">477ef62</code> was confirmed to be a direct descendant of the fix commit — i.e. the fix is genuinely deployed, not just marked as such.</span></li>
+          <li class="flex gap-3"><span class="text-slate-400 flex-shrink-0 pt-0.5">•</span><span><strong>Correctness:</strong> the route list renders the same routes and stops (unchanged result shape), and — the decisive check — a real edit to route data busts the cache instead of serving a stale list.</span></li>
+          <li class="flex gap-3"><span class="text-slate-400 flex-shrink-0 pt-0.5">•</span><span><strong>Performance:</strong> accepted qualitatively (see caveats) — the scan is confirmed gone from the hot path, cross-checked against production, which still runs the pre-fix build.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== Results ===== -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Results</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Passes UAT hardening</h2>
+          <p class="text-slate-700 leading-relaxed">
+            Deployed, no functional regression, and the cache-invalidation risk this fix introduces
+            is confirmed correct on the live build.
+          </p>
+        </div>
+
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+          <table class="w-full text-sm min-w-[720px]">
+            <colgroup>
+              <col class="w-[26%]" />
+              <col />
+              <col class="w-32" />
+            </colgroup>
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+                <th class="text-left px-4 py-3">Check</th>
+                <th class="text-left px-4 py-3">How</th>
+                <th class="text-left px-4 py-3">Result</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr class="align-top">
+                <td class="px-4 py-3 font-semibold text-slate-900">Actually deployed to UAT</td>
+                <td class="px-4 py-3 text-slate-700"><code class="k">/version</code> = <code class="k">477ef628</code>; the fix commit is its direct parent (ancestor-checked, not just trusting the Jira status).</td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Confirmed</span></td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 font-semibold text-slate-900">No functional regression</td>
+                <td class="px-4 py-3 text-slate-700">Route list + full stop hydration (names, schools, times, coordinates, map geometry) render correctly across all trips.</td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Pass</span></td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 font-semibold text-slate-900">Cache invalidation <span class="text-slate-500 font-normal">(the real risk)</span></td>
+                <td class="px-4 py-3 text-slate-700">Changed a stop on the route → the list showed the new value, not the stale cached one. Verified both directions. See below.</td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Pass</span></td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 font-semibold text-slate-900">Performance</td>
+                <td class="px-4 py-3 text-slate-700">Scan suppressed on the hot path; only reruns when route data changes. Qualitative — magnitude not reproduced on tiny <code class="k">testqa</code>.</td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Pass</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== The decisive test (numbered sequence) ===== -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-purple-800">How invalidation was verified</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">The decisive test</h2>
+          <p class="text-slate-700 leading-relaxed">
+            This is the check that matters: the fix now caches a list that <em>could</em> go stale
+            if invalidation were mis-wired. A real write to a watched table must force the route
+            list to re-read.
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">1</div>
+            <div class="flex-1 pt-1">
+              <p class="text-slate-700 leading-relaxed"><strong>Warm the cache.</strong> Load the route list for <code class="k">testqa</code> so the route-only stop list is cached in Redis.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">2</div>
+            <div class="flex-1 pt-1">
+              <p class="text-slate-700 leading-relaxed"><strong>Make a real write.</strong> Rename a stop used by the route — <code class="k">Chateau Drive Circle</code> → <code class="k">Chateau Drive Circle INVTEST</code> — in the Stops tab. This bumps the <code class="k">stop</code> table's modified-time, one of the tables the route-only cache now watches.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">3</div>
+            <div class="flex-1 pt-1">
+              <p class="text-slate-700 leading-relaxed"><strong>Hard-reload the route list.</strong> Force a fresh server read so it hits the route-only cache path.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">4</div>
+            <div class="flex-1 pt-1">
+              <p class="text-slate-700 leading-relaxed"><strong>Verify, then revert.</strong> Confirm the new name appears in every trip; then rename it back and confirm the original returns.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-5 mt-6">
+          <div class="flex items-start gap-3">
+            <div class="text-emerald-800 text-xl leading-none flex-shrink-0">✓</div>
+            <div>
+              <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-1">Result</div>
+              <p class="text-slate-800 leading-relaxed">
+                After the write, the route-only stop <strong>list showed the new name in every trip</strong>
+                (TRIP #1 / #2 / #3 / PM) and on the map — <strong>not</strong> the stale cached name.
+                Reverting restored the original throughout. The newly-cached route-only list
+                invalidates correctly on a real write. <code class="k">testqa</code> was left at its
+                baseline.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Performance evidence ===== -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Performance</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Why we're confident the scan is gone</h2>
+          <p class="text-slate-700 leading-relaxed">
+            The <code class="k">vwAllStops</code> scan is a literal, searchable DB span in APM, so
+            its presence per request is directly observable.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 mb-5">
+          <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
+            <div class="text-2xl font-extrabold text-sky-900 tabular-nums">≈20</div>
+            <div class="text-xs text-slate-600 mt-1 leading-snug">scans in one route-list request — pre-fix build (still on production)</div>
+          </div>
+          <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
+            <div class="text-2xl font-extrabold text-sky-900 tabular-nums">≈0</div>
+            <div class="text-xs text-slate-600 mt-1 leading-snug">on a warm route-list read — post-fix (UAT); reruns only when route data changes</div>
+          </div>
+          <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
+            <div class="text-2xl font-extrabold text-sky-900 tabular-nums">1.47s</div>
+            <div class="text-xs text-slate-600 mt-1 leading-snug">heaviest single scan, pre-fix — mid-size tenant under load (per ticket, dev-eks)</div>
+          </div>
+        </div>
+
+        <p class="text-slate-700 leading-relaxed">
+          On <strong>production</strong> — still running the pre-fix build — a single route-list
+          request fanned out <strong>~20</strong> of these scans in under half a second: the
+          uncached behavior. On <strong>UAT</strong> (fixed build) the scan appears only when route
+          data actually changes, then the list is served from Redis. In a controlled reload after
+          an edit, the re-scan showed up exactly when the cache was invalidated, then went quiet —
+          consistent with the cache being active. Note the per-query cost is small in steady state;
+          the 1.47s figure was a mid-size tenant under concurrent load. The fix's win is
+          <strong>eliminating the scan from the hot poll path</strong>, not making one query faster.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== Scope & caveats ===== -->
+    <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+      <div class="flex items-start gap-4">
+        <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+        <div>
+          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-3">Scope &amp; caveats — what this verification does and doesn't claim</div>
+          <ul class="space-y-2.5 text-slate-800 leading-relaxed">
+            <li class="flex gap-2.5"><span class="text-amber-700 flex-shrink-0">•</span><span><strong>Magnitude not reproduced on UAT.</strong> <code class="k">testqa</code> is a single small route, so the headline 1.47s figure can't show there — it lives in the ticket's dev-eks trace. What was shown is that the scan is gone from the hot path.</span></li>
+            <li class="flex gap-2.5"><span class="text-amber-700 flex-shrink-0">•</span><span><strong>Not yet in production.</strong> Prod still runs the pre-fix build and still does the scan — the latency win lands when this ships to prod.</span></li>
+            <li class="flex gap-2.5"><span class="text-amber-700 flex-shrink-0">•</span><span><strong>Column-narrow / base-table JOIN rewrite deferred.</strong> The ticket's sharpened alternative (drop the view, select only the needed columns) was intentionally set aside in favor of caching — smaller blast radius. It's still available if the cache-miss path matters at scale.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 pb-12 pt-2">
+    <div class="text-slate-500 text-sm text-center">
+      EZRD-2319 · UAT verification ·
+      <a href="https://pathwise.atlassian.net/browse/EZRD-2319" class="text-slate-600 hover:text-slate-900 hover:underline">Jira</a> ·
+      PR #537 (<code class="k">2491dc11</code>) ·
+      <a href="../" class="text-slate-600 hover:text-slate-900 hover:underline">all reports</a>
+    </div>
+  </footer>
+
+  <!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
+  <style data-report-enhanced>
+    .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 60;
+      background: rgb(2 132 199); transition: width .1s linear; }
+    .anchor-h { position: relative; }
+    .anchor-link { position: absolute; left: -1.15rem; top: 0.12em; opacity: 0; text-decoration: none;
+      color: rgb(148 163 184); font-weight: 600; transition: opacity .12s ease; }
+    .anchor-h:hover .anchor-link, .anchor-link:focus { opacity: 1; }
+    .anchor-link:hover { color: rgb(37 99 235); }
+    @media (max-width: 640px) { .anchor-link { display: none; } }
+    @media (prefers-reduced-motion: reduce) { .reading-progress { transition: none; } }
+    @media print {
+      .reading-progress, .no-print, .anchor-link { display: none !important; }
+      html { font-size: 11.5pt; }
+      body { background: #fff !important; }
+      .main-card, [class*="shadow"] { box-shadow: none !important; }
+      [class*="sticky"] { position: static !important; }
+      section, .main-card, tr, pre, figure { break-inside: avoid; }
+      h1, h2, h3 { break-after: avoid; }
+      [class*="overflow-"] { overflow: visible !important; }
+      table { min-width: 0 !important; width: 100% !important; font-size: 9pt; }
+      pre { white-space: pre-wrap !important; overflow-wrap: anywhere; }
+      a { text-decoration: none; }
+    }
+  </style>
+  <div class="reading-progress no-print" aria-hidden="true"></div>
+  <script data-report-enhanced>
+  (function () {
+    if (window.__reportEnhanced) return; window.__reportEnhanced = true;
+    var bar = document.querySelector('.reading-progress'), ticking = false;
+    function upd() {
+      var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+      var top = h.scrollTop || document.body.scrollTop;
+      if (bar) bar.style.width = (max > 0 ? (top / max) * 100 : 0) + '%';
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { requestAnimationFrame(upd); ticking = true; }
+    }, { passive: true });
+    window.addEventListener('resize', upd); upd();
+
+    var used = {};
+    function slug(t) {
+      return t.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'section';
+    }
+    document.querySelectorAll('main h2, section h2').forEach(function (h) {
+      if (h.querySelector('.anchor-link')) return;
+      var id = h.id;
+      if (!id) { id = slug(h.textContent); while (used[id] || document.getElementById(id)) id += '-x'; h.id = id; }
+      used[id] = true;
+      h.classList.add('anchor-h');
+      var a = document.createElement('a');
+      a.className = 'anchor-link'; a.href = '#' + id; a.textContent = '#';
+      a.setAttribute('aria-label', 'Link to this section');
+      h.insertBefore(a, h.firstChild);
+    });
+  })();
+  </script>
+</body>
+</html>
