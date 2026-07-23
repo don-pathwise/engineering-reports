@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EZRD-2319 · Route-List Stop-Cache Fix — UAT Verification</title>
-  <meta name="description" content="EZRD-2319: caching the route-only stop list so GET /api/routes stops re-running the vwAllStops view scan on every request. Explainer + UAT verification report." />
+  <meta name="description" content="EZRD-2319: caching the route-only stop list so GET /api/routes stops re-running the vwAllStops view scan on every request. Explainer + step-by-step UAT testing walkthrough." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -44,6 +44,8 @@
       white-space: nowrap;
     }
     code.k.wrap { white-space: normal; overflow-wrap: anywhere; }
+    .phase-label { display: flex; align-items: center; gap: 0.75rem; }
+    .phase-label .rule { flex: 1; height: 1px; background: rgb(226 232 240); }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans antialiased">
@@ -64,7 +66,7 @@
       <p class="mt-4 text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
         After EZRD-2111 removed the Redis fan-out, the route list's residual cost was a heavy
         MySQL view scan that re-ran on <em>every</em> request. This change caches it. Below is
-        what the fix does, and how it was verified on UAT.
+        what the fix does, and a step-by-step account of how it was tested on UAT.
       </p>
       <p class="mt-5 text-sm text-slate-600 flex flex-wrap items-center gap-x-2 gap-y-1">
         <span>Verified on <code class="k">uat.pathwiserouting.com</code></span>
@@ -182,26 +184,100 @@ WHERE sandboxId = ? AND semesterId = ?
       </div>
     </section>
 
-    <!-- ===== What was tested ===== -->
+    <!-- ===== Testing walkthrough (the readout) ===== -->
     <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
       <div class="p-7 sm:p-9">
-        <div class="mb-6">
+        <div class="mb-7">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-slate-600">Verification</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-purple-800">Testing walkthrough</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">What was tested</h2>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">How it was tested, step by step</h2>
           <p class="text-slate-700 leading-relaxed">
-            A caching fix has two things to prove: the caching actually suppresses the scan
-            (performance), and — the real risk — the newly-cached list still <em>invalidates</em>
-            correctly so the UI never shows a stale route.
+            A caching fix has two things to prove: that the cache actually suppresses the scan
+            (performance), and — the real risk — that the newly-cached list still <em>invalidates</em>
+            so the UI never serves a stale route. Here is the full sequence, from reading the code
+            to cleaning up after.
           </p>
         </div>
-        <ul class="space-y-3 text-slate-700 leading-relaxed">
-          <li class="flex gap-3"><span class="text-slate-400 flex-shrink-0 pt-0.5">•</span><span><strong>Environment:</strong> UAT (<code class="k">uat.pathwiserouting.com</code>), tenant <code class="k">testqa</code>. The live build <code class="k">477ef62</code> was confirmed to be a direct descendant of the fix commit — i.e. the fix is genuinely deployed, not just marked as such.</span></li>
-          <li class="flex gap-3"><span class="text-slate-400 flex-shrink-0 pt-0.5">•</span><span><strong>Correctness:</strong> the route list renders the same routes and stops (unchanged result shape), and — the decisive check — a real edit to route data busts the cache instead of serving a stale list.</span></li>
-          <li class="flex gap-3"><span class="text-slate-400 flex-shrink-0 pt-0.5">•</span><span><strong>Performance:</strong> accepted qualitatively (see caveats) — the scan is confirmed gone from the hot path, cross-checked against production, which still runs the pre-fix build.</span></li>
-        </ul>
+
+        <!-- Phase A -->
+        <div class="phase-label mb-4">
+          <span class="text-xs font-bold uppercase tracking-wider text-purple-800">Grounding · before touching anything live</span>
+          <span class="rule"></span>
+        </div>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">1</div>
+            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Read the ticket and the merged code.</strong> Pulled EZRD-2319 and <code class="k">git show</code> of PR #537 (<code class="k">2491dc11</code>) to pin exactly what changed: the route-only stop list in <code class="k">app/stop/stop.js</code> is now Redis-cached, invalidated on the broadened table set.</p></div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">2</div>
+            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Confirmed it's genuinely deployed to UAT.</strong> <code class="k">uat.pathwiserouting.com/version</code> = <code class="k">477ef628</code>; ancestor-checked that the fix commit is its <em>direct parent</em> — so it's actually live, not just trusting the "Hardening in UAT" status (which has been wrong before).</p></div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">3</div>
+            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Pre-flight.</strong> Checked the <code class="k">kubectl</code> context — it was pointed at production, so I deliberately left it untouched. All testing was read-only / UI-driven; nothing was run against prod.</p></div>
+          </div>
+        </div>
+
+        <!-- Phase B -->
+        <div class="phase-label mb-4">
+          <span class="text-xs font-bold uppercase tracking-wider text-purple-800">Live checks · UAT (uat-prd), tenant testqa</span>
+          <span class="rule"></span>
+        </div>
+        <div class="space-y-4 mb-6">
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">4</div>
+            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Confirmed access and data.</strong> Loaded testqa's Routes tab — one route (<em>Activity Bus - Alternative Route A Test</em>, 4 trips, ~13 stops), enough to exercise the cached route-only path.</p></div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">5</div>
+            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Functional render check.</strong> Expanded the route: every trip, stop name, resolved school name, arrival time, and the map geometry rendered correctly → the cached list's result shape is unchanged, no regression.</p></div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">6</div>
+            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Datadog APM.</strong> Resolved the services (<code class="k">ezrouting</code> / <code class="k">ezrouting-mysql</code>), confirmed UAT = env <code class="k">uat-prd</code> by matching my own request (build <code class="k">477ef62</code>), and located the <code class="k">vwAllStops</code> scan span. Saw <strong>production — still on the pre-fix build — fan out ~20 of these scans in one request</strong>. UAT's own volume was too low to show a clean before/after, so I did not claim one. (Detail in the next section.)</p></div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">7</div>
+            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>The decisive test — cache invalidation.</strong> Warmed the cache, then renamed a stop the route uses (<code class="k">Chateau Drive Circle</code> → <code class="k">Chateau Drive Circle INVTEST</code>) in the Stops tab — a real write to a watched table (<code class="k">stop</code>). Hard-reloaded the route list to force a fresh server read.</p></div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-5 mb-6 ml-0 sm:ml-[3.25rem]">
+          <div class="flex items-start gap-3">
+            <div class="text-emerald-800 text-xl leading-none flex-shrink-0">✓</div>
+            <div>
+              <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-1">Result — step 7</div>
+              <p class="text-slate-800 leading-relaxed">
+                The route-only stop <strong>list showed the new name in every trip</strong>
+                (TRIP #1 / #2 / #3 / PM) and on the map — <strong>not</strong> the stale cached
+                name. Reverting the rename restored the original throughout. The newly-cached
+                route-only list invalidates correctly on a real write.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">8</div>
+            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Corroboration.</strong> APM showed <code class="k">vwAllStops</code> scans on UAT at the exact moments I forced cache misses (the write-reload and the revert-reload), then quiet — consistent with the cache being active rather than scanning on every request.</p></div>
+          </div>
+        </div>
+
+        <!-- Phase C -->
+        <div class="phase-label mb-4">
+          <span class="text-xs font-bold uppercase tracking-wider text-purple-800">Cleanup &amp; record</span>
+          <span class="rule"></span>
+        </div>
+        <div class="space-y-4">
+          <div class="flex items-start gap-4">
+            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">9</div>
+            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Left testqa clean and wrote it up.</strong> Reverted the rename and confirmed the baseline is restored, then recorded the full investigation (queries, evidence, verdict) in the engineering vault.</p></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -247,7 +323,7 @@ WHERE sandboxId = ? AND semesterId = ?
               </tr>
               <tr class="align-top">
                 <td class="px-4 py-3 font-semibold text-slate-900">Cache invalidation <span class="text-slate-500 font-normal">(the real risk)</span></td>
-                <td class="px-4 py-3 text-slate-700">Changed a stop on the route → the list showed the new value, not the stale cached one. Verified both directions. See below.</td>
+                <td class="px-4 py-3 text-slate-700">Changed a stop on the route → the list showed the new value, not the stale cached one. Verified both directions (step 7 above).</td>
                 <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Pass</span></td>
               </tr>
               <tr class="align-top">
@@ -257,67 +333,6 @@ WHERE sandboxId = ? AND semesterId = ?
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== The decisive test (numbered sequence) ===== -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
-      <div class="p-7 sm:p-9">
-        <div class="mb-6">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-purple-800">How invalidation was verified</div>
-          </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">The decisive test</h2>
-          <p class="text-slate-700 leading-relaxed">
-            This is the check that matters: the fix now caches a list that <em>could</em> go stale
-            if invalidation were mis-wired. A real write to a watched table must force the route
-            list to re-read.
-          </p>
-        </div>
-
-        <div class="space-y-4">
-          <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">1</div>
-            <div class="flex-1 pt-1">
-              <p class="text-slate-700 leading-relaxed"><strong>Warm the cache.</strong> Load the route list for <code class="k">testqa</code> so the route-only stop list is cached in Redis.</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">2</div>
-            <div class="flex-1 pt-1">
-              <p class="text-slate-700 leading-relaxed"><strong>Make a real write.</strong> Rename a stop used by the route — <code class="k">Chateau Drive Circle</code> → <code class="k">Chateau Drive Circle INVTEST</code> — in the Stops tab. This bumps the <code class="k">stop</code> table's modified-time, one of the tables the route-only cache now watches.</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">3</div>
-            <div class="flex-1 pt-1">
-              <p class="text-slate-700 leading-relaxed"><strong>Hard-reload the route list.</strong> Force a fresh server read so it hits the route-only cache path.</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">4</div>
-            <div class="flex-1 pt-1">
-              <p class="text-slate-700 leading-relaxed"><strong>Verify, then revert.</strong> Confirm the new name appears in every trip; then rename it back and confirm the original returns.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-5 mt-6">
-          <div class="flex items-start gap-3">
-            <div class="text-emerald-800 text-xl leading-none flex-shrink-0">✓</div>
-            <div>
-              <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-1">Result</div>
-              <p class="text-slate-800 leading-relaxed">
-                After the write, the route-only stop <strong>list showed the new name in every trip</strong>
-                (TRIP #1 / #2 / #3 / PM) and on the map — <strong>not</strong> the stale cached name.
-                Reverting restored the original throughout. The newly-cached route-only list
-                invalidates correctly on a real write. <code class="k">testqa</code> was left at its
-                baseline.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -356,8 +371,8 @@ WHERE sandboxId = ? AND semesterId = ?
           On <strong>production</strong> — still running the pre-fix build — a single route-list
           request fanned out <strong>~20</strong> of these scans in under half a second: the
           uncached behavior. On <strong>UAT</strong> (fixed build) the scan appears only when route
-          data actually changes, then the list is served from Redis. In a controlled reload after
-          an edit, the re-scan showed up exactly when the cache was invalidated, then went quiet —
+          data actually changes, then the list is served from Redis. In the controlled reload after
+          my edit, the re-scan showed up exactly when the cache was invalidated, then went quiet —
           consistent with the cache being active. Note the per-query cost is small in steady state;
           the 1.47s figure was a mid-size tenant under concurrent load. The fix's win is
           <strong>eliminating the scan from the hot poll path</strong>, not making one query faster.
