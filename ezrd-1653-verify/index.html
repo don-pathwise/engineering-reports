@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EZRD-1653 — Verification Guide (prod bug · UAT fix)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: {
+      sans: ['Inter','ui-sans-serif','system-ui','sans-serif'],
+      mono: ['JetBrains Mono','ui-monospace','SFMono-Regular','monospace'],
+    }}}};
+  </script>
+  <style>
+    html { font-size: 17px; scroll-behavior: smooth; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    h1,h2,h3 { text-wrap: balance; } p { text-wrap: pretty; }
+    .badge-num { width:2.4rem; height:2.4rem; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem; font-variant-numeric:tabular-nums; box-shadow:0 1px 0 rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.06); }
+    .pill { display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .75rem; border-radius:9999px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; border-width:1px; }
+    .main-card { box-shadow:0 1px 3px rgba(15,23,42,.08), 0 1px 2px rgba(15,23,42,.04); }
+    code.k { font-family:'JetBrains Mono',ui-monospace,monospace; background:rgb(226 232 240); color:rgb(15 23 42); padding:.1rem .4rem; border-radius:.25rem; font-size:.82em; white-space:nowrap; }
+    .kicker { display:inline-flex; align-items:center; gap:.5rem; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; }
+    .kdot { width:2.5px; height:2.5px; border-radius:9999px; box-shadow:0 0 0 2.5px currentColor; }
+    .meta-chip { display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border-radius:.5rem; font-size:.8rem; font-weight:600; background:rgb(248 250 252); border:1px solid rgb(203 213 225); color:rgb(51 65 85); }
+    section { scroll-margin-top: 1.5rem; }
+    @media print { .no-print{display:none!important} .main-card{box-shadow:none!important} section{break-inside:avoid} *{print-color-adjust:exact;-webkit-print-color-adjust:exact} }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+<header class="border-b-2 border-slate-300 bg-white">
+  <div class="max-w-6xl mx-auto px-6 py-12">
+    <div class="flex items-center gap-2 mb-5">
+      <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span> Verification guide · EZRD-1653
+      </span>
+    </div>
+    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-4">
+      Splitting a trip added stops nobody assigned
+    </h1>
+    <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+      Two runs of the same steps. On <strong>production</strong> you should still see the bug — extra stops on the
+      receiving buses, some listed twice at the same minute. On <strong>UAT</strong>, with the fix deployed, the same
+      split should come out clean.
+    </p>
+    <div class="flex flex-wrap gap-2 mt-7">
+      <span class="meta-chip">App · Trip Preparation</span>
+      <span class="meta-chip">Tenant · testqa</span>
+      <span class="meta-chip">Flow · View/Edit Trip → Break Up</span>
+      <span class="meta-chip">Two runs · prod, then UAT</span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-10 space-y-6">
+
+  <!-- ORIENTATION -->
+  <section id="what" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-slate-700 mb-4"><span class="kdot"></span> Orientation</div>
+    <h2 class="text-2xl font-bold text-slate-950 mb-4">What you're doing, in plain terms</h2>
+    <p class="text-slate-700 leading-relaxed mb-4 max-w-3xl">
+      Trip Preparation is the “today isn't going to plan” tool. When a bus loses its driver, a dispatcher covers its
+      stops using other buses — often by <strong>splitting one trip's stops across two other buses</strong>. That's the
+      action you're going to perform, and it's what the reporting district was doing when they hit this.
+    </p>
+    <p class="text-slate-700 leading-relaxed mb-6 max-w-3xl">
+      Trip Prep edits apply to <strong>one service day</strong> and don't change the permanent route plan — which is
+      why moved stops are labelled “Moved from route …” and carry an undo arrow.
+    </p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5">
+        <div class="text-xs font-extrabold uppercase tracking-wider text-rose-800 mb-2">The bug</div>
+        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+          Each receiving bus gained extra stops with no “Moved from” label, several duplicating a stop already on the
+          list at the same arrival minute. Those stops reached the driver tablets and parent apps, so a bus showed a
+          longer route with times that didn't match.
+        </p>
+      </div>
+      <div class="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-5">
+        <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-800 mb-2">The fix</div>
+        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+          Those stops were scratch work from the arrival-time calculation, never meant to be saved. They're now
+          discarded before the split is stored, and hidden from the preview, so what you approve is what's kept.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROD -->
+  <section id="prod" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-rose-800 mb-4"><span class="kdot"></span> Run 1</div>
+    <h2 class="text-2xl font-bold text-slate-950 mb-2">Verify bug on prod</h2>
+    <p class="text-slate-700 leading-relaxed mb-6 max-w-3xl">
+      Production does not have the fix, so this run should <strong>reproduce the bug</strong> and give you the
+      “before” evidence. Open Trip Preparation for <code class="k">testqa</code> from the production EZDistrict home.
+    </p>
+
+    <div class="rounded-xl border-2 border-rose-300 bg-rose-50 p-5 mb-5">
+      <div class="text-xs font-extrabold uppercase tracking-wider text-rose-800 mb-2">Service day</div>
+      <p class="text-slate-900 text-lg font-bold mb-1">07 / 29 / 2026</p>
+      <p class="text-slate-700 text-[.9rem]">Any weekday in the current 2026~2027 semester works equally well.</p>
+    </div>
+
+    <div class="overflow-x-auto mb-5">
+      <table class="w-full text-[.93rem] border-collapse">
+        <thead>
+          <tr class="border-b-2 border-slate-300">
+            <th class="text-left font-bold text-slate-800 py-2 pr-4">Role</th>
+            <th class="text-left font-bold text-slate-800 py-2 pr-4">Route</th>
+            <th class="text-left font-bold text-slate-800 py-2 pr-4">Trip</th>
+            <th class="text-left font-bold text-slate-800 py-2">Note this before you start</th>
+          </tr>
+        </thead>
+        <tbody class="text-slate-700">
+          <tr class="border-b border-slate-200 bg-rose-50">
+            <td class="py-2.5 pr-4 font-bold text-rose-900">Break&nbsp;up</td>
+            <td class="py-2.5 pr-4 font-semibold">West Elementary</td>
+            <td class="py-2.5 pr-4"><code class="k">Test3</code></td>
+            <td class="py-2.5">27 stops · 6:00 – 7:27 AM</td>
+          </tr>
+          <tr class="border-b border-slate-200">
+            <td class="py-2.5 pr-4 font-bold text-slate-900">Into</td>
+            <td class="py-2.5 pr-4 font-semibold">Emergency Transport - High Route B</td>
+            <td class="py-2.5 pr-4"><code class="k">AM-HS-EMRG-25</code></td>
+            <td class="py-2.5"><strong>8 stops · 7:06 – 7:34 AM</strong></td>
+          </tr>
+          <tr>
+            <td class="py-2.5 pr-4 font-bold text-slate-900">And into</td>
+            <td class="py-2.5 pr-4 font-semibold">Activity Bus - South Middle</td>
+            <td class="py-2.5 pr-4"><code class="k">AM-MS-ACT-46</code></td>
+            <td class="py-2.5"><strong>8 stops · 7:39 – 8:00 AM</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ol class="space-y-4 mb-6">
+      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">1</span>
+        <div><div class="font-bold text-slate-900">Set the service day, then write down both destination windows</div>
+        <p class="text-slate-700 leading-relaxed">The two “7:06 – 7:34” and “7:39 – 8:00” figures are your baseline. This is the easiest evidence to capture and the easiest step to forget.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">2</span>
+        <div><div class="font-bold text-slate-900">Open <code class="k">Test3</code> on West Elementary</div>
+        <p class="text-slate-700 leading-relaxed">Hover the route row, then click the ✏️ next to the trip name — the pencil only appears on hover, and on a narrow window it sits past the right edge.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">3</span>
+        <div><div class="font-bold text-slate-900">Click <strong>BREAK UP</strong>, tick the two destination trips, then <strong>CALCULATE</strong></div>
+        <p class="text-slate-700 leading-relaxed">The plan screen should look correct — every stop assigned to exactly one bus. Worth a screenshot: it proves the problem comes later.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">4</span>
+        <div><div class="font-bold text-slate-900">Click <strong>CALCULATE DETAILS</strong> — the bug shows here</div>
+        <p class="text-slate-700 leading-relaxed">Scan the preview for a stop name appearing twice with the <em>same</em> arrival time. <strong>This is the key screenshot.</strong></p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">5</span>
+        <div><div class="font-bold text-slate-900">Save it: <strong>SAVE</strong> → <strong>YES</strong>, then <strong>NO</strong> to notifications</div>
+        <p class="text-slate-700 leading-relaxed">Answer <strong>NO</strong> to “send notifications to the parents” so no messages go out.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">6</span>
+        <div><div class="font-bold text-slate-900">Compare against your baseline, then reopen a destination trip</div>
+        <p class="text-slate-700 leading-relaxed">Both windows should now be visibly longer, and the reopened trip should still show the repeated stop.</p></div></li>
+    </ol>
+
+    <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5">
+      <div class="font-bold text-slate-900 mb-2">Bug confirmed if you see all three</div>
+      <ul class="text-slate-700 text-[.95rem] leading-relaxed space-y-1.5 list-disc pl-5">
+        <li>A stop listed <strong>twice at the same arrival minute</strong> in the preview.</li>
+        <li>A row with <strong>no “Moved from …” label</strong> that also isn't one of that bus's own stops — the clearest single tell.</li>
+        <li>Both destination trip windows <strong>longer than the baseline</strong> you noted in step 1.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- UAT -->
+  <section id="uat" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-emerald-800 mb-4"><span class="kdot"></span> Run 2</div>
+    <h2 class="text-2xl font-bold text-slate-950 mb-2">Verify fix on UAT</h2>
+    <p class="text-slate-700 leading-relaxed mb-6 max-w-3xl">
+      Same steps, fix deployed. Open Trip Preparation for <code class="k">testqa</code> from
+      <code class="k">home.pathwiserouting.com</code>.
+    </p>
+
+    <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5 mb-5">
+      <div class="text-xs font-extrabold uppercase tracking-wider text-amber-800 mb-2">Service day — different from prod</div>
+      <p class="text-slate-900 text-lg font-bold mb-1">05 / 27 / 2026</p>
+      <p class="text-slate-700 text-[.9rem]">
+        This tenant's routes sit in the 2025~2026 semester on UAT. <strong>Today's date shows an almost empty
+        list</strong> — that's the data, not a broken environment.
+      </p>
+    </div>
+
+    <div class="overflow-x-auto mb-5">
+      <table class="w-full text-[.93rem] border-collapse">
+        <thead>
+          <tr class="border-b-2 border-slate-300">
+            <th class="text-left font-bold text-slate-800 py-2 pr-4">Role</th>
+            <th class="text-left font-bold text-slate-800 py-2 pr-4">Route</th>
+            <th class="text-left font-bold text-slate-800 py-2 pr-4">Trip</th>
+            <th class="text-left font-bold text-slate-800 py-2">Note this before you start</th>
+          </tr>
+        </thead>
+        <tbody class="text-slate-700">
+          <tr class="border-b border-slate-200 bg-emerald-50">
+            <td class="py-2.5 pr-4 font-bold text-emerald-900">Break&nbsp;up</td>
+            <td class="py-2.5 pr-4 font-semibold">West Elementary</td>
+            <td class="py-2.5 pr-4"><code class="k">Test3</code></td>
+            <td class="py-2.5">27 stops · 6:00 – 7:27 AM</td>
+          </tr>
+          <tr class="border-b border-slate-200">
+            <td class="py-2.5 pr-4 font-bold text-slate-900">Into</td>
+            <td class="py-2.5 pr-4 font-semibold">Emergency Transport - High Route B</td>
+            <td class="py-2.5 pr-4"><code class="k">AM-HS-EMRG-25</code></td>
+            <td class="py-2.5"><strong>7 stops · 7:06 – 7:34 AM</strong></td>
+          </tr>
+          <tr>
+            <td class="py-2.5 pr-4 font-bold text-slate-900">And into</td>
+            <td class="py-2.5 pr-4 font-semibold">Late Bus - Elementary Express</td>
+            <td class="py-2.5 pr-4"><code class="k">AM-ELEM-LATE-53</code></td>
+            <td class="py-2.5"><strong>6 stops · 7:18 – 7:30 AM</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-slate-700 leading-relaxed mb-5 max-w-3xl">
+      Run steps 1–6 exactly as above. Then check the fix held:
+    </p>
+
+    <div class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-5 mb-5">
+      <div class="font-bold text-slate-900 mb-2">Fix confirmed if all three hold</div>
+      <ul class="text-slate-700 text-[.95rem] leading-relaxed space-y-1.5 list-disc pl-5">
+        <li><strong>Every row is explainable</strong> — it either carries a “Moved from …” label or is one of that bus's own original stops. No unlabelled strangers.</li>
+        <li><strong>Stop counts add up</strong>: each destination ends with <em>its own stop count plus the number of stops assigned to it</em>, and nothing more.</li>
+        <li><strong>No stop appears twice at the same arrival minute.</strong></li>
+      </ul>
+    </div>
+
+    <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
+      <div class="font-bold text-slate-900 mb-2">One thing that is <em>not</em> a failure</div>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed">
+        A stop name may still appear twice if the receiving bus <strong>already served that stop</strong> and students
+        were moved to it — one row will be its own stop, the other will carry a “Moved from …” label, and the times
+        will differ. Both are explainable, and it's tracked separately. The failure signal is an
+        <strong>unlabelled</strong> row, or two rows at the <strong>same minute</strong>.
+      </p>
+    </div>
+  </section>
+
+  <!-- TRAPS -->
+  <section id="traps" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-amber-800 mb-4"><span class="kdot"></span> Before you start</div>
+    <h2 class="text-2xl font-bold text-slate-950 mb-5">Three things that will waste your time</h2>
+    <div class="space-y-4">
+      <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
+        <div class="font-bold text-slate-900 mb-1">Use the destination trips named above, not others</div>
+        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+          On the Break&nbsp;Up list, picking a trip whose route isn't loaded in the view behind the modal
+          <strong>crashes on CALCULATE</strong> with nothing on screen to explain it. That's a separate known defect.
+          The trips listed here are safe.
+        </p>
+      </div>
+      <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
+        <div class="font-bold text-slate-900 mb-1">The edit pencil only exists while the row is hovered</div>
+        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+          Hover the route row first. On a narrow window it sits past the right edge — widen the window or scroll the
+          table sideways.
+        </p>
+      </div>
+      <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
+        <div class="font-bold text-slate-900 mb-1">An empty route list means the wrong date</div>
+        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+          Trip Prep is day-scoped, and the two environments need <strong>different dates</strong> — 07/29/2026 on prod,
+          05/27/2026 on UAT. An empty list is almost always a date outside the semester holding the data.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLEANUP -->
+  <section id="after" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-slate-700 mb-4"><span class="kdot"></span> Afterwards</div>
+    <h2 class="text-2xl font-bold text-slate-950 mb-4">What you leave behind</h2>
+    <p class="text-slate-700 leading-relaxed mb-4 max-w-3xl">
+      Both tenants had <strong>no prior day-changes</strong> on these trips, so everything you see afterwards is
+      yours. A saved split affects only the service day you chose and leaves the permanent route plan untouched.
+    </p>
+    <p class="text-slate-700 leading-relaxed max-w-3xl">
+      If you repeat a run, start from a <strong>different source trip</strong>. Re-running a split over trips you've
+      already split adds to the mess rather than resetting it — on the unfixed environment that makes the symptom
+      worse each time, which is exactly what the reporting district experienced.
+    </p>
+  </section>
+
+  <footer class="pt-4 pb-10 text-center text-slate-500 text-sm">
+    EZRD-1653 · verification guide · Trip Preparation break-up flow
+  </footer>
+
+</main>
+</body>
+</html>
