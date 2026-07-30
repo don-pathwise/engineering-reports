@@ -100,10 +100,11 @@
 
     <div class="rounded-xl border-2 border-rose-300 bg-rose-50 p-5 mb-5">
       <div class="text-xs font-extrabold uppercase tracking-wider text-rose-800 mb-2">Service day</div>
-      <p class="text-slate-900 text-lg font-bold mb-1">07 / 29 / 2026</p>
+      <p class="text-slate-900 text-lg font-bold mb-1">08 / 05 / 2026 &nbsp;<span class="text-slate-500 text-sm font-semibold">(Wednesday)</span></p>
       <p class="text-slate-700 text-[.9rem]">
-        Use this exact date. Which trips a day offers depends on each trip's recurrence, so another weekday
-        may not offer the three trips below.
+        Checked against the database: all three trips below run that day, and the day has no existing changes on it.
+        Which trips a day offers depends on each trip's recurrence, so don't substitute another date casually —
+        <strong>07/31, 08/03, 08/04, 08/06 and 08/07</strong> were also confirmed to offer all three if you need one.
       </p>
     </div>
 
@@ -113,6 +114,7 @@
           <tr class="border-b-2 border-slate-300">
             <th class="text-left font-bold text-slate-800 py-2 pr-4">Role</th>
             <th class="text-left font-bold text-slate-800 py-2 pr-4">Route</th>
+            <th class="text-left font-bold text-slate-800 py-2 pr-4">Which tab</th>
             <th class="text-left font-bold text-slate-800 py-2 pr-4">Trip</th>
             <th class="text-left font-bold text-slate-800 py-2">Note this before you start</th>
           </tr>
@@ -121,18 +123,21 @@
           <tr class="border-b border-slate-200 bg-rose-50">
             <td class="py-2.5 pr-4 font-bold text-rose-900">Break&nbsp;up</td>
             <td class="py-2.5 pr-4 font-semibold">West Elementary</td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">Test3</code></td>
             <td class="py-2.5">27 stops · 6:00 – 7:27 AM</td>
           </tr>
           <tr class="border-b border-slate-200">
             <td class="py-2.5 pr-4 font-bold text-slate-900">Into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - High Route B</td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">AM-HS-EMRG-25</code></td>
             <td class="py-2.5"><strong>8 stops · 7:06 – 7:34 AM</strong></td>
           </tr>
           <tr>
             <td class="py-2.5 pr-4 font-bold text-slate-900">And into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - West Alternative</td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">UNCOVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">AM-ALT-EMRG-52</code></td>
             <td class="py-2.5"><strong>8 stops · 7:27 – 7:55 AM</strong></td>
           </tr>
@@ -144,9 +149,9 @@
       <div class="font-bold text-slate-900 mb-2">Two things to know before step 1</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-2">
         The route list is split across two tabs — <strong>UNCOVERED ROUTES</strong> (the one you land on) and
-        <strong>COVERED ROUTES</strong>. A route sits on one or the other depending on whether its driver and bus are
-        available, so <strong>check both tabs</strong> when looking for a route by name. On our run the source route was
-        on <em>COVERED</em> and both destinations were on <em>UNCOVERED</em>.
+        <strong>COVERED ROUTES</strong>. A route lands on COVERED only when it has both a bus and an available driver, so
+        the same route can be on a different tab in each environment. The <strong>“Which tab”</strong> column in each
+        lineup table below is the one to follow — it was read from that environment's own data.
       </p>
       <p class="text-slate-700 text-[.95rem] leading-relaxed">
         Inside a trip, the stop list is <strong>numbered</strong> in a <code class="k">#</code> column. You never have to
@@ -218,11 +223,13 @@
     </p>
 
     <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5 mb-5">
-      <div class="text-xs font-extrabold uppercase tracking-wider text-amber-800 mb-2">Service day — different from prod</div>
-      <p class="text-slate-900 text-lg font-bold mb-1">05 / 27 / 2026</p>
+      <div class="text-xs font-extrabold uppercase tracking-wider text-amber-800 mb-2">Service day — different from prod, and in the past</div>
+      <p class="text-slate-900 text-lg font-bold mb-1">05 / 27 / 2026 &nbsp;<span class="text-slate-500 text-sm font-semibold">(Wednesday)</span></p>
       <p class="text-slate-700 text-[.9rem]">
-        This tenant's routes sit in the 2025~2026 semester on UAT. <strong>Today's date shows an almost empty
-        list</strong> — that's the data, not a broken environment.
+        This tenant's routes sit in the <strong>2025~2026 semester, which ended 07/05/2026</strong>, so there is no
+        current or future date that offers these trips — a past service day is the only option here, and that's the data
+        rather than a broken environment. Checked against the database: all three trips run that day and the day has no
+        existing changes on it. Today's date shows an almost empty list.
       </p>
     </div>
 
@@ -232,6 +239,7 @@
           <tr class="border-b-2 border-slate-300">
             <th class="text-left font-bold text-slate-800 py-2 pr-4">Role</th>
             <th class="text-left font-bold text-slate-800 py-2 pr-4">Route</th>
+            <th class="text-left font-bold text-slate-800 py-2 pr-4">Which tab</th>
             <th class="text-left font-bold text-slate-800 py-2 pr-4">Trip</th>
             <th class="text-left font-bold text-slate-800 py-2">Note this before you start</th>
           </tr>
@@ -240,18 +248,21 @@
           <tr class="border-b border-slate-200 bg-emerald-50">
             <td class="py-2.5 pr-4 font-bold text-emerald-900">Break&nbsp;up</td>
             <td class="py-2.5 pr-4 font-semibold">West Elementary</td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">UNCOVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">Test3</code></td>
             <td class="py-2.5">27 stops · 6:00 – 7:27 AM</td>
           </tr>
           <tr class="border-b border-slate-200">
             <td class="py-2.5 pr-4 font-bold text-slate-900">Into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - High Route B</td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">UNCOVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">AM-HS-EMRG-25</code></td>
             <td class="py-2.5"><strong>7 stops · 7:06 – 7:34 AM</strong></td>
           </tr>
           <tr>
             <td class="py-2.5 pr-4 font-bold text-slate-900">And into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - West Alternative</td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">UNCOVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">AM-ALT-EMRG-52</code></td>
             <td class="py-2.5"><strong>8 stops · 7:27 – 7:55 AM</strong></td>
           </tr>
@@ -284,7 +295,7 @@
     </div>
 
     <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
-      <div class="font-bold text-slate-900 mb-2">You will see some stop names twice — that part is expected</div>
+      <div class="font-bold text-slate-900 mb-2">You will see some stop names twice — that part is expected, on both runs</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
         These two destinations already serve some of the stops <code class="k">Test3</code> hands them, so one place ends
         up on two rows, usually adjacent and at the same time: the bus's own stop with a <strong>blank</strong>
@@ -301,11 +312,15 @@
           </thead>
           <tbody class="text-slate-700">
             <tr class="border-b border-amber-100">
-              <td class="py-2 px-3 font-semibold"><code class="k">AM-HS-EMRG-25</code></td>
+              <td class="py-2 px-3 font-semibold"><code class="k">AM-HS-EMRG-25</code><div class="text-[.8rem] font-normal text-slate-500">UAT</div></td>
               <td class="py-2 px-3">up to <strong>6</strong> — Bayside Village Center, Dean Road &amp; Lake Drive, Diversey Boulevard &amp; Port Washington, Fox Point-Bayside High School, Good Hope &amp; Calumet, Sunset Drive &amp; Mohawk</td>
             </tr>
+            <tr class="border-b border-amber-100">
+              <td class="py-2 px-3 font-semibold"><code class="k">AM-HS-EMRG-25</code><div class="text-[.8rem] font-normal text-slate-500">production</div></td>
+              <td class="py-2 px-3">up to <strong>7</strong> — the six above, plus Gray Log Lane Circle Test</td>
+            </tr>
             <tr>
-              <td class="py-2 px-3 font-semibold"><code class="k">AM-ALT-EMRG-52</code></td>
+              <td class="py-2 px-3 font-semibold"><code class="k">AM-ALT-EMRG-52</code><div class="text-[.8rem] font-normal text-slate-500">both</div></td>
               <td class="py-2 px-3">up to <strong>6</strong> — Bender Road &amp; Lake Drive, Calumet Road East, Dean Road &amp; Lake Drive, Fox Point Drive &amp; Seneca, Fox Point Village Hall, Mohawk &amp; Indian Creek</td>
             </tr>
           </tbody>
@@ -342,8 +357,8 @@
       <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
         <div class="font-bold text-slate-900 mb-1">An empty route list means the wrong date</div>
         <p class="text-slate-700 text-[.95rem] leading-relaxed">
-          Trip Prep is day-scoped, and the two environments need <strong>different dates</strong> — 07/29/2026 on prod,
-          05/27/2026 on UAT. An empty list is almost always a date outside the semester holding the data.
+          Trip Prep is day-scoped, and the two environments need <strong>different dates</strong> — 08/05/2026 on
+          production, 05/27/2026 on UAT. An empty list is almost always a date outside the semester holding the data.
         </p>
       </div>
     </div>
