@@ -83,7 +83,7 @@
         <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-800 mb-2">The fix</div>
         <p class="text-slate-700 text-[.95rem] leading-relaxed">
           Those stops were scratch work from the arrival-time calculation, never meant to be saved. They're now
-          discarded before the split is stored, and hidden from the preview, so what you approve is what's kept.
+          discarded before the split is stored, so the bus keeps only the stops it was actually given.
         </p>
       </div>
     </div>
@@ -140,22 +140,22 @@
     <ol class="space-y-4 mb-6">
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">1</span>
         <div><div class="font-bold text-slate-900">Set the service day, then record each destination's baseline</div>
-        <p class="text-slate-700 leading-relaxed">For <em>both</em> destination trips write down the <strong>time window</strong> and the <strong>number of stops</strong>, and screenshot each stop list. The stop count is what the pass/fail check is built on, so this step is the one that makes the rest verifiable — and the easiest to skip.</p></div></li>
+        <p class="text-slate-700 leading-relaxed">For <em>both</em> destination trips write down the <strong>number of stops</strong> and the <strong>time window</strong>. The stop count is what the pass/fail check is built on, so this step is what makes the rest verifiable — and the easiest to skip.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">2</span>
         <div><div class="font-bold text-slate-900">Open <code class="k">Test3</code> on West Elementary</div>
         <p class="text-slate-700 leading-relaxed">Hover the route row, then click the ✏️ next to the trip name — the pencil only appears on hover, and on a narrow window it sits past the right edge.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">3</span>
         <div><div class="font-bold text-slate-900">Click <strong>BREAK UP</strong>, tick the two destination trips, then <strong>CALCULATE</strong></div>
-        <p class="text-slate-700 leading-relaxed">The plan screen should look correct — every stop assigned to exactly one bus. Worth a screenshot: it proves the problem comes later.</p></div></li>
+        <p class="text-slate-700 leading-relaxed">The plan screen should look correct — every stop assigned to exactly one bus. Nothing is wrong yet, which is worth noting: the problem comes later.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">4</span>
         <div><div class="font-bold text-slate-900">Click <strong>CALCULATE DETAILS</strong> — the bug shows here</div>
-        <p class="text-slate-700 leading-relaxed">Count the rows and compare against the baseline you noted — the list is longer than it should be. <strong>This is the key screenshot.</strong></p></div></li>
+        <p class="text-slate-700 leading-relaxed">Note the row count. Keep going — the count that decides the result is the one in the saved trip at step 6.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">5</span>
         <div><div class="font-bold text-slate-900">Save it: <strong>SAVE</strong> → <strong>YES</strong>, then <strong>NO</strong> to notifications</div>
         <p class="text-slate-700 leading-relaxed">Answer <strong>NO</strong> to “send notifications to the parents” so no messages go out.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">6</span>
-        <div><div class="font-bold text-slate-900">Compare against your baseline, then reopen a destination trip</div>
-        <p class="text-slate-700 leading-relaxed">Both windows should now be visibly longer, and the reopened trip should still show the repeated stop.</p></div></li>
+        <div><div class="font-bold text-slate-900">Reopen each destination trip and count its stops</div>
+        <p class="text-slate-700 leading-relaxed">This is the step that decides the result — compare the count against the baseline you noted in step 1. Both trip windows should also be visibly longer than they were.</p></div></li>
     </ol>
 
     <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5 mb-4">
@@ -166,9 +166,9 @@
         normally serve, pulled in because a student's pickup was separated from it.
       </p>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        Spotting one by eye: a row with <strong>no “Moved from …” label</strong> that also <strong>isn't in the baseline
-        stop list you screenshotted</strong> in step 1. Both conditions matter — a stop the bus already served will also
-        appear without a label, and that one is fine.
+        Spotting one by eye: a row with <strong>no “Moved from …” label</strong> that <strong>isn't a stop this bus
+        already served</strong>. Both conditions matter — the bus's own stops also appear without a label, and those are
+        fine. On these two destinations the give-away is usually a <em>school</em>.
       </p>
       <div class="rounded-lg bg-white border border-rose-200 p-4">
         <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The reliable test: stops now &gt; baseline stops + stops assigned to it</p>
@@ -180,11 +180,11 @@
     </div>
 
     <div class="rounded-xl border-2 border-slate-200 bg-slate-50 p-5">
-      <div class="font-bold text-slate-900 mb-2">The count is the test — the preview is the screenshot</div>
+      <div class="font-bold text-slate-900 mb-2">Decide from the saved trip</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed">
-        The Calculate Details preview is where the extra stops are most visible, and it's the best evidence to capture
-        here. But base your pass/fail on the <strong>count in the reopened trip after saving</strong> — that's what the
-        driver tablets and parent apps actually read.
+        The Calculate Details screen shows working stops in <strong>both</strong> environments, so it can't tell them
+        apart. Base your result on the <strong>count in the reopened trip after saving</strong> — that's what the driver
+        tablets and parent apps actually read, and it's the only thing this fix changes.
       </p>
     </div>
   </section>
@@ -247,16 +247,16 @@
     <div class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-5 mb-5">
       <div class="font-bold text-slate-900 mb-2">What you'll see — fix working</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        On the same <strong>Calculate Details</strong> screen, the unassigned extras are gone — no school or stray stop
-        the bus wasn't given — and the <code class="k">#</code> column runs <strong>1, 2, 3 … with no gaps</strong>. Put
-        the two screenshots side by side: UAT's list is the shorter one.
+        <strong>The Calculate Details screen looks much the same as it did on prod</strong> — it still lists working stops
+        used to work out arrival times, and that's expected. The difference is in what gets <em>saved</em>, so don't judge
+        this run from that screen.
       </p>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        After saving, every row in the reopened trip is accountable: it either carries a “Moved from …” label or you can
-        find it in the baseline stop list you screenshotted. Nothing unexplained.
+        Reopen each destination trip after saving. Every row is accountable: it either carries a “Moved from …” label, or
+        it's a stop that trip already served before you started. Nothing unexplained.
       </p>
       <div class="rounded-lg bg-white border border-emerald-200 p-4">
-        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The reliable test: stops now = baseline stops + stops assigned to it</p>
+        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The test: stops now = baseline stops + stops assigned to it</p>
         <p class="text-slate-600 text-[.88rem]">Exactly equal, on both destinations. Where prod came out over, this lands on the number.</p>
       </div>
     </div>
