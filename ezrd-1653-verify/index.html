@@ -101,7 +101,10 @@
     <div class="rounded-xl border-2 border-rose-300 bg-rose-50 p-5 mb-5">
       <div class="text-xs font-extrabold uppercase tracking-wider text-rose-800 mb-2">Service day</div>
       <p class="text-slate-900 text-lg font-bold mb-1">07 / 29 / 2026</p>
-      <p class="text-slate-700 text-[.9rem]">Any weekday in the current 2026~2027 semester works equally well.</p>
+      <p class="text-slate-700 text-[.9rem]">
+        Use this exact date. Which trips a day offers depends on each trip's recurrence, so another weekday
+        may not offer the three trips below.
+      </p>
     </div>
 
     <div class="overflow-x-auto mb-5">
@@ -129,9 +132,9 @@
           </tr>
           <tr>
             <td class="py-2.5 pr-4 font-bold text-slate-900">And into</td>
-            <td class="py-2.5 pr-4 font-semibold">Activity Bus - South Middle</td>
-            <td class="py-2.5 pr-4"><code class="k">AM-MS-ACT-46</code></td>
-            <td class="py-2.5"><strong>8 stops · 7:39 – 8:00 AM</strong></td>
+            <td class="py-2.5 pr-4 font-semibold">Emergency Transport - West Alternative</td>
+            <td class="py-2.5 pr-4"><code class="k">AM-ALT-EMRG-52</code></td>
+            <td class="py-2.5"><strong>8 stops · 7:27 – 7:55 AM</strong></td>
           </tr>
         </tbody>
       </table>
@@ -232,9 +235,9 @@
           </tr>
           <tr>
             <td class="py-2.5 pr-4 font-bold text-slate-900">And into</td>
-            <td class="py-2.5 pr-4 font-semibold">Late Bus - Elementary Express</td>
-            <td class="py-2.5 pr-4"><code class="k">AM-ELEM-LATE-53</code></td>
-            <td class="py-2.5"><strong>6 stops · 7:18 – 7:30 AM</strong></td>
+            <td class="py-2.5 pr-4 font-semibold">Emergency Transport - West Alternative</td>
+            <td class="py-2.5 pr-4"><code class="k">AM-ALT-EMRG-52</code></td>
+            <td class="py-2.5"><strong>8 stops · 7:27 – 7:55 AM</strong></td>
           </tr>
         </tbody>
       </table>
@@ -279,11 +282,11 @@
           <tbody class="text-slate-700">
             <tr class="border-b border-amber-100">
               <td class="py-2 px-3 font-semibold"><code class="k">AM-HS-EMRG-25</code></td>
-              <td class="py-2 px-3">up to <strong>7</strong> — Bayside Village Center, Dean Road &amp; Lake Drive, Diversey Boulevard &amp; Port Washington, Good Hope &amp; Calumet, Gray Log Lane Circle Test, Sunset Drive &amp; Mohawk, Fox Point-Bayside High School</td>
+              <td class="py-2 px-3">up to <strong>6</strong> — Bayside Village Center, Dean Road &amp; Lake Drive, Diversey Boulevard &amp; Port Washington, Fox Point-Bayside High School, Good Hope &amp; Calumet, Sunset Drive &amp; Mohawk</td>
             </tr>
             <tr>
-              <td class="py-2 px-3 font-semibold"><code class="k">AM-ELEM-LATE-53</code></td>
-              <td class="py-2 px-3">up to <strong>5</strong> — Alternative Campus Entrance, Bender Road &amp; Lake Drive, Fox Point Drive &amp; Seneca, Regent Road &amp; Calumet, Fox Point-Bayside Elementary School</td>
+              <td class="py-2 px-3 font-semibold"><code class="k">AM-ALT-EMRG-52</code></td>
+              <td class="py-2 px-3">up to <strong>6</strong> — Bender Road &amp; Lake Drive, Calumet Road East, Dean Road &amp; Lake Drive, Fox Point Drive &amp; Seneca, Fox Point Village Hall, Mohawk &amp; Indian Creek</td>
             </tr>
           </tbody>
         </table>
@@ -303,9 +306,10 @@
       <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
         <div class="font-bold text-slate-900 mb-1">Use the destination trips named above, not others</div>
         <p class="text-slate-700 text-[.95rem] leading-relaxed">
-          On the Break&nbsp;Up list, picking a trip whose route isn't loaded in the view behind the modal
-          <strong>crashes on CALCULATE</strong> with nothing on screen to explain it. That's a separate known defect.
-          The trips listed here are safe.
+          The Break&nbsp;Up list offers trips whose <strong>route isn't in the day's route list behind the modal</strong>,
+          and picking one <strong>crashes on CALCULATE</strong> with nothing on screen to explain it. That's a separate
+          known defect. If you do substitute a destination, first check its route name is visible in the list behind the
+          modal. Both trips named above were confirmed present on their stated date.
         </p>
       </div>
       <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
