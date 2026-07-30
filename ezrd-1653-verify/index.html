@@ -174,12 +174,11 @@
     </div>
 
     <div class="rounded-xl border-2 border-slate-200 bg-slate-50 p-5">
-      <div class="font-bold text-slate-900 mb-2">Judge from the saved trip, not the preview</div>
+      <div class="font-bold text-slate-900 mb-2">The count is the test — the preview is the screenshot</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed">
-        The Calculate Details preview shows extra stops on <strong>both</strong> environments — they're part of how
-        arrival times get worked out, and the fix doesn't remove them from that screen. The difference between the two
-        environments is only in <strong>what gets stored</strong>, so always reopen the trip after saving before
-        deciding pass or fail.
+        The Calculate Details preview is where the extra stops are most visible, and it's the best evidence to capture
+        here. But base your pass/fail on the <strong>count in the reopened trip after saving</strong> — that's what the
+        driver tablets and parent apps actually read.
       </p>
     </div>
   </section>
@@ -263,8 +262,10 @@
         tracked separately. This is expected on UAT and is <em>not</em> the defect.
       </p>
       <p class="text-slate-700 text-[.95rem] leading-relaxed">
-        <strong>Extra stops in the Calculate Details preview.</strong> That screen looks much the same on both
-        environments. Only the saved trip differs — so judge from the reopened trip, never from the preview.
+        <strong>Numbering that skips, or a stop list shorter than you saw on prod.</strong> With the fix, the working
+        stops are kept off this screen too, so the preview here is shorter than the one you screenshotted on prod and
+        the numbering is continuous. That's the fix doing its job, not data going missing — the count check below is
+        what confirms it.
       </p>
     </div>
   </section>
