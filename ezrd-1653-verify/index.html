@@ -140,54 +140,70 @@
       </table>
     </div>
 
+    <div class="rounded-xl border-2 border-slate-300 bg-slate-100 p-5 mb-6">
+      <div class="font-bold text-slate-900 mb-2">Two things to know before step 1</div>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-2">
+        The route list is split across two tabs — <strong>UNCOVERED ROUTES</strong> (the one you land on) and
+        <strong>COVERED ROUTES</strong>. A route sits on one or the other depending on whether its driver and bus are
+        available, so <strong>check both tabs</strong> when looking for a route by name. On our run the source route was
+        on <em>COVERED</em> and both destinations were on <em>UNCOVERED</em>.
+      </p>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed">
+        Inside a trip, the stop list is <strong>numbered</strong> in a <code class="k">#</code> column. You never have to
+        hand-count stops — scroll to the bottom and read the number on the last row.
+      </p>
+    </div>
+
     <ol class="space-y-4 mb-6">
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">1</span>
-        <div><div class="font-bold text-slate-900">Set the service day, then record each destination's baseline</div>
-        <p class="text-slate-700 leading-relaxed">For <em>both</em> destination trips write down the <strong>number of stops</strong> and the <strong>time window</strong>. The stop count is what the pass/fail check is built on, so this step is what makes the rest verifiable — and the easiest to skip.</p></div></li>
+        <div><div class="font-bold text-slate-900">Set the service day</div>
+        <p class="text-slate-700 leading-relaxed">Click the date at the top of the page, step back with <strong>&lt;</strong> to the right month, then click the day. Wait for the route counts to appear on the two tabs.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">2</span>
-        <div><div class="font-bold text-slate-900">Open <code class="k">Test3</code> on West Elementary</div>
-        <p class="text-slate-700 leading-relaxed">Hover the route row, then click the ✏️ next to the trip name — the pencil only appears on hover, and on a narrow window it sits past the right edge.</p></div></li>
+        <div><div class="font-bold text-slate-900">Record both destinations' baselines</div>
+        <p class="text-slate-700 leading-relaxed">For each destination trip: hover its route row, click the ✏️ beside the trip name, scroll to the bottom of the stop list and write down <strong>the number on the last row</strong>. Also note the trip's <strong>time window</strong> from the route list. Then <strong>CANCEL</strong>. Everything after this compares against these two numbers, so don't skip it.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">3</span>
-        <div><div class="font-bold text-slate-900">Click <strong>BREAK UP</strong>, tick the two destination trips, then <strong>CALCULATE</strong></div>
-        <p class="text-slate-700 leading-relaxed">The plan screen should look correct — every stop assigned to exactly one bus. Nothing is wrong yet, which is worth noting: the problem comes later.</p></div></li>
+        <div><div class="font-bold text-slate-900">Open the source trip and click <strong>BREAK UP</strong></div>
+        <p class="text-slate-700 leading-relaxed">Find West Elementary, hover the row, click the ✏️ beside <code class="k">Test3</code>. The pencil only exists while the row is hovered. In the trip window, click <strong>BREAK UP</strong>.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">4</span>
-        <div><div class="font-bold text-slate-900">Click <strong>CALCULATE DETAILS</strong> — the bug shows here</div>
-        <p class="text-slate-700 leading-relaxed">Note the row count. Keep going — the count that decides the result is the one in the saved trip at step 6.</p></div></li>
+        <div><div class="font-bold text-slate-900">Tick the two destination trips, then <strong>CALCULATE</strong></div>
+        <p class="text-slate-700 leading-relaxed">This list is <strong>not alphabetical</strong> and is longer than the day's route list — scroll to find each one by trip name. A ticked row turns green. Use only the two trips named above (see the traps below). <strong>CALCULATE</strong> stays greyed out until something is ticked.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">5</span>
-        <div><div class="font-bold text-slate-900">Save it: <strong>SAVE</strong> → <strong>YES</strong>, then <strong>NO</strong> to notifications</div>
-        <p class="text-slate-700 leading-relaxed">Answer <strong>NO</strong> to “send notifications to the parents” so no messages go out.</p></div></li>
+        <div><div class="font-bold text-slate-900">Click <strong>CALCULATE DETAILS</strong></div>
+        <p class="text-slate-700 leading-relaxed">Leave the two checkboxes at the top right (“Never move the stops to the beginning…”, “Keep original school arrival time”) <strong>unticked</strong>. This screen shows <strong>one destination at a time</strong> — use the <strong>“Select a trip to view details”</strong> dropdown to look at the other. Its row count is <em>higher</em> than what gets saved in both environments, so don't judge the result from here.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">6</span>
-        <div><div class="font-bold text-slate-900">Reopen each destination trip and count its stops</div>
-        <p class="text-slate-700 leading-relaxed">This is the step that decides the result — compare the count against the baseline you noted in step 1. Both trip windows should also be visibly longer than they were.</p></div></li>
+        <div><div class="font-bold text-slate-900">Save: <strong>SAVE</strong> → <strong>YES</strong> → <strong>NO</strong></div>
+        <p class="text-slate-700 leading-relaxed">“Do you really want to save the break-up results?” → <strong>YES</strong>. Then “Do you want to send notifications to the parents…?” → <strong>NO</strong>, so no messages go out. The save has already happened by the time that second question appears.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">7</span>
+        <div><div class="font-bold text-slate-900">Reopen each destination and read the last row</div>
+        <p class="text-slate-700 leading-relaxed">Back on the route list both destination time windows should now end <strong>visibly later</strong> than the baseline — a quick confirmation the split landed. Then open each destination trip again for the check below.</p></div></li>
     </ol>
 
     <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5 mb-4">
       <div class="font-bold text-slate-900 mb-2">What you'll see — bug present</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        On the <strong>Calculate Details</strong> screen (step 4), each receiving bus's list is <strong>longer than it
-        should be</strong>. The extra rows are stops nobody assigned — most often a <em>school</em> the bus doesn't
-        normally serve, pulled in because a student's pickup was separated from it.
+        In each reopened destination trip, the <strong>DESCRIPTION</strong> column tells you where every row came from. A
+        stop moved by your split reads <strong>“Moved from route West Elementary”</strong> with the date under it. A stop
+        the bus already served has a <strong>blank</strong> Description. Those are the only two legitimate cases.
       </p>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        Spotting one by eye: a row with <strong>no “Moved from …” label</strong> that <strong>isn't a stop this bus
-        already served</strong>. Both conditions matter — the bus's own stops also appear without a label, and those are
-        fine. On these two destinations the give-away is usually a <em>school</em>.
+        The bug adds rows that are <em>neither</em> — blank Description, but not a stop this bus served before you
+        started. They're often a <em>school</em> the bus doesn't normally serve.
       </p>
       <div class="rounded-lg bg-white border border-rose-200 p-4">
-        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The reliable test: stops now &gt; baseline stops + stops assigned to it</p>
+        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The test: count the rows with a blank Description</p>
         <p class="text-slate-600 text-[.88rem]">
-          Count it on both destinations, in the reopened trip after saving. More stops than anyone asked for is the
-          defect. The trip's time window will also be visibly longer than the baseline you noted.
+          That count must equal the <strong>baseline number you wrote down in step 2</strong>. On production it will be
+          <strong>higher</strong> — those extras are the defect. Do this on both destinations.
         </p>
       </div>
     </div>
 
     <div class="rounded-xl border-2 border-slate-200 bg-slate-50 p-5">
-      <div class="font-bold text-slate-900 mb-2">Decide from the saved trip</div>
+      <div class="font-bold text-slate-900 mb-2">Decide from the saved trip, not from Calculate Details</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed">
-        The Calculate Details screen shows working stops in <strong>both</strong> environments, so it can't tell them
-        apart. Base your result on the <strong>count in the reopened trip after saving</strong> — that's what the driver
-        tablets and parent apps actually read, and it's the only thing this fix changes.
+        The Calculate Details screen lists working stops in <strong>both</strong> environments, so it cannot tell them
+        apart. Judge the result only from the <strong>reopened trip after saving</strong> — that's what the driver tablets
+        and parent apps read, and it's the only thing this fix changes.
       </p>
     </div>
   </section>
@@ -244,7 +260,7 @@
     </div>
 
     <p class="text-slate-700 leading-relaxed mb-5 max-w-3xl">
-      Run steps 1–6 exactly as above. Then check the fix held:
+      Run steps 1–7 exactly as above. Then check the fix held:
     </p>
 
     <div class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-5 mb-5">
@@ -255,12 +271,15 @@
         this run from that screen.
       </p>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        Reopen each destination trip after saving. Every row is accountable: it either carries a “Moved from …” label, or
-        it's a stop that trip already served before you started. Nothing unexplained.
+        Reopen each destination trip after saving. Every row is accountable: it either reads “Moved from route West
+        Elementary” in the Description column, or it's a stop that trip already served before you started.
       </p>
       <div class="rounded-lg bg-white border border-emerald-200 p-4">
-        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The test: stops now = baseline stops + stops assigned to it</p>
-        <p class="text-slate-600 text-[.88rem]">Exactly equal, on both destinations. Where prod came out over, this lands on the number.</p>
+        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The test: blank-Description rows = your baseline number</p>
+        <p class="text-slate-600 text-[.88rem]">
+          Exactly equal, on both destinations. Where production came out over, this lands on the number. We ran this end
+          to end against the fix and both destinations matched their baseline exactly.
+        </p>
       </div>
     </div>
 
@@ -268,8 +287,9 @@
       <div class="font-bold text-slate-900 mb-2">You will see some stop names twice — that part is expected</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
         These two destinations already serve some of the stops <code class="k">Test3</code> hands them, so one place ends
-        up on two rows: the bus's own stop, and the moved one carrying a “Moved from …” label. Both are accounted for and
-        the count still adds up. Merging them into a single visit is tracked separately.
+        up on two rows, usually adjacent and at the same time: the bus's own stop with a <strong>blank</strong>
+        Description, and the moved one reading <strong>“Moved from route West Elementary”</strong>. Both are accounted
+        for, and the blank-row count still matches your baseline. Merging them into a single visit is tracked separately.
       </p>
       <div class="overflow-x-auto">
         <table class="w-full text-[.9rem] border-collapse bg-white rounded-lg">
