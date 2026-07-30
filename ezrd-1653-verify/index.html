@@ -43,7 +43,7 @@
     </h1>
     <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
       Two runs of the same steps. On <strong>production</strong> you should still see the bug — extra stops on the
-      receiving buses, some listed twice at the same minute. On <strong>UAT</strong>, with the fix deployed, the same
+      receiving buses that nobody assigned to them. On <strong>UAT</strong>, with the fix deployed, the same
       split should come out clean.
     </p>
     <div class="flex flex-wrap gap-2 mt-7">
@@ -74,9 +74,9 @@
       <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5">
         <div class="text-xs font-extrabold uppercase tracking-wider text-rose-800 mb-2">The bug</div>
         <p class="text-slate-700 text-[.95rem] leading-relaxed">
-          Each receiving bus gained extra stops with no “Moved from” label, several duplicating a stop already on the
-          list at the same arrival minute. Those stops reached the driver tablets and parent apps, so a bus showed a
-          longer route with times that didn't match.
+          Each receiving bus gained extra stops with no “Moved from” label — typically a school the bus doesn't serve,
+          dragged in because a student's pickup got separated from it. Those stops reached the driver tablets and parent
+          apps, so a bus showed a longer route with times that didn't match.
         </p>
       </div>
       <div class="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-5">
@@ -149,7 +149,7 @@
         <p class="text-slate-700 leading-relaxed">The plan screen should look correct — every stop assigned to exactly one bus. Worth a screenshot: it proves the problem comes later.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">4</span>
         <div><div class="font-bold text-slate-900">Click <strong>CALCULATE DETAILS</strong> — the bug shows here</div>
-        <p class="text-slate-700 leading-relaxed">Scan the preview for a stop name appearing twice with the <em>same</em> arrival time. <strong>This is the key screenshot.</strong></p></div></li>
+        <p class="text-slate-700 leading-relaxed">Count the rows and compare against the baseline you noted — the list is longer than it should be. <strong>This is the key screenshot.</strong></p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">5</span>
         <div><div class="font-bold text-slate-900">Save it: <strong>SAVE</strong> → <strong>YES</strong>, then <strong>NO</strong> to notifications</div>
         <p class="text-slate-700 leading-relaxed">Answer <strong>NO</strong> to “send notifications to the parents” so no messages go out.</p></div></li>
@@ -161,25 +161,21 @@
     <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5 mb-4">
       <div class="font-bold text-slate-900 mb-2">What you'll see — bug present</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        On the <strong>Calculate Details</strong> screen (step 4), the receiving bus's list contains stops that were
-        never assigned to it. The clearest form is the same stop listed twice with the <em>same</em> arrival time — one
-        row bold/green, one plain:
+        On the <strong>Calculate Details</strong> screen (step 4), each receiving bus's list is <strong>longer than it
+        should be</strong>. The extra rows are stops nobody assigned — most often a <em>school</em> the bus doesn't
+        normally serve, pulled in because a student's pickup was separated from it.
       </p>
-      <div class="overflow-x-auto mb-3">
-        <table class="w-full text-[.86rem] font-mono border-collapse bg-white rounded-lg">
-          <tbody class="text-slate-700">
-            <tr class="border-b border-slate-200"><td class="py-1.5 px-3 font-semibold text-slate-900">16</td><td class="py-1.5 px-3 font-semibold text-slate-900">Dean Road &amp; Lake Drive</td><td class="py-1.5 px-3">6:47 → <strong>7:46 AM</strong></td></tr>
-            <tr><td class="py-1.5 px-3">17</td><td class="py-1.5 px-3">Dean Road &amp; Lake Drive</td><td class="py-1.5 px-3">7:26 → <strong>7:46 AM</strong></td></tr>
-          </tbody>
-        </table>
-      </div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        After saving, reopening the trip shows a row with <strong>no “Moved from …” label</strong> that also wasn't in
-        the baseline stop list you screenshotted, and both destination windows are <strong>longer</strong> than baseline.
+        Spotting one by eye: a row with <strong>no “Moved from …” label</strong> that also <strong>isn't in the baseline
+        stop list you screenshotted</strong> in step 1. Both conditions matter — a stop the bus already served will also
+        appear without a label, and that one is fine.
       </p>
       <div class="rounded-lg bg-white border border-rose-200 p-4">
-        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">Confirms it: stops now &gt; baseline stops + stops assigned to it</p>
-        <p class="text-slate-600 text-[.88rem]">More stops than anyone asked for. Count it on both destinations.</p>
+        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The reliable test: stops now &gt; baseline stops + stops assigned to it</p>
+        <p class="text-slate-600 text-[.88rem]">
+          Count it on both destinations, in the reopened trip after saving. More stops than anyone asked for is the
+          defect. The trip's time window will also be visibly longer than the baseline you noted.
+        </p>
       </div>
     </div>
 
@@ -251,33 +247,50 @@
     <div class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-5 mb-5">
       <div class="font-bold text-slate-900 mb-2">What you'll see — fix working</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        On the same <strong>Calculate Details</strong> screen, the pair you photographed on prod is gone: each stop the
-        bus was assigned appears <strong>once</strong>, and the <code class="k">#</code> column runs <strong>1, 2, 3 …
-        with no gaps</strong>. Put the two screenshots side by side — UAT's list is the shorter one.
+        On the same <strong>Calculate Details</strong> screen, the unassigned extras are gone — no school or stray stop
+        the bus wasn't given — and the <code class="k">#</code> column runs <strong>1, 2, 3 … with no gaps</strong>. Put
+        the two screenshots side by side: UAT's list is the shorter one.
       </p>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
         After saving, every row in the reopened trip is accountable: it either carries a “Moved from …” label or you can
-        find it in the baseline stop list you screenshotted. No unlabelled strangers.
+        find it in the baseline stop list you screenshotted. Nothing unexplained.
       </p>
       <div class="rounded-lg bg-white border border-emerald-200 p-4">
-        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">Confirms it: stops now = baseline stops + stops assigned to it</p>
+        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The reliable test: stops now = baseline stops + stops assigned to it</p>
         <p class="text-slate-600 text-[.88rem]">Exactly equal, on both destinations. Where prod came out over, this lands on the number.</p>
       </div>
     </div>
 
     <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
-      <div class="font-bold text-slate-900 mb-2">Two things that are <em>not</em> failures</div>
+      <div class="font-bold text-slate-900 mb-2">You will see some stop names twice — that part is expected</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        <strong>A stop name appearing twice — even at the same minute.</strong> If the receiving bus already served that
-        stop and students were moved to it, you get two rows for one place: one is the bus's own stop, the other carries
-        a “Moved from …” label. Both are accounted for, the count still adds up, and merging them into a single visit is
-        tracked separately. This is expected on UAT and is <em>not</em> the defect.
+        These two destinations already serve some of the stops <code class="k">Test3</code> hands them, so one place ends
+        up on two rows: the bus's own stop, and the moved one carrying a “Moved from …” label. Both are accounted for and
+        the count still adds up. Merging them into a single visit is tracked separately.
       </p>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed">
-        <strong>Numbering that skips, or a stop list shorter than you saw on prod.</strong> With the fix, the working
-        stops are kept off this screen too, so the preview here is shorter than the one you screenshotted on prod and
-        the numbering is continuous. That's the fix doing its job, not data going missing — the count check below is
-        what confirms it.
+      <div class="overflow-x-auto">
+        <table class="w-full text-[.9rem] border-collapse bg-white rounded-lg">
+          <thead>
+            <tr class="border-b-2 border-amber-200">
+              <th class="text-left font-bold text-slate-800 py-2 px-3">Destination</th>
+              <th class="text-left font-bold text-slate-800 py-2 px-3">Stops it already shares with <code class="k">Test3</code></th>
+            </tr>
+          </thead>
+          <tbody class="text-slate-700">
+            <tr class="border-b border-amber-100">
+              <td class="py-2 px-3 font-semibold"><code class="k">AM-HS-EMRG-25</code></td>
+              <td class="py-2 px-3">up to <strong>7</strong> — Bayside Village Center, Dean Road &amp; Lake Drive, Diversey Boulevard &amp; Port Washington, Good Hope &amp; Calumet, Gray Log Lane Circle Test, Sunset Drive &amp; Mohawk, Fox Point-Bayside High School</td>
+            </tr>
+            <tr>
+              <td class="py-2 px-3 font-semibold"><code class="k">AM-ELEM-LATE-53</code></td>
+              <td class="py-2 px-3">up to <strong>5</strong> — Alternative Campus Entrance, Bender Road &amp; Lake Drive, Fox Point Drive &amp; Seneca, Regent Road &amp; Calumet, Fox Point-Bayside Elementary School</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed mt-3">
+        A repeated name outside these lists, or one where <em>neither</em> row has a “Moved from …” label, is worth
+        raising.
       </p>
     </div>
   </section>
