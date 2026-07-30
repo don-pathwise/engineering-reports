@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EZRD-1757 — Route-Split Save Outcome Visibility</title>
+  <title>EZRD-1757 — UAT Test Steps</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -35,9 +35,7 @@
       text-transform: uppercase; letter-spacing: 0.08em;
       border-width: 1px;
     }
-    .main-card {
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
-    }
+    .main-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
     code.k {
       font-family: 'JetBrains Mono', ui-monospace, monospace;
       background: rgb(226 232 240); color: rgb(15 23 42);
@@ -45,45 +43,41 @@
       white-space: nowrap;
     }
     code.k.wrap { white-space: normal; overflow-wrap: anywhere; }
-    .quote-ui {
-      font-family: 'JetBrains Mono', ui-monospace, monospace;
-      font-size: 0.88rem; line-height: 1.6;
-    }
+    .ui-quote { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.86rem; line-height: 1.65; }
+    .click { font-weight: 700; color: rgb(2 44 84); }
+    .pickbox { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.88rem; font-weight: 600; }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans antialiased">
 
 <header class="border-b-2 border-slate-300 bg-white">
-  <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
-    <div class="inline-flex items-center gap-2 rounded-full bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1 text-xs font-bold tracking-wider uppercase mb-5">
-      <span class="w-2 h-2 rounded-full bg-amber-600"></span>
-      Implemented · not yet deployed
+  <div class="max-w-5xl mx-auto px-6 py-12">
+    <div class="inline-flex items-center gap-2 rounded-full bg-sky-100 text-sky-900 border border-sky-300 px-3 py-1 text-xs font-bold tracking-wider uppercase mb-5">
+      <span class="w-2 h-2 rounded-full bg-sky-600"></span>
+      UAT test steps · testqa
     </div>
     <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-5">
-      EZRD-1757 — Route-Split Save Outcome Visibility
+      EZRD-1757 — UAT Test Steps
     </h1>
-    <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
-      Splitting one bus route across other buses in Trip Preparation could fail and tell the dispatcher
-      <em>nothing</em> — no error, and in one case not even a success message. This is the tester's guide:
-      what the ticket turned out to actually be, how to see the broken behaviour today, and how to confirm
-      the fix once it ships. Everything here runs on the <strong>testqa</strong> tenant.
+    <p class="text-lg text-slate-700 max-w-3xl leading-relaxed">
+      Splitting a bus route across other buses could fail and tell the dispatcher <em>nothing</em> — no error,
+      and in one case not even a success message. Five checks confirm it now reports. Every route, trip and
+      date below was read from the UAT <strong>testqa</strong> database, so you can follow them literally.
     </p>
   </div>
 </header>
 
-<main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
+<main class="max-w-5xl mx-auto px-6 py-12 space-y-6">
 
   <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
     <div class="flex items-start gap-4">
       <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
       <div>
-        <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Read this before you start</div>
+        <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Check the build first</div>
         <p class="text-slate-800 text-lg leading-relaxed">
-          The fix is <strong>not deployed anywhere yet</strong>. Its pull request is stacked behind the
-          EZRD-1653 fix and merges after it. As of this writing both UAT deployments are running builds
-          that predate <em>even</em> the 1653 fix — so right now UAT is a valid place to reproduce the bug,
-          not to verify the fix. Confirm what is actually live before you test anything (see
-          <a href="#environment-state-confirm-this-first" class="text-amber-900 underline font-semibold">Environment state</a>).
+          Open <code class="k wrap">https://preparation.ezd-uat.runpathwise.com/version</code> and confirm with the
+          dev team that the commit shown includes EZRD-1757. If it doesn't, everything below will behave the
+          <em>old</em> way — no messages at all — and you'll be recording the bug rather than the fix.
         </p>
       </div>
     </div>
@@ -91,412 +85,318 @@
 
   <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
     <div class="p-7 sm:p-9">
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Background</div>
+      <div class="flex items-start gap-4 mb-6">
+        <div class="badge-num bg-slate-200 text-slate-900 step-number flex-shrink-0">0</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-slate-600 mb-1">Setup</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Get to the right screen and day</h2>
+          <p class="text-slate-700 leading-relaxed">Do this once. Every check starts here.</p>
         </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">What this ticket actually turned out to be</h2>
-        <p class="text-slate-700 leading-relaxed">
-          The ticket was written as a broken <em>sync pipeline</em> between EZDistrict and EZRouting, and asked for
-          retry logic, a propagation SLA, and a district-facing "sync status" indicator. Investigation found no such
-          pipeline exists.
+      </div>
+
+      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+        <li>Go to <code class="k wrap">https://preparation.ezd-uat.runpathwise.com/testqa</code> and sign in. You land on <strong>Routes / Trips</strong>.</li>
+        <li>The routes list will be <strong>empty</strong> on today's date. That's correct — today falls in a school term with almost no routes. You need to change the day.</li>
+        <li>Click the <span class="click">calendar icon</span> just left of the date in the top bar. A month grid opens with <code class="k">‹ MONTH YEAR ›</code> across the top.</li>
+        <li>Navigate to <strong>MAY 2026</strong> — click <span class="click">‹</span> to step back a month at a time, or click the month name and the year to pick from dropdowns.</li>
+        <li>Click day <span class="click">13</span>. The date should read <code class="k">05/13/2026</code>.</li>
+      </ol>
+
+      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
+        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">You're ready when</div>
+        <p class="text-slate-800 leading-relaxed">
+          The list fills with routes including <code class="k">West Elementary</code>,
+          <code class="k">TestQA3</code>, <code class="k">Emergency Transport - West Alternative</code> and
+          several <code class="k">Activity Bus - Alternative Route A Test</code> entries.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="mb-5">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-amber-800">Read once</div>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Two quirks of this tenant that will trip you up</h2>
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
+          <div class="font-bold text-slate-900 mb-1">Every route is listed twice</div>
+          <p class="text-slate-800 leading-relaxed">
+            testqa holds two copies of its route set, so you'll see two <code class="k">West Elementary</code>
+            rows, two <code class="k">Activity Bus - South Middle</code> rows, and so on. They behave the same —
+            just pick one and stay with it. <code class="k">West Elementary</code> also has more than one trip
+            called <code class="k">Test3</code>; take the one showing <strong>6:00 AM ~ 7:27 AM</strong>.
+          </p>
+        </div>
+        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
+          <div class="font-bold text-slate-900 mb-1">Two routes are named "High Route B" and they behave oppositely</div>
+          <p class="text-slate-800 leading-relaxed">
+            <code class="k">Athletic Transport - High Route B</code> is <strong>not</strong> available on this day
+            and will produce the error. <code class="k">Emergency Transport - High Route B</code> <strong>is</strong>
+            available and saves normally. Read the first word, not the last three.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-6">
+        <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0">1</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-rose-800 mb-1">Check 1</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">A destination you can't use now says so</h2>
+          <p class="text-slate-700 leading-relaxed">
+            The one a dispatcher actually hits, and it works every time. Nothing is saved, so there's nothing to
+            undo. <strong>Start here.</strong>
+          </p>
+        </div>
+      </div>
+
+      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+        <li>Find a <code class="k">West Elementary</code> row. In the <strong>TRIP</strong> column, hover over <code class="k">Test3 (6:00 AM ~ 7:27 AM)</code> — a <span class="click">pencil</span> icon appears. Click it.</li>
+        <li><strong>View/Edit Trip</strong> opens with 27 stops. Click <span class="click">BREAK UP</span> at the bottom.</li>
+        <li>A list of 27 candidate destination trips appears. Tick the checkbox for:
+          <div class="bg-rose-100 border-2 border-rose-300 rounded-lg px-4 py-3 mt-2 pickbox text-slate-900">
+            Activity Bus - South Middle &nbsp;·&nbsp; AM-MS-ACT-46
+          </div>
+        </li>
+        <li>Click <span class="click">CALCULATE</span>.</li>
+      </ol>
+
+      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
+        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-slate-800 leading-relaxed mb-3">A red banner, top right:</p>
+        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">"AM-MS-ACT-46" cannot be used as a destination: its
+route is not loaded for this service day. Select a
+different trip.</pre>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          The dialog stays on the destination list and <strong>CALCULATE works again</strong> so you can change
+          your pick. Previously this click did nothing whatsoever — no banner, no movement, button still live.
         </p>
       </div>
 
-      <div class="grid sm:grid-cols-2 gap-4 mb-6">
-        <div class="bg-rose-100 border-2 border-rose-300 rounded-xl p-5">
-          <div class="text-rose-900 font-bold text-sm tracking-wider uppercase mb-2">What the ticket assumed</div>
-          <p class="text-slate-800 leading-relaxed">
-            EZDistrict saves a split, then hands it to EZRouting over some queue or API call. That hand-off silently
-            drops the change, so drivers and parents keep seeing stale routing and nobody is told.
+      <p class="text-slate-600 text-sm leading-relaxed mt-4">
+        16 of the 27 candidates behave this way. Others you can repeat it with:
+        <code class="k">Activity Bus - East Alternative / AM-ALT-ACT-58</code>,
+        <code class="k">Athletic Transport - High Route B / AM-HS-ATH-62</code>,
+        <code class="k">Late Bus - Elementary Express / AM-ELEM-LATE-53</code>,
+        <code class="k">Special Education - South Elementary / AM-ELEM-SPED-44</code>.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-6">
+        <div class="badge-num bg-emerald-200 text-emerald-900 step-number flex-shrink-0">2</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-emerald-800 mb-1">Check 2</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">A good split still works, and the button locks</h2>
+          <p class="text-slate-700 leading-relaxed">
+            Confirms nothing was broken, and shows the new double-click guard.
+            <strong>This one saves real data</strong> — undo it with check 6 before moving on.
           </p>
         </div>
-        <div class="bg-sky-100 border-2 border-sky-300 rounded-xl p-5">
-          <div class="text-sky-900 font-bold text-sm tracking-wider uppercase mb-2">How it actually works</div>
-          <p class="text-slate-800 leading-relaxed">
-            Trip Preparation writes rows into a per-district trip-change table. EZRouting <em>reads those same rows</em>
-            the next time a bus tablet asks for its route. No queue, no cron, no hand-off — a shared table, read on
-            demand. It's a pull.
+      </div>
+
+      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+        <li>Same trip: <code class="k">West Elementary</code> → pencil on <code class="k">Test3</code> → <span class="click">BREAK UP</span>.</li>
+        <li>Tick <strong>both</strong> of these — both are available on this day, so Calculate will go through:
+          <div class="bg-emerald-100 border-2 border-emerald-300 rounded-lg px-4 py-3 mt-2 pickbox text-slate-900">
+            TestQA3 &nbsp;·&nbsp; Test<br>
+            Emergency Transport - West Alternative &nbsp;·&nbsp; AM-ALT-EMRG-52
+          </div>
+        </li>
+        <li>Click <span class="click">CALCULATE</span> — the dialog advances and each stop gets a <strong>MOVE TO</strong> assignment.</li>
+        <li>Click <span class="click">CALCULATE DETAILS</span> — a preview per destination, old times in black, new times in green.</li>
+        <li>Click <span class="click">SAVE</span>, then <span class="click">YES</span>. <strong>Watch the SAVE button as you do.</strong></li>
+      </ol>
+
+      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
+        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-slate-800 leading-relaxed mb-3">
+          SAVE greys out while the writes run — that's the new guard, and it's what stops a second impatient click
+          from writing everything twice. Then a green banner:
+        </p>
+        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">Trip stops have been moved to the new trips</pre>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          You'll be asked whether to notify parents — answer <span class="click">NO</span> for a test.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-6">
+        <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0">3</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-rose-800 mb-1">Check 3</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">A save that fails now tells you</h2>
+          <p class="text-slate-700 leading-relaxed">
+            The ticket's headline complaint. You make the save fail using the browser's own Network panel — still
+            just clicking, only in developer tools rather than the app.
+          </p>
+        </div>
+      </div>
+
+      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+        <li>Set up exactly as check 2 and stop at the preview screen with the <strong>SAVE</strong> button. Don't click it yet.</li>
+        <li>Open developer tools (<code class="k">⌥⌘I</code> on Mac, <code class="k">F12</code> on Windows) and pick the <span class="click">Network</span> tab.</li>
+        <li>In the throttling dropdown — it reads <strong>No throttling</strong>, near the top right of that panel — choose <span class="click">Offline</span>.</li>
+        <li>Now click <span class="click">SAVE</span>, then <span class="click">YES</span>.</li>
+      </ol>
+
+      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
+        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-slate-800 leading-relaxed mb-3">A red banner:</p>
+        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">Nothing was saved. The server could not be reached.
+Check your connection and try again.</pre>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          The dialog <strong>stays open</strong> so you can retry. Two things to check specifically, because both
+          were real defects caught in review: the text must not contain <code class="k">[object Object]</code>,
+          and it must not claim the server was unreachable when the server actually answered with a reason.
+        </p>
+      </div>
+
+      <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5 mt-4">
+        <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-2">Before you continue</div>
+        <p class="text-slate-800 leading-relaxed">Set throttling back to <strong>No throttling</strong>, or every later check fails too.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-6">
+        <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0">4</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-rose-800 mb-1">Check 4</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">The important one — a stop on two buses</h2>
+          <p class="text-slate-700 leading-relaxed">
+            The fiddliest, because you have to act mid-save. Worth it: this failure produces the same customer
+            complaint as EZRD-1653, by a different route.
           </p>
         </div>
       </div>
 
       <p class="text-slate-700 leading-relaxed mb-4">
-        Because of that, <strong>"saved" and "synced" are the same event.</strong> There's no window in which a change is
-        saved-but-not-synced, so there is no transient hand-off to retry and no asynchronous delay to put an SLA on.
-        Two of the five original acceptance criteria had nothing to attach to, and the proposed status indicator had
-        nothing to indicate — it could only ever have displayed "the write landed" or "it didn't," which is what a
-        success or error message already says.
+        A split isn't one save. It writes each destination bus separately and the <strong>original bus last</strong> —
+        and that final write is what records that the stops left. Fail in between and a destination has claimed
+        stops the original still thinks are its own.
       </p>
-      <p class="text-slate-700 leading-relaxed">
-        But the instinct behind the ticket was right: there <em>is</em> a real silent failure. It's on the write side,
-        not in a pipeline. When a save was rejected, or when the Calculate step crashed, the dispatcher was shown
-        nothing at all. That is what got fixed.
-      </p>
-    </div>
-  </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
-    <div class="p-7 sm:p-9">
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">What changed</div>
-        </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">Five changes, and why it isn't just one message</h2>
-        <p class="text-slate-700 leading-relaxed">
-          The approved scope was "make the failure visible, and add the audit trail the ticket asked for." That came out
-          as five pieces. Nothing here changes what a <em>successful</em> split does.
-        </p>
-      </div>
+      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+        <li>Set up as check 2 with <strong>both</strong> destinations, and reach the <strong>SAVE</strong> screen.</li>
+        <li>In <span class="click">Network</span>, set throttling to <span class="click">Slow 3G</span>. This stretches each save so you have time to act between them.</li>
+        <li>Type <code class="k">api/trip</code> in the Network filter box so you only see the save calls.</li>
+        <li>Click <span class="click">SAVE</span> → <span class="click">YES</span> and watch the request list.</li>
+        <li>The moment the <strong>first</strong> <code class="k">api/trip</code> request completes, switch throttling to <span class="click">Offline</span>.</li>
+      </ol>
 
-      <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
-        <table class="w-full text-sm min-w-[860px]">
-          <colgroup>
-            <col class="w-[22%]">
-            <col class="w-[39%]">
-            <col class="w-[39%]">
-          </colgroup>
-          <thead>
-            <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
-              <th class="text-left px-4 py-3">Where</th>
-              <th class="text-left px-4 py-3">Before</th>
-              <th class="text-left px-4 py-3">After</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200">
-            <tr class="hover:bg-slate-50 align-top">
-              <td class="px-4 py-3 font-semibold text-slate-900">Calculate step</td>
-              <td class="px-4 py-3 text-slate-700">Certain destination choices made Calculate crash. The button stayed live and <strong>nothing appeared</strong> — the only record was in the browser's developer console.</td>
-              <td class="px-4 py-3 text-slate-700">A red message naming the trip that can't be used. The modal stays on the destination picker so you can choose differently.</td>
-            </tr>
-            <tr class="hover:bg-slate-50 align-top">
-              <td class="px-4 py-3 font-semibold text-slate-900">Save outcome</td>
-              <td class="px-4 py-3 text-slate-700">A rejected save produced <strong>no error and no success message</strong>. The modal just sat there.</td>
-              <td class="px-4 py-3 text-slate-700">An error message with the actual reason. If some buses were already written, an acknowledgement dialog naming which ones.</td>
-            </tr>
-            <tr class="hover:bg-slate-50 align-top">
-              <td class="px-4 py-3 font-semibold text-slate-900">Readable error text</td>
-              <td class="px-4 py-3 text-slate-700">The underlying failures surfaced as raw internal text, or as nothing usable at all.</td>
-              <td class="px-4 py-3 text-slate-700">Plain sentences. Includes a reference code matching the server log, so support can trace it.</td>
-            </tr>
-            <tr class="hover:bg-slate-50 align-top">
-              <td class="px-4 py-3 font-semibold text-slate-900">Save button</td>
-              <td class="px-4 py-3 text-slate-700">Stayed clickable during the save. An impatient double-click fired the whole multi-bus write twice.</td>
-              <td class="px-4 py-3 text-slate-700">Greys out while the save runs, re-enables afterwards.</td>
-            </tr>
-            <tr class="hover:bg-slate-50 align-top">
-              <td class="px-4 py-3 font-semibold text-slate-900">Audit trail</td>
-              <td class="px-4 py-3 text-slate-700">No record at all that a trip save had been attempted, by whom, or whether it worked.</td>
-              <td class="px-4 py-3 text-slate-700">One entry per attempt — success <em>and</em> rejection — readable in EZRouting's existing audit screen.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
+        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-slate-800 leading-relaxed mb-3">A dialog you must dismiss with <strong>OK</strong> — not a banner that fades:</p>
+        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">This break-up was only partly saved.
 
-      <p class="text-slate-700 leading-relaxed mt-6">
-        The audit trail was acceptance criterion #3 on the ticket, not an addition. The readable-text work exists because
-        a message showing raw internal error text isn't an explainer. The acknowledgement dialog is used instead of a
-        brief message for the partial-save case specifically, because that message has to survive being read — a
-        self-dismissing toast can't carry "check each bus before service."
-      </p>
-    </div>
-  </section>
-
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
-    <div class="p-7 sm:p-9">
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-rose-800">Reproduce the bug</div>
-        </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">Seeing the broken behaviour</h2>
-        <p class="text-slate-700 leading-relaxed">
-          Run this on an environment that does <strong>not</strong> yet have the fix. Tenant is <strong>testqa</strong>
-          in Trip Preparation. Case A needs nothing but the app and is fully deterministic — start there. Cases B and C
-          need browser developer tools.
-        </p>
-      </div>
-
-      <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5 mb-7">
-        <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-2">Pick your service day first</div>
-        <p class="text-slate-800 leading-relaxed">
-          Trip Preparation shows routes for one service day at a time, and a day outside a school term that has routes
-          shows an <strong>empty list</strong>. That looks like a broken page but is correct behaviour. Before anything
-          else: page the date control back until the Routes list is populated, and use that day throughout. Note the
-          date you settled on — you'll want it for the fix run too.
-        </p>
-      </div>
-
-      <div class="space-y-7">
-
-        <div>
-          <div class="flex items-start gap-4 mb-3">
-            <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">A</div>
-            <div class="flex-1 pt-1">
-              <h3 class="text-lg font-bold text-slate-950">Calculate does nothing, silently</h3>
-              <p class="text-slate-600 text-sm leading-relaxed">No developer tools needed. This is the one a dispatcher would actually hit, and it reproduces every time.</p>
-            </div>
-          </div>
-          <ol class="space-y-2 text-slate-700 leading-relaxed list-decimal pl-9">
-            <li>On the <strong>Routes</strong> screen, note the route names visible for your chosen service day. This list is what matters in step 4.</li>
-            <li>Find a route whose trip has plenty of stops to redistribute. Hover its trip in the <strong>TRIP</strong> column and click the pencil icon to open <strong>View/Edit Trip</strong>.</li>
-            <li>Click <strong>BREAK UP</strong>. You now see a longer list of candidate destination trips, with their route names in the left column.</li>
-            <li><strong>Select a destination whose route is NOT one of the routes you noted in step 1.</strong> The candidate list is searched separately and offers routes the Routes screen didn't load — those are the ones that break. Pick two to be safe.</li>
-            <li>Click <strong>CALCULATE</strong>.</li>
-          </ol>
-          <div class="bg-rose-100 border-2 border-rose-300 rounded-xl p-5 mt-4">
-            <div class="text-rose-900 font-bold text-sm tracking-wider uppercase mb-2">Bug confirmed when</div>
-            <p class="text-slate-800 leading-relaxed">
-              <strong>Nothing happens.</strong> No message, no progress, no advance to the next step. The CALCULATE button
-              stays enabled, inviting you to click it again. If you open the browser console you'll find an unhandled error
-              mentioning <code class="k">calculateBreakup</code> — that console entry is the <em>only</em> indication anything went wrong.
-            </p>
-          </div>
-        </div>
-
-        <div class="border-t-2 border-slate-200 pt-7">
-          <div class="flex items-start gap-4 mb-3">
-            <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">B</div>
-            <div class="flex-1 pt-1">
-              <h3 class="text-lg font-bold text-slate-950">A rejected save says nothing at all</h3>
-              <p class="text-slate-600 text-sm leading-relaxed">Needs developer tools to force the rejection. This is the ticket's headline complaint.</p>
-            </div>
-          </div>
-          <ol class="space-y-2 text-slate-700 leading-relaxed list-decimal pl-9">
-            <li>Same trip, but this time pick destinations whose routes <em>are</em> on the Routes screen, so Calculate succeeds.</li>
-            <li>Click <strong>CALCULATE</strong>, then <strong>CALCULATE DETAILS</strong>. You should reach the preview step with a <strong>SAVE</strong> button.</li>
-            <li>Open developer tools → <strong>Network</strong>. In the request filter box type <code class="k">api/trip</code> so you can watch the save requests.</li>
-            <li>Set the throttling dropdown to <strong>Offline</strong>. (Right-clicking a prior request and choosing "Block request URL" also works.)</li>
-            <li>Click <strong>SAVE</strong>, then confirm <strong>YES</strong> on the prompt.</li>
-          </ol>
-          <div class="bg-rose-100 border-2 border-rose-300 rounded-xl p-5 mt-4">
-            <div class="text-rose-900 font-bold text-sm tracking-wider uppercase mb-2">Bug confirmed when</div>
-            <p class="text-slate-800 leading-relaxed">
-              The modal stays open and <strong>no message of any kind appears</strong> — not an error, and not the usual
-              green success message either. There is no way to tell from the screen whether anything was saved. Set
-              throttling back to <strong>No throttling</strong> when you're done.
-            </p>
-          </div>
-        </div>
-
-        <div class="border-t-2 border-slate-200 pt-7">
-          <div class="flex items-start gap-4 mb-3">
-            <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">C</div>
-            <div class="flex-1 pt-1">
-              <h3 class="text-lg font-bold text-slate-950">A half-saved split puts one stop on two buses</h3>
-              <p class="text-slate-600 text-sm leading-relaxed">Optional and fiddly to time by hand. Engineering has already captured this one — treat it as background unless you want to see it yourself.</p>
-            </div>
-          </div>
-          <p class="text-slate-700 leading-relaxed mb-3 pl-9">
-            A split is not one save. It writes each destination bus as a separate request and then the source bus
-            <strong>last</strong> — and that final write is the one that records that the stops left. So if a write fails
-            partway, the destination buses have already claimed stops that the original bus still lists as its own.
-          </p>
-          <ol class="space-y-2 text-slate-700 leading-relaxed list-decimal pl-9">
-            <li>Set up as in case B with <strong>two</strong> destination buses, and reach the SAVE step.</li>
-            <li>In Network, let the first <code class="k">POST api/trip</code> complete, then immediately switch throttling to <strong>Offline</strong> so the later ones fail.</li>
-            <li>Reopen the original trip and the destination you saw succeed, and compare their stop lists.</li>
-          </ol>
-          <div class="bg-rose-100 border-2 border-rose-300 rounded-xl p-5 mt-4">
-            <div class="text-rose-900 font-bold text-sm tracking-wider uppercase mb-2">Bug confirmed when</div>
-            <p class="text-slate-800 leading-relaxed">
-              The same stops appear on <strong>both</strong> the original bus and the destination bus, and nothing on
-              screen ever warned you. In engineering's capture of this, ten stops were live on two buses simultaneously
-              with no message shown.
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
-    <div class="p-7 sm:p-9">
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Verify the fix</div>
-        </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">Confirming it once the fix is live</h2>
-        <p class="text-slate-700 leading-relaxed">
-          Same tenant, same service day, same trips. Re-run each case and look for a message where there previously was
-          none. The wording below is what the code produces — the trip and route names will be whichever ones you picked.
-        </p>
-      </div>
-
-      <div class="space-y-6">
-
-        <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5">
-          <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Case A passes when</div>
-          <p class="text-slate-800 leading-relaxed mb-3">
-            Clicking CALCULATE with an unloaded destination route produces a red message along these lines:
-          </p>
-          <pre class="quote-ui text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">"AM-HS-ATH-62" cannot be used as a destination: its
-route is not loaded for this service day. Select a
-different trip.</pre>
-          <p class="text-slate-800 leading-relaxed mt-3">
-            The modal must stay on the destination picker, and CALCULATE must be usable again afterwards. Check the
-            browser console too — the unhandled error that used to appear on this click should be gone.
-          </p>
-        </div>
-
-        <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5">
-          <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Case B passes when</div>
-          <p class="text-slate-800 leading-relaxed mb-3">
-            A save that is rejected before anything is written produces a red message that begins:
-          </p>
-          <pre class="quote-ui text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">Nothing was saved. The server could not be reached.
-Check your connection and try again.</pre>
-          <p class="text-slate-800 leading-relaxed mt-3">
-            Wording after "Nothing was saved." varies with the cause — a server that answers with a rejection gives that
-            rejection's reason plus a reference code instead. What must <em>not</em> appear anywhere is
-            <code class="k">[object Object]</code>, raw internal error text, or a claim the server was unreachable when
-            it plainly answered. Also watch the SAVE button grey out while the save runs.
-          </p>
-        </div>
-
-        <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5">
-          <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Case C passes when</div>
-          <p class="text-slate-800 leading-relaxed mb-3">
-            A partly-completed split raises a dialog you have to acknowledge with OK, naming what did save:
-          </p>
-          <pre class="quote-ui text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">This break-up was only partly saved.
-
-Saved: to the blue place.
-Not saved: Trip stops are different on 05/14/2026
-(reference 9f4c1a77-…)
+Saved: Test.
+Not saved: The server could not be reached. Check
+your connection and try again.
 
 The stops that moved may currently show on both the
 original bus and the new one. Reopen this trip and
 check each bus before service.</pre>
-          <p class="text-slate-800 leading-relaxed mt-3">
-            The point of this one is that the message is <em>true</em>: the stop really is on two buses at that moment, and
-            the dispatcher is told to go check. The fix reports the state — it does not prevent it. Preventing it is
-            tracked separately.
+        <p class="text-slate-800 leading-relaxed mt-3">
+          It must name the bus that <em>did</em> save. A dialog rather than a banner is deliberate — a banner fades
+          after three seconds, which is not long enough for "check each bus before service."
+        </p>
+      </div>
+
+      <div class="bg-sky-100 border-2 border-sky-300 rounded-xl p-5 mt-4">
+        <div class="text-sky-900 font-bold text-sm tracking-wider uppercase mb-2">Now confirm the warning is true</div>
+        <p class="text-slate-800 leading-relaxed mb-3">Set throttling back to <strong>No throttling</strong>, close the dialog, then:</p>
+        <ol class="space-y-2 text-slate-800 leading-relaxed list-decimal pl-6">
+          <li>Open <code class="k">TestQA3</code> → <code class="k">Test</code> via its pencil. The stops it took are listed, each labelled <strong>Moved from … Test3</strong>.</li>
+          <li>Now open <code class="k">West Elementary</code> → <code class="k">Test3</code>. Those same stop names are <strong>still there</strong>, as ordinary stops with no "moved" label.</li>
+        </ol>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          The same stops, live on two buses at once, and in the old build nothing told anyone.
+        </p>
+      </div>
+
+      <p class="text-slate-600 text-sm leading-relaxed mt-4">
+        If you can't land the timing, don't sink time into it — check 3 already proves the reporting works.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <div class="p-7 sm:p-9">
+      <div class="flex items-start gap-4 mb-6">
+        <div class="badge-num bg-sky-200 text-sky-900 step-number flex-shrink-0">5</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-sky-800 mb-1">Check 5</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Support can now see the save happened</h2>
+          <p class="text-slate-700 leading-relaxed">
+            No developer tools needed — the easiest check on the list. The entry is written by Trip Preparation but
+            read in EZRouting; the two share one audit trail.
           </p>
         </div>
+      </div>
 
-        <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5">
-          <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Audit trail passes when</div>
-          <p class="text-slate-800 leading-relaxed mb-3">
-            This one needs no developer tools and is the easiest independent check. Perform any ordinary trip save
-            (a break-up, a stop move, or a stop removal), then open <strong>EZRouting → Settings → audit history</strong>
-            for the same district and search for <code class="k">[EZD]</code>. You should find a fresh entry like:
-          </p>
-          <pre class="quote-ui text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">[EZD] Saved to the blue place on 2026-05-13:
-10 stop(s) moved in (11 stop(s) stored)</pre>
-          <p class="text-slate-800 leading-relaxed mt-3">
-            A save the server <em>rejected</em> is also recorded, with <code class="k">— REJECTED</code> and a code appended.
-            Before this fix there were no entries for trip saves at all, so any such entry is itself the pass signal.
-          </p>
-        </div>
+      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+        <li>Do any save first — check 2 is easiest.</li>
+        <li>Go to <code class="k wrap">https://ezr-uat.runpathwise.com/testqa</code> and sign in.</li>
+        <li>Open <span class="click">Settings</span> → <span class="click">Audit</span>.</li>
+        <li>Search for <code class="k">[EZD]</code>.</li>
+      </ol>
 
+      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
+        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-slate-800 leading-relaxed mb-3">One fresh entry per bus written, timestamped just now:</p>
+        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">[EZD] Saved Test on 2026-05-13: 12 stop(s) moved in
+(27 stop(s) stored)</pre>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          Counts depend on how you split, so don't match them exactly — what matters is that entries exist and name
+          the right trip and date. Before this change there were <strong>no</strong> entries for trip saves at all,
+          so any entry here is the pass. A save the server rejects also gets one, with
+          <code class="k">— REJECTED</code> and a code appended.
+        </p>
       </div>
     </div>
   </section>
 
   <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
     <div class="p-7 sm:p-9">
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-amber-800">Traps</div>
-        </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">Things that will waste your time</h2>
-        <p class="text-slate-700 leading-relaxed">
-          Each of these cost real time during the work. None of them is a bug in the fix.
-        </p>
-      </div>
-
-      <div class="space-y-4">
-        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">An empty Routes list is usually the wrong service day</div>
-          <p class="text-slate-800 leading-relaxed">Routes exist only within a school term that has them. A date outside one shows nothing and looks broken. Page the date back until routes appear.</p>
-        </div>
-        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">Two UAT hostnames exist and they run different builds</div>
-          <p class="text-slate-800 leading-relaxed">Trip Preparation is reachable at two different UAT hostnames whose deployed versions diverge. Confirm the one the tester is actually on, and check its version, rather than assuming both moved together.</p>
-        </div>
-        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">A break-up writes real data for that service day</div>
-          <p class="text-slate-800 leading-relaxed">Saving a split changes what drivers would see for that day. Don't leave a test split in place — reopen the affected trips and use the per-stop undo in View/Edit Trip, or pick a service day nobody is relying on.</p>
-        </div>
-        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">Repeated stop names are not necessarily a failure</div>
-          <p class="text-slate-800 leading-relaxed">A physical stop can legitimately be served twice on one route. What matters is whether each row is explainable — a "Moved from" label or an original stop. Two identical rows at the <em>same arrival minute</em> with no label is the EZRD-1653 symptom, which is a separate fix.</p>
-        </div>
-        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">A console error from the tab component is pre-existing</div>
-          <p class="text-slate-800 leading-relaxed">The break-up modal logs an unrelated error from its tab widget on open. It predates this work and is not what you're looking for. The one that matters names <code class="k">calculateBreakup</code>.</p>
+      <div class="flex items-start gap-4 mb-6">
+        <div class="badge-num bg-amber-200 text-amber-900 step-number flex-shrink-0">6</div>
+        <div class="flex-1 pt-1">
+          <div class="text-sm font-bold tracking-wider uppercase text-amber-800 mb-1">Cleanup</div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Putting the test data back</h2>
+          <p class="text-slate-700 leading-relaxed">
+            Checks 2 and 4 write real changes for 05/13/2026. There's a one-click undo per trip.
+          </p>
         </div>
       </div>
-    </div>
-  </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
-    <div class="p-7 sm:p-9">
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Environment state</div>
-        </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">Confirm this first</h2>
-        <p class="text-slate-700 leading-relaxed">
-          Ground truth for "what's live" is each deployment's own version endpoint — not a release tag or a ticket status.
-          Trip Preparation exposes one at <code class="k">/version</code> on whichever host you're testing.
-        </p>
-      </div>
+      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+        <li>Open each affected trip via its pencil — <code class="k">Test3</code>, then <code class="k">Test</code>, then <code class="k">AM-ALT-EMRG-52</code>.</li>
+        <li>In the stop table, look at the <strong>far right column of the header row</strong>. If the trip has changes there's an <span class="click">↺ undo</span> icon there — click it to revert the whole trip at once.</li>
+        <li>Individual changed stops each have their own <span class="click">↺</span> in the last column, if you'd rather undo one at a time.</li>
+      </ol>
 
-      <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
-        <table class="w-full text-sm min-w-[720px]">
-          <colgroup>
-            <col class="w-10">
-            <col class="w-[38%]">
-            <col>
-          </colgroup>
-          <thead>
-            <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
-              <th class="text-left px-4 py-3"></th>
-              <th class="text-left px-4 py-3">Check</th>
-              <th class="text-left px-4 py-3">Why it matters</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200">
-            <tr class="hover:bg-slate-50 align-top">
-              <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
-              <td class="px-4 py-3 text-slate-800">Read <code class="k">/version</code> on the exact host you'll test</td>
-              <td class="px-4 py-3 text-slate-700">The two UAT hosts diverge. Testing the wrong one produces a confident wrong answer.</td>
-            </tr>
-            <tr class="hover:bg-slate-50 align-top">
-              <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
-              <td class="px-4 py-3 text-slate-800">Confirm the EZRD-1653 fix is present</td>
-              <td class="px-4 py-3 text-slate-700">This fix merges after it. A build without 1653 definitely doesn't have 1757.</td>
-            </tr>
-            <tr class="hover:bg-slate-50 align-top">
-              <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
-              <td class="px-4 py-3 text-slate-800">Note the service day you used</td>
-              <td class="px-4 py-3 text-slate-700">The bug run and the fix run must use the same day and trips to be comparable.</td>
-            </tr>
-            <tr class="hover:bg-slate-50 align-top">
-              <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
-              <td class="px-4 py-3 text-slate-800">Leave no test split behind</td>
-              <td class="px-4 py-3 text-slate-700">Saved splits change what that service day would show to drivers.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="bg-sky-100 border-2 border-sky-300 rounded-xl p-5 mt-5">
-        <div class="text-sky-900 font-bold text-sm tracking-wider uppercase mb-2">On the specific names in this guide</div>
+      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
+        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Back to clean when</div>
         <p class="text-slate-800 leading-relaxed">
-          Trip and route names quoted above — and the <code class="k">2026-05-13</code> service day — come from a local
-          copy of <strong>testqa</strong> and are shown to make the wording concrete. testqa data drifts, so treat them
-          as examples rather than fixed coordinates. The <em>selection rules</em> are what carry over: a trip with plenty
-          of stops, and destination routes chosen by whether they appear on the Routes screen for your service day. Those
-          rules hold whatever the data looks like when you run it.
+          <code class="k">Test3</code> shows all <strong>27</strong> stops again with no "moved" labels and reads
+          <strong>6:00 AM ~ 7:27 AM</strong> in the routes list, and the two destination trips show no moved-in stops.
         </p>
       </div>
     </div>
@@ -504,45 +404,36 @@ check each bus before service.</pre>
 
   <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
     <div class="p-7 sm:p-9">
-      <div class="mb-6">
+      <div class="mb-4">
         <div class="flex items-center gap-3 mb-2">
           <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-slate-600">Out of scope</div>
+          <div class="text-sm font-bold tracking-wider uppercase text-slate-600">Not a failure</div>
         </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">Deliberately not fixed here</h2>
-        <p class="text-slate-700 leading-relaxed">
-          Reporting a problem clearly is not the same as removing it. These are known, tracked separately, and should not
-          be logged as failures of this fix.
-        </p>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Things that look wrong but aren't</h2>
       </div>
-
       <div class="space-y-4">
         <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
           <div class="font-bold text-slate-900 mb-1">You still can't use those destination buses</div>
-          <p class="text-slate-800 leading-relaxed">Case A now tells you the route isn't loaded. It doesn't load it. The underlying mismatch — the candidate list offering routes the screen didn't load — has its own defect ticket.</p>
+          <p class="text-slate-800 leading-relaxed">Check 1 now tells you the route isn't available. It doesn't make it available. That's a separate ticket — don't log it against this one.</p>
         </div>
         <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
           <div class="font-bold text-slate-900 mb-1">A half-saved split is still possible</div>
-          <p class="text-slate-800 leading-relaxed">Case C warns you and tells you where to look. Making the whole split succeed-or-fail as one unit needs a transactional save, which is its own ticket. Note that simply reversing the write order is <em>not</em> a fix — it would trade a stop double-booked on two buses for a stop on no bus at all, which strands a child rather than wasting a stop.</p>
+          <p class="text-slate-800 leading-relaxed">Check 4 warns you and tells you where to look. Making the whole split succeed-or-fail as one unit is separately tracked.</p>
         </div>
         <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">Retry logic and a propagation SLA were dropped</div>
-          <p class="text-slate-800 leading-relaxed">Both assumed a hand-off between systems that doesn't exist. There is no transient failure to retry and no asynchronous delay to measure. Recommended to Product as dropped rather than deferred.</p>
+          <div class="font-bold text-slate-900 mb-1">A repeated stop name can be legitimate</div>
+          <p class="text-slate-800 leading-relaxed">A bus can serve the same physical stop twice. What matters is that each row is explainable — a "Moved from" label, or an original stop. Two identical rows at the same arrival minute with no label is the EZRD-1653 symptom, which is its own fix.</p>
         </div>
         <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">"When will the driver's tablet show this?" is a real but different question</div>
-          <p class="text-slate-800 leading-relaxed">EZRouting picks a change up when a tablet next asks for its route, so a driver already looking at a loaded screen won't see it until their app refetches. That's a genuine delay, but answering it needs device-level telemetry that doesn't exist and can't be answered from EZDistrict. It sits with Product.</p>
-        </div>
-        <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">The single-stop Move flow has the same gap</div>
-          <p class="text-slate-800 leading-relaxed">Moving individual stops between trips shares the same silent-rejection and partial-write shape as break-up did. This fix covers break-up, because that's the reported incident. The Move flow is a tracked follow-up — so a silent failure there is expected, not a regression.</p>
+          <div class="font-bold text-slate-900 mb-1">Moving a single stop can still fail quietly</div>
+          <p class="text-slate-800 leading-relaxed">This change covers the <strong>Break Up</strong> flow. The <strong>MOVE</strong> button in View/Edit Trip has the same gap and is a tracked follow-up, so a silent failure there is expected, not a regression.</p>
         </div>
       </div>
     </div>
   </section>
 
   <div class="text-slate-500 text-sm text-center pt-6">
-    Sources: EZRD-1757 · related defect EZRD-1653 · behaviour captured against a local copy of the testqa tenant.
+    Route, trip, stop counts and availability read from the UAT testqa database · service day 2026-05-13.
   </div>
 
 </main>
