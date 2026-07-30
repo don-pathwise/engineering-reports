@@ -61,8 +61,9 @@
     </h1>
     <p class="text-lg text-slate-700 max-w-3xl leading-relaxed">
       Splitting a bus route across other buses could fail and tell the dispatcher <em>nothing</em> — no error,
-      and in one case not even a success message. Five checks confirm it now reports. Every route, trip and
-      date below was read from the UAT <strong>testqa</strong> database, so you can follow them literally.
+      and in one case not even a success message. Five checks confirm it now reports. Every route, trip and date
+      below was confirmed live against <strong>Prod UAT</strong> for tenant <strong>testqa</strong>, so you can
+      follow them literally.
     </p>
   </div>
 </header>
@@ -75,7 +76,7 @@
       <div>
         <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Check the build first</div>
         <p class="text-slate-800 text-lg leading-relaxed">
-          Open <code class="k wrap">https://preparation.ezd-uat.runpathwise.com/version</code> and confirm with the
+          Open <code class="k wrap">https://preparation.pathwiserouting.com/version</code> and confirm with the
           dev team that the commit shown includes EZRD-1757. If it doesn't, everything below will behave the
           <em>old</em> way — no messages at all — and you'll be recording the bug rather than the fix.
         </p>
@@ -95,7 +96,7 @@
       </div>
 
       <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
-        <li>Go to <code class="k wrap">https://preparation.ezd-uat.runpathwise.com/testqa</code> and sign in. You land on <strong>Routes / Trips</strong>.</li>
+        <li>Go to <code class="k wrap">https://preparation.pathwiserouting.com/testqa</code> and sign in. You land on <strong>Routes / Trips</strong>.</li>
         <li>The routes list will be <strong>empty</strong> on today's date. That's correct — today falls in a school term with almost no routes. You need to change the day.</li>
         <li>Click the <span class="click">calendar icon</span> just left of the date in the top bar. A month grid opens with <code class="k">‹ MONTH YEAR ›</code> across the top.</li>
         <li>Navigate to <strong>MAY 2026</strong> — click <span class="click">‹</span> to step back a month at a time, or click the month name and the year to pick from dropdowns.</li>
@@ -107,7 +108,7 @@
         <p class="text-slate-800 leading-relaxed">
           The list fills with routes including <code class="k">West Elementary</code>,
           <code class="k">TestQA3</code>, <code class="k">Emergency Transport - West Alternative</code> and
-          several <code class="k">Activity Bus - Alternative Route A Test</code> entries.
+          several <code class="k">Activity Bus - Alternative Route A</code> entries — 12 routes in total.
         </p>
       </div>
     </div>
@@ -120,17 +121,19 @@
           <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-amber-800">Read once</div>
         </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">Two quirks of this tenant that will trip you up</h2>
+        <h2 class="text-2xl font-bold text-slate-950 mb-2">Two things that will otherwise trip you up</h2>
       </div>
 
       <div class="space-y-4">
         <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">Every route is listed twice</div>
+          <div class="font-bold text-slate-900 mb-1">There are five environments and two of them look like "UAT"</div>
           <p class="text-slate-800 leading-relaxed">
-            testqa holds two copies of its route set, so you'll see two <code class="k">West Elementary</code>
-            rows, two <code class="k">Activity Bus - South Middle</code> rows, and so on. They behave the same —
-            just pick one and stay with it. <code class="k">West Elementary</code> also has more than one trip
-            called <code class="k">Test3</code>; take the one showing <strong>6:00 AM ~ 7:27 AM</strong>.
+            <code class="k wrap">pathwiserouting.com</code> is the <strong>Prod UAT</strong> environment and is the
+            one these steps target. It is <em>not</em> the same as UAT (EKS)
+            (<code class="k wrap">ezd-uat.runpathwise.com</code>) or UAT (EC2)
+            (<code class="k wrap">ezd-uat-ec2.runpathwise.com</code>) — those are separate deployments with
+            separate databases, and the routes and trips named below will not all match there. Use the exact
+            hostnames in these steps.
           </p>
         </div>
         <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
@@ -162,7 +165,7 @@
       <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
         <li>Find a <code class="k">West Elementary</code> row. In the <strong>TRIP</strong> column, hover over <code class="k">Test3 (6:00 AM ~ 7:27 AM)</code> — a <span class="click">pencil</span> icon appears. Click it.</li>
         <li><strong>View/Edit Trip</strong> opens with 27 stops. Click <span class="click">BREAK UP</span> at the bottom.</li>
-        <li>A list of 27 candidate destination trips appears. Tick the checkbox for:
+        <li>A list of 30 candidate destination trips appears. Tick the checkbox for:
           <div class="bg-rose-100 border-2 border-rose-300 rounded-lg px-4 py-3 mt-2 pickbox text-slate-900">
             Activity Bus - South Middle &nbsp;·&nbsp; AM-MS-ACT-46
           </div>
@@ -183,7 +186,7 @@ different trip.</pre>
       </div>
 
       <p class="text-slate-600 text-sm leading-relaxed mt-4">
-        16 of the 27 candidates behave this way. Others you can repeat it with:
+        16 of the 30 candidates behave this way. Others you can repeat it with:
         <code class="k">Activity Bus - East Alternative / AM-ALT-ACT-58</code>,
         <code class="k">Athletic Transport - High Route B / AM-HS-ATH-62</code>,
         <code class="k">Late Bus - Elementary Express / AM-ELEM-LATE-53</code>,
@@ -353,7 +356,7 @@ check each bus before service.</pre>
 
       <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
         <li>Do any save first — check 2 is easiest.</li>
-        <li>Go to <code class="k wrap">https://ezr-uat.runpathwise.com/testqa</code> and sign in.</li>
+        <li>Go to <code class="k wrap">https://uat.pathwiserouting.com/testqa</code> and sign in.</li>
         <li>Open <span class="click">Settings</span> → <span class="click">Audit</span>.</li>
         <li>Search for <code class="k">[EZD]</code>.</li>
       </ol>
@@ -368,6 +371,11 @@ check each bus before service.</pre>
           the right trip and date. Before this change there were <strong>no</strong> entries for trip saves at all,
           so any entry here is the pass. A save the server rejects also gets one, with
           <code class="k">— REJECTED</code> and a code appended.
+        </p>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          If no entry appears at all, don't log it as a failure yet — check with the dev team that this EZRouting
+          instance reads the same tenant database that Trip Preparation writes to. Both are Prod UAT, so they
+          should, but that pairing has not been confirmed end to end.
         </p>
       </div>
     </div>
@@ -433,7 +441,7 @@ check each bus before service.</pre>
   </section>
 
   <div class="text-slate-500 text-sm text-center pt-6">
-    Route, trip, stop counts and availability read from the UAT testqa database · service day 2026-05-13.
+    Routes, trips and availability confirmed live against preparation.pathwiserouting.com for tenant testqa · service day 2026-05-13 · 30 candidates, 14 available, 16 not.
   </div>
 
 </main>
