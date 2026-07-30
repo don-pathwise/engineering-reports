@@ -159,18 +159,28 @@
     </ol>
 
     <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5 mb-4">
-      <div class="font-bold text-slate-900 mb-2">Bug confirmed — count the saved trip</div>
+      <div class="font-bold text-slate-900 mb-2">What you'll see — bug present</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        Reopen each destination trip <em>after</em> saving and count its stops. The arithmetic is the reliable test:
+        On the <strong>Calculate Details</strong> screen (step 4), the receiving bus's list contains stops that were
+        never assigned to it. The clearest form is the same stop listed twice with the <em>same</em> arrival time — one
+        row bold/green, one plain:
       </p>
-      <div class="rounded-lg bg-white border border-rose-200 p-4 mb-3">
-        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">stops now &gt; (baseline stops + stops assigned to it)</p>
-        <p class="text-slate-600 text-[.88rem]">More stops than were asked for = stops nobody assigned. That's the defect.</p>
+      <div class="overflow-x-auto mb-3">
+        <table class="w-full text-[.86rem] font-mono border-collapse bg-white rounded-lg">
+          <tbody class="text-slate-700">
+            <tr class="border-b border-slate-200"><td class="py-1.5 px-3 font-semibold text-slate-900">16</td><td class="py-1.5 px-3 font-semibold text-slate-900">Dean Road &amp; Lake Drive</td><td class="py-1.5 px-3">6:47 → <strong>7:46 AM</strong></td></tr>
+            <tr><td class="py-1.5 px-3">17</td><td class="py-1.5 px-3">Dean Road &amp; Lake Drive</td><td class="py-1.5 px-3">7:26 → <strong>7:46 AM</strong></td></tr>
+          </tbody>
+        </table>
       </div>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed">
-        Supporting evidence: a row with <strong>no “Moved from …” label</strong> that wasn't in the baseline stop list
-        you screenshotted, and both destination windows <strong>longer than the baseline</strong>.
+      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+        After saving, reopening the trip shows a row with <strong>no “Moved from …” label</strong> that also wasn't in
+        the baseline stop list you screenshotted, and both destination windows are <strong>longer</strong> than baseline.
       </p>
+      <div class="rounded-lg bg-white border border-rose-200 p-4">
+        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">Confirms it: stops now &gt; baseline stops + stops assigned to it</p>
+        <p class="text-slate-600 text-[.88rem]">More stops than anyone asked for. Count it on both destinations.</p>
+      </div>
     </div>
 
     <div class="rounded-xl border-2 border-slate-200 bg-slate-50 p-5">
@@ -239,18 +249,20 @@
     </p>
 
     <div class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-5 mb-5">
-      <div class="font-bold text-slate-900 mb-2">Fix confirmed — the same count, now exact</div>
+      <div class="font-bold text-slate-900 mb-2">What you'll see — fix working</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
-        Reopen each destination trip after saving and count again. Where prod came out over, UAT should land exactly on:
+        On the same <strong>Calculate Details</strong> screen, the pair you photographed on prod is gone: each stop the
+        bus was assigned appears <strong>once</strong>, and the <code class="k">#</code> column runs <strong>1, 2, 3 …
+        with no gaps</strong>. Put the two screenshots side by side — UAT's list is the shorter one.
       </p>
-      <div class="rounded-lg bg-white border border-emerald-200 p-4 mb-3">
-        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">stops now = baseline stops + stops assigned to it</p>
-        <p class="text-slate-600 text-[.88rem]">Exactly equal, on both destinations. No extras.</p>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+        After saving, every row in the reopened trip is accountable: it either carries a “Moved from …” label or you can
+        find it in the baseline stop list you screenshotted. No unlabelled strangers.
+      </p>
+      <div class="rounded-lg bg-white border border-emerald-200 p-4">
+        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">Confirms it: stops now = baseline stops + stops assigned to it</p>
+        <p class="text-slate-600 text-[.88rem]">Exactly equal, on both destinations. Where prod came out over, this lands on the number.</p>
       </div>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed">
-        Supporting evidence: every row without a “Moved from …” label is one you can find in the baseline stop list you
-        screenshotted — no unlabelled strangers.
-      </p>
     </div>
 
     <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
