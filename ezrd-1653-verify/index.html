@@ -139,8 +139,8 @@
 
     <ol class="space-y-4 mb-6">
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">1</span>
-        <div><div class="font-bold text-slate-900">Set the service day, then write down both destination windows</div>
-        <p class="text-slate-700 leading-relaxed">The two “7:06 – 7:34” and “7:39 – 8:00” figures are your baseline. This is the easiest evidence to capture and the easiest step to forget.</p></div></li>
+        <div><div class="font-bold text-slate-900">Set the service day, then record each destination's baseline</div>
+        <p class="text-slate-700 leading-relaxed">For <em>both</em> destination trips write down the <strong>time window</strong> and the <strong>number of stops</strong>, and screenshot each stop list. The stop count is what the pass/fail check is built on, so this step is the one that makes the rest verifiable — and the easiest to skip.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">2</span>
         <div><div class="font-bold text-slate-900">Open <code class="k">Test3</code> on West Elementary</div>
         <p class="text-slate-700 leading-relaxed">Hover the route row, then click the ✏️ next to the trip name — the pencil only appears on hover, and on a narrow window it sits past the right edge.</p></div></li>
@@ -158,13 +158,29 @@
         <p class="text-slate-700 leading-relaxed">Both windows should now be visibly longer, and the reopened trip should still show the repeated stop.</p></div></li>
     </ol>
 
-    <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5">
-      <div class="font-bold text-slate-900 mb-2">Bug confirmed if you see all three</div>
-      <ul class="text-slate-700 text-[.95rem] leading-relaxed space-y-1.5 list-disc pl-5">
-        <li>A stop listed <strong>twice at the same arrival minute</strong> in the preview.</li>
-        <li>A row with <strong>no “Moved from …” label</strong> that also isn't one of that bus's own stops — the clearest single tell.</li>
-        <li>Both destination trip windows <strong>longer than the baseline</strong> you noted in step 1.</li>
-      </ul>
+    <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5 mb-4">
+      <div class="font-bold text-slate-900 mb-2">Bug confirmed — count the saved trip</div>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+        Reopen each destination trip <em>after</em> saving and count its stops. The arithmetic is the reliable test:
+      </p>
+      <div class="rounded-lg bg-white border border-rose-200 p-4 mb-3">
+        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">stops now &gt; (baseline stops + stops assigned to it)</p>
+        <p class="text-slate-600 text-[.88rem]">More stops than were asked for = stops nobody assigned. That's the defect.</p>
+      </div>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed">
+        Supporting evidence: a row with <strong>no “Moved from …” label</strong> that wasn't in the baseline stop list
+        you screenshotted, and both destination windows <strong>longer than the baseline</strong>.
+      </p>
+    </div>
+
+    <div class="rounded-xl border-2 border-slate-200 bg-slate-50 p-5">
+      <div class="font-bold text-slate-900 mb-2">Judge from the saved trip, not the preview</div>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed">
+        The Calculate Details preview shows extra stops on <strong>both</strong> environments — they're part of how
+        arrival times get worked out, and the fix doesn't remove them from that screen. The difference between the two
+        environments is only in <strong>what gets stored</strong>, so always reopen the trip after saving before
+        deciding pass or fail.
+      </p>
     </div>
   </section>
 
@@ -224,21 +240,31 @@
     </p>
 
     <div class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-5 mb-5">
-      <div class="font-bold text-slate-900 mb-2">Fix confirmed if all three hold</div>
-      <ul class="text-slate-700 text-[.95rem] leading-relaxed space-y-1.5 list-disc pl-5">
-        <li><strong>Every row is explainable</strong> — it either carries a “Moved from …” label or is one of that bus's own original stops. No unlabelled strangers.</li>
-        <li><strong>Stop counts add up</strong>: each destination ends with <em>its own stop count plus the number of stops assigned to it</em>, and nothing more.</li>
-        <li><strong>No stop appears twice at the same arrival minute.</strong></li>
-      </ul>
+      <div class="font-bold text-slate-900 mb-2">Fix confirmed — the same count, now exact</div>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+        Reopen each destination trip after saving and count again. Where prod came out over, UAT should land exactly on:
+      </p>
+      <div class="rounded-lg bg-white border border-emerald-200 p-4 mb-3">
+        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">stops now = baseline stops + stops assigned to it</p>
+        <p class="text-slate-600 text-[.88rem]">Exactly equal, on both destinations. No extras.</p>
+      </div>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed">
+        Supporting evidence: every row without a “Moved from …” label is one you can find in the baseline stop list you
+        screenshotted — no unlabelled strangers.
+      </p>
     </div>
 
     <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
-      <div class="font-bold text-slate-900 mb-2">One thing that is <em>not</em> a failure</div>
+      <div class="font-bold text-slate-900 mb-2">Two things that are <em>not</em> failures</div>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+        <strong>A stop name appearing twice — even at the same minute.</strong> If the receiving bus already served that
+        stop and students were moved to it, you get two rows for one place: one is the bus's own stop, the other carries
+        a “Moved from …” label. Both are accounted for, the count still adds up, and merging them into a single visit is
+        tracked separately. This is expected on UAT and is <em>not</em> the defect.
+      </p>
       <p class="text-slate-700 text-[.95rem] leading-relaxed">
-        A stop name may still appear twice if the receiving bus <strong>already served that stop</strong> and students
-        were moved to it — one row will be its own stop, the other will carry a “Moved from …” label, and the times
-        will differ. Both are explainable, and it's tracked separately. The failure signal is an
-        <strong>unlabelled</strong> row, or two rows at the <strong>same minute</strong>.
+        <strong>Extra stops in the Calculate Details preview.</strong> That screen looks much the same on both
+        environments. Only the saved trip differs — so judge from the reopened trip, never from the preview.
       </p>
     </div>
   </section>
