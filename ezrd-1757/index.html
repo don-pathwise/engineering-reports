@@ -447,11 +447,22 @@ Reopen this trip and check each bus before service.</pre>
       <div class="bg-rose-100 border-2 border-rose-300 rounded-xl p-5 mt-6">
         <div class="text-rose-900 font-bold text-sm tracking-wider uppercase mb-2">Expect undo to fail — this is known</div>
         <p class="text-slate-800 leading-relaxed">
-          On Prod UAT this undo currently <strong>does not work</strong>, and it lies about it. It shows a red
-          <code class="k">[object Object]</code> banner <em>and</em> a green "Trip changes undone" banner at the
-          same time, while the server rejects the request and reverts nothing — the "Moved from …" labels stay
-          right where they were. This was reproduced on every attempt, on two different trips and two different
+          On Prod UAT this undo currently <strong>does not work</strong> on this data, and it lies about it. It
+          shows a red <code class="k">[object Object]</code> banner <em>and</em> a green "Trip changes undone"
+          banner at the same time, while the server rejects the request and reverts nothing — the
+          "Moved from …" labels stay right where they were. Reproduced on every attempt, across two trips and two
           service days, so assume you'll hit it.
+        </p>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          The cause has been identified and it is <strong>not</strong> part of this change. Undo recomputes stop
+          times, which calls the routing engine, and the engine can't place one of these stops on the map — the
+          server actually replies with something useful:
+        </p>
+        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-rose-300 overflow-x-auto mt-2">errcode: E_ROUTING
+message: Cannot find point 1: 43.15749,-87.60159</pre>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          The undo screen throws that message away and prints <code class="k">[object Object]</code> instead —
+          the same defect this ticket fixed on the break-up screen, in a screen this ticket didn't touch.
         </p>
         <p class="text-slate-800 leading-relaxed mt-3">
           It is a separate pre-existing defect in the undo screen, <strong>not</strong> a failure of anything on
