@@ -130,7 +130,7 @@
           <tr class="border-b border-slate-200">
             <td class="py-2.5 pr-4 font-bold text-slate-900">Into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - High Route B</td>
-            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span></td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span><div class="text-[.8rem] font-normal text-slate-500">2 trips — see note 2</div></td>
             <td class="py-2.5 pr-4"><code class="k">AM-HS-EMRG-25</code></td>
             <td class="py-2.5"><strong>8 stops · 7:06 – 7:34 AM</strong></td>
           </tr>
@@ -146,16 +146,24 @@
     </div>
 
     <div class="rounded-xl border-2 border-slate-300 bg-slate-100 p-5 mb-6">
-      <div class="font-bold text-slate-900 mb-2">Two things to know before step 1</div>
+      <div class="font-bold text-slate-900 mb-2">Three things to know before step 1</div>
       <p class="text-slate-700 text-[.95rem] leading-relaxed mb-2">
-        The route list is split across two tabs — <strong>UNCOVERED ROUTES</strong> (the one you land on) and
-        <strong>COVERED ROUTES</strong>. A route lands on COVERED only when it has both a bus and an available driver, so
-        the same route can be on a different tab in each environment. The <strong>“Which tab”</strong> column in each
-        lineup table below is the one to follow — it was read from that environment's own data.
+        <strong>1.</strong> The route list is split across two tabs — <strong>UNCOVERED ROUTES</strong> (the one you land
+        on) and <strong>COVERED ROUTES</strong>. A route lands on COVERED only when it has both a bus and an available
+        driver, so the same route can be on a different tab in each environment. The <strong>“Which tab”</strong> column
+        in each lineup table below is the one to follow — it was read from that environment's own data.
+      </p>
+      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-2">
+        <strong>2.</strong> <code class="k">AM-HS-EMRG-25</code> will <em>not</em> be on screen when you first look.
+        <strong>Emergency Transport - High Route B runs two trips</strong> on both service days, and the default
+        <strong>VIEW TRIP LIST</strong> shows only the other one (<code class="k">AM-HS-EMRG-30</code>). Click
+        <strong>VIEW TRIP BY TIME</strong> in the TRIP column header to see both, and pick
+        <code class="k">AM-HS-EMRG-25</code> from there. This applies to that route only — the other trips in the
+        lineups are the sole trip on their route.
       </p>
       <p class="text-slate-700 text-[.95rem] leading-relaxed">
-        Inside a trip, the stop list is <strong>numbered</strong> in a <code class="k">#</code> column. You never have to
-        hand-count stops — scroll to the bottom and read the number on the last row.
+        <strong>3.</strong> Inside a trip, the stop list is <strong>numbered</strong> in a <code class="k">#</code>
+        column. You never have to hand-count stops — scroll to the bottom and read the number on the last row.
       </p>
     </div>
 
@@ -165,7 +173,7 @@
         <p class="text-slate-700 leading-relaxed">Click the date at the top of the page, step back with <strong>&lt;</strong> to the right month, then click the day. Wait for the route counts to appear on the two tabs.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">2</span>
         <div><div class="font-bold text-slate-900">Record both destinations' baselines</div>
-        <p class="text-slate-700 leading-relaxed">For each destination trip: hover its route row, click the ✏️ beside the trip name, scroll to the bottom of the stop list and write down <strong>the number on the last row</strong>. Also note the trip's <strong>time window</strong> from the route list. Then <strong>CANCEL</strong>. Everything after this compares against these two numbers, so don't skip it.</p></div></li>
+        <p class="text-slate-700 leading-relaxed">For each destination trip: hover its route row, click the ✏️ beside the trip name, scroll to the bottom of the stop list and write down <strong>the number on the last row</strong>. Also note the trip's <strong>time window</strong> from the route list. Then <strong>CANCEL</strong>. Everything after this compares against these two numbers, so don't skip it. If you can't see <code class="k">AM-HS-EMRG-25</code>, that's note 2 above — switch to <strong>VIEW TRIP BY TIME</strong>.</p></div></li>
       <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">3</span>
         <div><div class="font-bold text-slate-900">Open the source trip and click <strong>BREAK UP</strong></div>
         <p class="text-slate-700 leading-relaxed">Find West Elementary, hover the row, click the ✏️ beside <code class="k">Test3</code>. The pencil only exists while the row is hovered. In the trip window, click <strong>BREAK UP</strong>.</p></div></li>
@@ -248,14 +256,14 @@
           <tr class="border-b border-slate-200 bg-emerald-50">
             <td class="py-2.5 pr-4 font-bold text-emerald-900">Break&nbsp;up</td>
             <td class="py-2.5 pr-4 font-semibold">West Elementary</td>
-            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">UNCOVERED</span></td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">Test3</code></td>
             <td class="py-2.5">27 stops · 6:00 – 7:27 AM</td>
           </tr>
           <tr class="border-b border-slate-200">
             <td class="py-2.5 pr-4 font-bold text-slate-900">Into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - High Route B</td>
-            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">UNCOVERED</span></td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span><div class="text-[.8rem] font-normal text-slate-500">2 trips — see note 2</div></td>
             <td class="py-2.5 pr-4"><code class="k">AM-HS-EMRG-25</code></td>
             <td class="py-2.5"><strong>7 stops · 7:06 – 7:34 AM</strong></td>
           </tr>
