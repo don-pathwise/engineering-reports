@@ -259,13 +259,27 @@ different trip.</pre>
 
       <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
         <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
-        <p class="text-slate-800 leading-relaxed mb-3">A red banner:</p>
-        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">Nothing was saved. The server could not be reached.
-Check your connection and try again.</pre>
+        <p class="text-slate-800 leading-relaxed mb-3">A dialog you must dismiss with <span class="click">OK</span>:</p>
+        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">This break-up did not finish saving.
+
+Stopped at PM-HS-EMRG-88: The server could not be
+reached. Check your connection and try again.
+
+The bus it stopped at may or may not have been written,
+so a stop that moved can currently show on two buses.
+Reopen this trip and check each bus before service.</pre>
         <p class="text-slate-800 leading-relaxed mt-3">
-          The dialog <strong>stays open</strong> so you can retry. Two things to check specifically, because both
-          were real defects caught in review: the text must not contain <code class="k">[object Object]</code>,
-          and it must not claim the server was unreachable when the server actually answered with a reason.
+          The bus named after <strong>Stopped at</strong> is whichever destination it was writing when the
+          connection dropped, so it may differ from the one above. There is no
+          <strong>Confirmed saved</strong> line here — nothing had been written yet — and that line appearing
+          is what separates this check from check 4.
+        </p>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          The break-up dialog <strong>stays open behind it</strong> so you can retry. Two things to check
+          specifically, because both were real defects caught in review: the text must not contain
+          <code class="k">[object Object]</code>, and it must not claim <em>nothing</em> was saved — the
+          request that failed may still have committed, so the wording has to send you to check rather than
+          reassure you.
         </p>
       </div>
 
@@ -307,18 +321,22 @@ Check your connection and try again.</pre>
       <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
         <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
         <p class="text-slate-800 leading-relaxed mb-3">A dialog you must dismiss with <strong>OK</strong> — not a banner that fades:</p>
-        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">This break-up was only partly saved.
+        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">This break-up did not finish saving.
 
-Saved: Test.
-Not saved: The server could not be reached. Check
-your connection and try again.
+Confirmed saved: Test.
+Stopped at Test3: The server could not be reached.
+Check your connection and try again.
 
-The stops that moved may currently show on both the
-original bus and the new one. Reopen this trip and
-check each bus before service.</pre>
+The bus it stopped at may or may not have been written,
+so a stop that moved can currently show on two buses.
+Reopen this trip and check each bus before service.</pre>
         <p class="text-slate-800 leading-relaxed mt-3">
-          It must name the bus that <em>did</em> save. A dialog rather than a banner is deliberate — a banner fades
-          after three seconds, which is not long enough for "check each bus before service."
+          Both lines matter. <strong>Confirmed saved</strong> must name the bus that <em>did</em> save — that is
+          the line missing in check 3. <strong>Stopped at</strong> must name the one it was writing when the
+          connection dropped; if you drop the connection after the last destination, that will be the original
+          bus (<code class="k">Test3</code>), which is the case shown here and the one that strands stops on two
+          buses. A dialog rather than a banner is deliberate — a banner fades after three seconds, which is not
+          long enough for "check each bus before service."
         </p>
       </div>
 
@@ -373,9 +391,14 @@ check each bus before service.</pre>
           <code class="k">— REJECTED</code> and a code appended.
         </p>
         <p class="text-slate-800 leading-relaxed mt-3">
-          If no entry appears at all, don't log it as a failure yet — check with the dev team that this EZRouting
-          instance reads the same tenant database that Trip Preparation writes to. Both are Prod UAT, so they
-          should, but that pairing has not been confirmed end to end.
+          This pairing has now been confirmed end to end: a save made in Trip Preparation on Prod UAT appears
+          in this EZRouting instance's audit trail, so the two do read the same tenant database. If no entry
+          appears, treat it as a real failure.
+        </p>
+        <p class="text-slate-800 leading-relaxed mt-3">
+          One known gap, already raised separately: the <strong>User</strong> column reads
+          <code class="k">System</code> rather than the dispatcher who saved. The entry is still correct — this
+          is not a failure of this check — but support cannot yet tell <em>who</em> made the change.
         </p>
       </div>
     </div>
@@ -395,10 +418,23 @@ check each bus before service.</pre>
       </div>
 
       <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
-        <li>Open each affected trip via its pencil — <code class="k">Test3</code>, then <code class="k">Test</code>, then <code class="k">AM-ALT-EMRG-52</code>.</li>
-        <li>In the stop table, look at the <strong>far right column of the header row</strong>. If the trip has changes there's an <span class="click">↺ undo</span> icon there — click it to revert the whole trip at once.</li>
+        <li>Hover the trip's row in the routes list — a <span class="click">✏ pencil</span> appears next to the trip name. Click it. Do this for <code class="k">Test3</code>, then <code class="k">Test</code>, then <code class="k">AM-ALT-EMRG-52</code>.</li>
+        <li>In the stop table, look at the <strong>far right column of the header row</strong>. If the trip has changes there's an <span class="click">↺ undo</span> icon there — click it to revert the whole trip at once. You may need to scroll the stop table sideways to bring that column into view.</li>
         <li>Individual changed stops each have their own <span class="click">↺</span> in the last column, if you'd rather undo one at a time.</li>
+        <li>Undoing from <em>either</em> side reverts both buses — the server clears the "moved to" flag on the original and the "moved from" flag on the destination in one operation, so you don't have to undo each end separately.</li>
       </ol>
+
+      <div class="bg-rose-100 border-2 border-rose-300 rounded-xl p-5 mt-6">
+        <div class="text-rose-900 font-bold text-sm tracking-wider uppercase mb-2">If undo fails</div>
+        <p class="text-slate-800 leading-relaxed">
+          Undo can come back with a red <code class="k">[object Object]</code> banner <em>and</em> a green
+          "Trip changes undone" banner at the same time. When that happens the undo did <strong>not</strong>
+          happen — the green banner is wrong, and the "Moved from …" labels will still be there. This is a
+          separate pre-existing defect in the undo screen, not part of what you're testing here. Two things
+          follow from it: don't trust the green banner alone, always re-read the stop table; and if you can't
+          revert a trip, hand it to the dev team rather than trying to unpick it by moving stops back by hand.
+        </p>
+      </div>
 
       <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
         <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Back to clean when</div>
