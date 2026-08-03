@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EZRD-2325 — Testing Guide: off-day trip variants in Assign Students</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: {
+      sans: ['Inter','ui-sans-serif','system-ui','sans-serif'],
+      mono: ['JetBrains Mono','ui-monospace','monospace'],
+    }}}};
+  </script>
+  <style>
+    html { font-size: 16px; }
+    body { color: rgb(15 23 42); }
+    code.k { font-family:'JetBrains Mono',monospace; background:rgb(226 232 240); padding:.08rem .35rem; border-radius:.25rem; font-size:.85em; }
+    .main-card { box-shadow: 0 1px 3px rgba(15,23,42,.08); }
+    ol.steps { counter-reset: s; }
+    ol.steps > li { counter-increment: s; position: relative; padding-left: 2rem; margin-bottom:.5rem; }
+    ol.steps > li::before { content: counter(s); position:absolute; left:0; top:.05rem; width:1.4rem; height:1.4rem; background:rgb(186 230 253); color:rgb(7 89 133); border-radius:9999px; font-size:.8rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .expect { background:rgb(236 253 245); border-left:4px solid rgb(16 185 129); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
+    .broken { background:rgb(254 242 242); border-left:4px solid rgb(239 68 68); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
+    .warn { background:rgb(255 251 235); border-left:4px solid rgb(245 158 11); padding:.55rem .9rem; border-radius:.3rem; }
+    .badge-num { display:inline-flex; align-items:center; justify-content:center; width:1.75rem; height:1.75rem; border-radius:9999px; font-weight:700; font-size:.8rem; }
+    table.data { width:100%; font-size:.875rem; border-collapse:collapse; }
+    table.data th { text-align:left; font-size:.7rem; text-transform:uppercase; letter-spacing:.03em; color:rgb(100 116 139); border-bottom:2px solid rgb(226 232 240); padding:.4rem .5rem; }
+    table.data td { border-bottom:1px solid rgb(241 245 249); padding:.4rem .5rem; vertical-align:top; }
+    .wrap { overflow-x:auto; }
+  </style>
+</head>
+<body class="bg-slate-100">
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <header class="mb-6">
+    <div class="flex flex-wrap items-center gap-2 mb-2">
+      <a href="https://pathwise.atlassian.net/browse/EZRD-2325" class="font-mono text-sm font-semibold text-blue-600 hover:underline">EZRD-2325</a>
+      <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-800">P1 · S2 High</span>
+      <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Testing guide</span>
+      <a href="https://github.com/TransActComm/ezrd-mono/pull/690" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-100 text-violet-800 hover:underline">PR #690</a>
+    </div>
+    <h1 class="text-2xl font-extrabold text-slate-900">Off-day trip variants must appear on the first stop selection</h1>
+    <p class="text-sm text-slate-600 mt-1">Spokane reported that a Monday late-start trip is missing from the &ldquo;other trips&rdquo; panel when assigning students, and only shows up if you repeat the selection.</p>
+  </header>
+
+  <!-- What you are testing -->
+  <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 mb-4 main-card">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="badge-num bg-blue-100 text-blue-700">?</span>
+      <h2 class="text-lg font-bold">What you're testing</h2>
+    </div>
+    <p class="text-sm leading-relaxed mb-3">
+      When you put a student on a bus from the <strong>Routes</strong> tab, after you pick a trip and click a stop
+      the app shows a panel headed <em>&ldquo;Choose any other trips you'd also like to assign these students to.&rdquo;</em>
+      That panel exists because one route usually runs several <strong>day-variants</strong> — the same run on
+      different days with different times. A router almost always wants the student on all of them.
+    </p>
+    <p class="text-sm leading-relaxed">
+      The bug: that panel only listed trips running on <strong>the day you're currently viewing</strong>. A variant that
+      doesn't run that day was missing entirely, so the student couldn't be added to it in the same action.
+    </p>
+    <div class="warn mt-4 text-sm">
+      <strong>The single most important thing about this test:</strong> you must view the route on a day when the two
+      variants <em>disagree</em>. On a day when both run, the panel looks correct whether or not the fix is present —
+      you'd be testing nothing. Every step below pins the day for you.
+    </div>
+  </div>
+
+  <!-- Part A -->
+  <div class="bg-white border-2 border-red-200 rounded-2xl p-6 mb-4 main-card">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="badge-num bg-red-100 text-red-700">A</span>
+      <h2 class="text-lg font-bold">Confirm the bug on UAT (before the fix ships)</h2>
+    </div>
+    <p class="text-sm mb-3">
+      UAT currently runs <code class="k">6b590d05d</code>, which is the commit this fix branches from — so the broken
+      behaviour is reproducible there <strong>right now</strong>. Do this part first; it's your baseline.
+    </p>
+
+    <div class="wrap mb-4">
+      <table class="data">
+        <thead><tr><th>Field</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>URL</td><td><a class="text-blue-600 hover:underline" href="https://uat.pathwiserouting.com/testqa">https://uat.pathwiserouting.com/testqa</a></td></tr>
+          <tr><td>Semester</td><td>2026 ~ 2027 <span class="text-slate-500">(the current one — no switching needed)</span></td></tr>
+          <tr><td>Route</td><td><strong>Activity Bus - Alternative Route A Test</strong></td></tr>
+          <tr><td>Trip to select</td><td><strong>PM-ALT-ACT-83</strong> &nbsp;— runs <strong>Mon–Fri</strong></td></tr>
+          <tr><td>Trip that should also be offered</td><td><strong>PM-ALT-ACT-83PM-ALT-ACT-83…</strong> <span class="text-slate-500">(the long repeated name — it's the only one)</span> — runs <strong>Mon, Wed, Fri</strong></td></tr>
+          <tr><td>Stop to click</td><td><strong>Indian Creek Parkway North</strong> <span class="text-slate-500">(both trips serve it)</span></td></tr>
+          <tr><td>Student</td><td>any unrouted student at <strong>Fox Point-Bayside Middle School</strong> — e.g. <strong>Matthew Anderson</strong>, Stephany Bergnaum, Tamara Conroy, Dawson Daniel</td></tr>
+          <tr><td>Date — <strong>must be a Tuesday or Thursday</strong></td><td>e.g. <strong>04/08/2026</strong>, 06/08/2026, 11/08/2026 <span class="text-slate-500">(both trips run Mon/Wed/Fri, so those days prove nothing)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ol class="steps text-sm">
+      <li>Open the tenant, go to the <strong>Routes</strong> tab, and set the date picker to a <strong>Tuesday or Thursday</strong> (e.g. 04/08/2026).</li>
+      <li>Search for <code class="k">Activity Bus - Alternative Route A Test</code>.
+        <div class="expect"><strong>Pre-check:</strong> the badge on the route row should read <strong>9/10 trips</strong>. That &ldquo;missing&rdquo; 10th trip is the Mon/Wed/Fri variant — it's the one that should still be offerable. If the badge says 10/10 you've landed on a Mon/Wed/Fri; change the date.</div>
+      </li>
+      <li>Click the route to expand it, then make <strong>PM-ALT-ACT-83</strong> visible on the map.</li>
+      <li>From <strong>Show Students</strong>, turn on <strong>Show Unrouted Students</strong>.</li>
+      <li>Tick <strong>Matthew Anderson</strong> in the student list, then press <strong>ASSIGN</strong>.</li>
+      <li>On the map, click the <strong>PM-ALT-ACT-83</strong> trip line, then click the stop <strong>Indian Creek Parkway North</strong>.</li>
+      <li>Read the panel <em>&ldquo;Choose any other trips you'd also like to assign these students to.&rdquo;</em></li>
+    </ol>
+
+    <div class="broken text-sm mt-3">
+      <strong>Broken behaviour to confirm:</strong> the panel lists <strong>8</strong> other trips, and the
+      <strong>Mon, Wed, Fri</strong> variant is <em>not</em> among them. Every row you can see says
+      &ldquo;Every weekday&rdquo;. There is no way to put the student on the Mon/Wed/Fri run from here.
+    </div>
+    <p class="text-xs text-slate-500 mt-2">Cancel out with the red ✕ when you're done — don't save during Part A.</p>
+  </div>
+
+  <!-- Part B -->
+  <div class="bg-white border-2 border-emerald-200 rounded-2xl p-6 mb-4 main-card">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="badge-num bg-emerald-100 text-emerald-700">B</span>
+      <h2 class="text-lg font-bold">Re-test after the fix deploys to UAT</h2>
+    </div>
+    <p class="text-sm mb-3">
+      Confirm the deploy first — <a class="text-blue-600 hover:underline" href="https://uat.pathwiserouting.com/version">uat.pathwiserouting.com/version</a>
+      should no longer report <code class="k">6b590d05d</code>. Then repeat <strong>exactly</strong> the steps in Part A.
+    </p>
+    <div class="expect text-sm">
+      <strong>Expected:</strong> the panel now lists <strong>9</strong> other trips, and the extra one is the long-named
+      variant showing <strong>RECURRENCE: Every week on Monday, Wednesday, Friday</strong> — its own days, <em>not</em>
+      the route's &ldquo;Every weekday&rdquo;. It also shows a real TIME, DURATION and DISTANCE rather than blanks.
+    </div>
+    <p class="text-sm mt-4 font-semibold">Then check these five things:</p>
+    <ul class="list-disc pl-5 text-sm space-y-1 mt-1">
+      <li><strong>First attempt only.</strong> It must appear the first time. Needing to back out and retry is the original bug.</li>
+      <li><strong>Correct recurrence on the row.</strong> If the extra row says &ldquo;Every weekday&rdquo; instead of Mon/Wed/Fri, that's a regression — it's showing the route's recurrence, not the trip's.</li>
+      <li><strong>Repeat the selection.</strong> Cancel, redo it. Same trips, and <strong>no duplicated rows</strong>.</li>
+      <li><strong>Tick it and save.</strong> You should get two success toasts, one per trip. Re-open the student and confirm the second assignment sits on the <strong>Mon/Wed/Fri</strong> schedule — not weekday.</li>
+      <li><strong>Nothing else moved.</strong> The route still shows 9/10 trips on the map, the map still draws only that day's trips, and the sidebar counts are unchanged. The fix deliberately does not widen what the map shows.</li>
+    </ul>
+    <div class="warn text-sm mt-4">
+      <strong>Also worth one pass:</strong> a route whose trips all share one recurrence should behave exactly as it
+      always has — same trips offered, nothing extra.
+    </div>
+  </div>
+
+  <!-- Part C -->
+  <div class="bg-white border-2 border-slate-300 rounded-2xl p-6 mb-4 main-card">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="badge-num bg-slate-200 text-slate-700">C</span>
+      <h2 class="text-lg font-bold">The same shape in production (Spokane)</h2>
+    </div>
+    <p class="text-sm mb-3">
+      For context, and so the reporter's original case can be confirmed directly. Spokane splits nearly every route
+      into a Monday run and a Tuesday&ndash;Friday run — the district-wide Monday late-start. In the current
+      <strong>2026 ~ 2027</strong> semester (26/08/2026 &rarr; 17/06/2027):
+    </p>
+
+    <div class="wrap mb-3">
+      <table class="data">
+        <thead><tr><th>Recurrence</th><th>Days</th><th>Trips using it</th></tr></thead>
+        <tbody>
+          <tr><td>Tue&ndash;Fri variant</td><td><code class="k">TU, WE, TH, FR</code></td><td>414</td></tr>
+          <tr><td>Monday late-start variant</td><td><code class="k">MO</code></td><td>410</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-sm mb-3">
+      <strong>172 routes</strong> carry both. Spokane names the Monday trip with an <code class="k">-M</code> suffix,
+      which makes the pairs easy to spot. On route <strong>126</strong>
+      (<a class="text-blue-600 hover:underline" href="https://www.ezrouting.com/spokanewa">www.ezrouting.com/spokanewa</a>):
+    </p>
+
+    <div class="wrap mb-3">
+      <table class="data">
+        <thead><tr><th>Tue&ndash;Fri trip</th><th>Monday trip</th><th>A stop they share</th></tr></thead>
+        <tbody>
+          <tr><td><strong>126-ROG-A</strong></td><td><strong>126-ROG-A-M</strong></td><td>COOPER ES · KONDO PARK ON N FLORIDA ST · E MARIETTA AVE &amp; N FERRALL ST</td></tr>
+          <tr><td><strong>126-MAD(EXP)/LNW(EXP)-A</strong></td><td><strong>126-MAD(EXP)/LNW(EXP)-A-M</strong></td><td>Linwood Elementary</td></tr>
+          <tr><td><strong>126-FLT-A</strong></td><td><strong>126-FLT-A-M</strong></td><td>N WINSTON DR &amp; W LYONS AVE</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="broken text-sm">
+      <strong>To see the broken state in prod:</strong> view route 126 on any <strong>Tue/Wed/Thu/Fri</strong>, start
+      assigning a student to <strong>126-ROG-A</strong> and click one of the shared stops. <strong>126-ROG-A-M</strong>
+      will not be offered. On a <strong>Monday</strong> it flips — you'll see the <code class="k">-M</code> trip and the
+      Tue&ndash;Fri one will be the one missing.
+    </div>
+    <p class="text-xs text-slate-500 mt-2">
+      Read-only check please — don't save assignments in production. Because the 2026&ndash;27 semester starts 26/08/2026,
+      Spokane is routing for it right now, which is why this landed as a back-to-school P1.
+    </p>
+  </div>
+
+  <!-- Notes -->
+  <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 main-card">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="badge-num bg-amber-100 text-amber-700">!</span>
+      <h2 class="text-lg font-bold">Notes &amp; known limits</h2>
+    </div>
+    <ul class="list-disc pl-5 text-sm space-y-2">
+      <li><strong>Not Spokane-specific.</strong> Any tenant with more than one recurrence on a route is affected. Tenants with a single recurrence per route never saw it.</li>
+      <li><strong>Why the old workaround worked.</strong> Two different loads populate the trip list with different scopes; backing out and retrying could get the unfiltered one to win. That's why it looked intermittent rather than broken.</li>
+      <li><strong>Degraded path is safe by design.</strong> If the extra trip list can't be loaded, the panel falls back to showing only the current day's trips — the old behaviour. It will never offer a trip whose schedule it couldn't confirm, because saving that could write the assignment against the wrong schedule.</li>
+      <li><strong>Tested before shipping:</strong> the whole flow was driven by hand on testqa before and after the change, including saving and confirming both assignments landed on their own schedules.</li>
+    </ul>
+    <p class="text-xs text-slate-500 mt-4">
+      Data in this guide was read from the UAT and production databases on 03/08/2026. Trip and route names can be
+      renamed by district staff — if a name here no longer matches, look for the pair by recurrence instead.
+    </p>
+  </div>
+
+  <p class="text-center text-xs text-slate-400 mt-8">
+    <a href="../index.html" class="hover:underline">← all reports</a>
+  </p>
+</div>
+</body>
+</html>
