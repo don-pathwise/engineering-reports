@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EZRD-1949 — Map Regeneration Feedback &amp; Tenant Scoping — Testing Walkthrough</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+      }},
+    };
+  </script>
+  <style>
+    html { font-size: 17px; }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    .step-number { font-variant-numeric: tabular-nums; }
+    .badge-num {
+      width: 3rem; height: 3rem; border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.06);
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.75rem; border-radius: 9999px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-width: 1px;
+    }
+    .main-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
+    code.k {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: rgb(226 232 240); color: rgb(15 23 42);
+      padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em;
+      white-space: nowrap;
+    }
+    code.k.wrap { white-space: normal; word-break: break-all; }
+    .stepnum { width:2.25rem;height:2.25rem;font-size:1rem; }
+    .toast-demo {
+      font-family: 'Inter', sans-serif; font-size: 0.9rem;
+      padding: 0.6rem 1rem; border-radius: 0.3rem; display: block;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+
+  <header class="border-b-2 border-slate-300 bg-white">
+    <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+      <div class="pill bg-emerald-100 text-emerald-900 border-emerald-300 mb-5">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        Ready to test
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950">EZRD-1949 — Map Regeneration</h1>
+      <p class="mt-2 text-xl text-slate-600 font-semibold">Honest status feedback + tenant scoping · Testing walkthrough</p>
+      <p class="mt-5 text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+        The admin dashboard's map-regeneration action used to report success no matter what happened — and, it turned out,
+        never told EZRouting <em>which district</em> the request was for, so the regeneration never actually ran. Both are
+        fixed. This walkthrough is how to confirm it by clicking, with no database or configuration changes needed.
+      </p>
+      <p class="mt-4 text-sm text-slate-600">
+        Test URL: <code class="k">https://admin.pathwiserouting.com</code> &nbsp;·&nbsp; Apps changed: EZRouting + EZRouting Admin
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
+
+    <!-- WHAT CHANGED -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">What changed</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Two defects, one click</h2>
+          <p class="text-slate-700 leading-relaxed">Both were confirmed in code and reproduced before fixing.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="bg-rose-50 border-2 border-rose-300 rounded-xl p-5">
+            <div class="text-rose-900 font-bold text-sm tracking-wider uppercase mb-3">Before</div>
+            <ul class="space-y-2 text-slate-800 leading-relaxed">
+              <li>A green <strong>"request submitted"</strong> toast appeared <em>before</em> the request was even sent — always, regardless of outcome.</li>
+              <li>The regeneration was dispatched without waiting for a reply, so failures were swallowed silently.</li>
+              <li>The district was never included in the request, so EZRouting could not identify a tenant — <strong>the regeneration did not run at all</strong>, and the request simply hung.</li>
+              <li>No failure ever reached the agent, which is why the same button got clicked repeatedly and TechOps was asked to push manually.</li>
+            </ul>
+          </div>
+          <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5">
+            <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-3">After</div>
+            <ul class="space-y-2 text-slate-800 leading-relaxed">
+              <li>A neutral <strong>"processing…"</strong> toast first — no claim of success until the system knows.</li>
+              <li>The dashboard waits for EZRouting to accept the job, then reports the real outcome.</li>
+              <li>The district is included, so the regeneration actually runs for the tenant you clicked.</li>
+              <li>A failure now produces a red toast naming the reason, at trigger time <em>and</em> if the rebuild fails later.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BEFORE YOU START -->
+    <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+      <div class="flex items-start gap-4">
+        <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+        <div>
+          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-2">Read before you start</div>
+          <ul class="space-y-2 text-slate-800 text-lg leading-relaxed">
+            <li><strong>Both apps must be deployed.</strong> The fix spans EZRouting and EZRouting Admin. Deploying only EZRouting leaves the behaviour broken — the tenant-scoping half lives in the Admin app.</li>
+            <li><strong>Confirm what is actually live.</strong> Check each app's own <code class="k">/version</code> rather than trusting a release tag.</li>
+            <li><strong>Keep the browser tab open for the whole test.</strong> The completion message arrives over a live connection roughly 20 minutes later and is not stored anywhere. Reloading or navigating away means you will miss it — that is a known limitation, not a failure.</li>
+            <li><strong>Pick a district you are allowed to regenerate.</strong> This triggers a real map rebuild for that district.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE TEST -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-purple-800">The test</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Trigger a regeneration and watch three messages</h2>
+          <p class="text-slate-700 leading-relaxed">One click, then wait. No setup, no data changes.</p>
+        </div>
+
+        <div class="space-y-5">
+          <div class="flex items-start gap-4">
+            <div class="badge-num stepnum bg-purple-200 text-purple-900 step-number flex-shrink-0">1</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-950">Open the admin dashboard</h3>
+              <p class="text-slate-700 leading-relaxed">Go to <code class="k">https://admin.pathwiserouting.com</code> and sign in.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num stepnum bg-purple-200 text-purple-900 step-number flex-shrink-0">2</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-950">Open Clients and select a district</h3>
+              <p class="text-slate-700 leading-relaxed">Choose the district you intend to regenerate. Note its name — you will need it to confirm the right tenant was used.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num stepnum bg-purple-200 text-purple-900 step-number flex-shrink-0">3</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-950">Open the Actions menu and trigger the regeneration</h3>
+              <p class="text-slate-700 leading-relaxed">
+                Click <strong>"Download lastest map and reset 2nd Gen Routing Engine"</strong>. If the district has no
+                2nd-gen map yet, the same item instead reads <strong>"Initialize 2nd Gen Routing Engine"</strong> — either
+                label is the correct button; they run the same action.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num stepnum bg-purple-200 text-purple-900 step-number flex-shrink-0">4</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-950">Check the first two messages immediately</h3>
+              <p class="text-slate-700 leading-relaxed">These appear within a second or two of each other. See the expected results below.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="badge-num stepnum bg-purple-200 text-purple-900 step-number flex-shrink-0">5</div>
+            <div class="flex-1 pt-1">
+              <h3 class="font-bold text-slate-950">Leave the tab open and wait for the completion message</h3>
+              <p class="text-slate-700 leading-relaxed">
+                Expect roughly 20 minutes for a normal district; very large districts take longer. This third message is the
+                one that proves the regeneration genuinely finished.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPECTED RESULTS -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Expected results — this is a pass</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Three messages, in this order</h2>
+        </div>
+
+        <div class="space-y-3 mb-6">
+          <span class="toast-demo bg-slate-700 text-white">2nd gen road network re-generation requested — processing…</span>
+          <span class="toast-demo bg-green-700 text-white">2nd gen road network re-generation started</span>
+          <span class="toast-demo bg-green-700 text-white">2nd gen road network of "&lt;your district&gt;" initialized successfully</span>
+        </div>
+
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+          <table class="w-full text-sm min-w-[760px]">
+            <colgroup><col class="w-10"><col class="w-28"><col class="w-24"><col></colgroup>
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+                <th class="text-left px-4 py-3">✓</th>
+                <th class="text-left px-4 py-3">When</th>
+                <th class="text-left px-4 py-3">Colour</th>
+                <th class="text-left px-4 py-3">What it proves</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+                <td class="px-4 py-3 font-semibold">Immediately</td>
+                <td class="px-4 py-3">Grey</td>
+                <td class="px-4 py-3 text-slate-700">The dashboard no longer claims success up front. <strong>A green message here instead is a fail.</strong></td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+                <td class="px-4 py-3 font-semibold">~1–2 s later</td>
+                <td class="px-4 py-3">Green</td>
+                <td class="px-4 py-3 text-slate-700">EZRouting genuinely accepted the job. This green now means something — it only appears after a real acknowledgement.</td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+                <td class="px-4 py-3 font-semibold">~20 min later</td>
+                <td class="px-4 py-3">Green</td>
+                <td class="px-4 py-3 text-slate-700">
+                  The rebuild completed <em>and</em> reached the routing engine. It <strong>names the district</strong> — which
+                  also confirms the tenant-scoping fix, since the old behaviour produced no completion message at all.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="mt-5 text-slate-700 leading-relaxed">
+          Optional extra confirmation: once the completion message arrives, the corrected road should be usable for routing on
+          that district's site.
+        </p>
+      </div>
+    </section>
+
+    <!-- UNEXPECTED RESULTS -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-rose-800">Unexpected results — what to report</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">A red message is not necessarily this ticket failing</h2>
+          <p class="text-slate-700 leading-relaxed">
+            Surfacing failures is the point of this change. What matters is <em>which</em> failure you see.
+          </p>
+        </div>
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+          <table class="w-full text-sm min-w-[820px]">
+            <colgroup><col class="w-[40%]"><col class="w-32"><col></colgroup>
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+                <th class="text-left px-4 py-3">What you see</th>
+                <th class="text-left px-4 py-3">Meaning</th>
+                <th class="text-left px-4 py-3">What to do</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">Red: <em>"Road network re-generation could not be started: …"</em></td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Working</span></td>
+                <td class="px-4 py-3 text-slate-700">The fix is doing its job — the trigger genuinely failed and now says why. Report the quoted reason; it points at an environment or preprocessor problem, not at this ticket.</td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">Red: <em>"…of "district" failed to regenerate: …"</em></td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Working</span></td>
+                <td class="px-4 py-3 text-slate-700">The job was accepted but the rebuild failed afterwards. Previously this was complete silence. Report the reason.</td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">Green appears <strong>instantly</strong>, with no grey message first</td>
+                <td class="px-4 py-3"><span class="pill bg-rose-100 text-rose-900 border-rose-300">Fail</span></td>
+                <td class="px-4 py-3 text-slate-700">You are on the old build. Re-check the deployed version of the Admin app.</td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">The click appears to do nothing at all, or hangs</td>
+                <td class="px-4 py-3"><span class="pill bg-rose-100 text-rose-900 border-rose-300">Fail</span></td>
+                <td class="px-4 py-3 text-slate-700">Report it — the endpoint is now supposed to always answer.</td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">First two messages fine, but <strong>no completion message</strong> after a generous wait</td>
+                <td class="px-4 py-3"><span class="pill bg-amber-100 text-amber-900 border-amber-300">Separate ticket</span></td>
+                <td class="px-4 py-3 text-slate-700">First rule out having reloaded or navigated away. If the tab stayed open, this is real signal for <strong>EZRD-2498</strong> (regenerated maps not reaching the routing engine) — report it there, not here.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-5 text-slate-600 text-sm leading-relaxed">
+          Note: the dashboard also contains an older orange <em>"already been initialized within 12 hours"</em> variant. We
+          could not find anything that currently sends it, so it is not expected — mention it if you do see it.
+        </p>
+      </div>
+    </section>
+
+    <!-- NOT TESTABLE HERE -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-slate-700">Not testable here — and how it was covered instead</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">The trigger-failure path</h2>
+        </div>
+        <p class="text-slate-700 leading-relaxed mb-4">
+          One branch cannot be exercised by clicking in a healthy environment: the <strong>immediate</strong> red
+          <em>"could not be started"</em> message. It only appears when the trigger itself fails — an unreachable or
+          misconfigured map preprocessor. In UAT the preprocessor is configured and reachable, so a click correctly
+          <em>succeeds</em>, and there is no way to provoke that failure without deliberately breaking the environment.
+        </p>
+        <p class="text-slate-700 leading-relaxed mb-4">
+          Rather than ask anyone to break UAT, that branch was verified two other ways before this shipped:
+        </p>
+        <ul class="space-y-3 text-slate-700 leading-relaxed">
+          <li class="flex gap-3">
+            <span class="text-slate-500 font-bold flex-shrink-0">1.</span>
+            <span><strong>Verified in a local environment by manipulating configuration.</strong> With the map preprocessor
+            address deliberately left empty, and separately pointed at an address nothing is listening on, the action was
+            triggered from the real dashboard. Both produced the grey "processing…" message followed by the red
+            <em>"could not be started"</em> message quoting the underlying reason — and no false success. The previous
+            behaviour in the identical setup was a single green "request submitted" and silence.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-slate-500 font-bold flex-shrink-0">2.</span>
+            <span><strong>Automated tests.</strong> Both failure shapes — a rejected dispatch and a failing map-existence
+            check — are pinned by unit tests that fail without the fix, including one asserting the endpoint always answers
+            rather than hanging.</span>
+          </li>
+        </ul>
+        <p class="mt-5 text-slate-700 leading-relaxed">
+          So the practical split is: <strong>confirm the success path in UAT by clicking</strong> (this document), and treat the
+          failure path as already covered. If you do happen to see the red "could not be started" message in UAT, that is the
+          same verified path firing for real — capture the quoted reason.
+        </p>
+      </div>
+    </section>
+
+    <!-- OUT OF SCOPE -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-slate-700">Out of scope</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">What this ticket does not claim to fix</h2>
+        </div>
+        <ul class="space-y-3 text-slate-700 leading-relaxed">
+          <li><strong>EZRD-2498 — regenerated maps not reaching the routing engine.</strong> If a regeneration completes but a
+          district still routes on old roads, that belongs there. This ticket makes that situation <em>visible</em>; it does not
+          claim to prevent it.</li>
+          <li><strong>Status does not survive a page reload.</strong> Messages are live-only. Confirming an older regeneration
+          after the fact is a known gap, not part of this change.</li>
+          <li><strong>Per-agent attribution.</strong> The completion message is per district, not per person — if two agents
+          trigger the same district, both see the same message.</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="text-slate-500 text-sm text-center pt-6 pb-2">
+      EZRD-1949 · Testing walkthrough · Related: EZRD-2498
+    </div>
+  </main>
+</body>
+</html>
