@@ -48,6 +48,15 @@
       font-family: 'Inter', sans-serif; font-size: 0.9rem;
       padding: 0.6rem 1rem; border-radius: 0.3rem; display: block;
     }
+    pre.codeblock {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: rgb(15 23 42); color: rgb(226 232 240);
+      padding: 1rem 1.1rem; border-radius: 0.6rem;
+      font-size: 0.78rem; line-height: 1.65;
+      overflow-x: auto; white-space: pre;
+    }
+    pre.codeblock .cm { color: rgb(148 163 184); }
+    pre.codeblock .st { color: rgb(134 239 172); }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans antialiased">
@@ -407,7 +416,8 @@
             <strong>None matched:</strong> every district has a valid, sensibly-shaped map area inside the North America map
             data — including the <code class="k">qatest</code> district, which the source code comments name as a stub expected
             to have a blank one. There is therefore <strong>no district a tester can pick to see the red message</strong>; it
-            would require deliberately breaking a district's configuration or the environment itself.
+            would require deliberately breaking a district's configuration or the environment itself. If you want to see the
+            red message anyway, the <strong>optional appendix below</strong> shows a safe way to simulate it from the browser.
           </p>
         </div>
         <p class="text-slate-700 leading-relaxed mb-4">
@@ -431,9 +441,116 @@
         </ul>
         <p class="mt-5 text-slate-700 leading-relaxed">
           So the practical split is: <strong>confirm the success path in UAT by clicking</strong> (this document), and treat the
-          failure paths as already covered. If you do happen to see a red message in UAT, that is the
-          same verified path firing for real — capture the quoted reason.
+          failure paths as already covered — optionally simulating them in the browser via the appendix below. If you do
+          happen to see a red message in UAT for real, that is the same verified path firing — capture the quoted reason.
         </p>
+      </div>
+    </section>
+
+    <!-- OPTIONAL: CONSOLE SIMULATION -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-indigo-700">Optional appendix — not required for sign-off</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Seeing the red messages without breaking anything</h2>
+          <p class="text-slate-700 leading-relaxed">
+            Since no district on this environment can produce a genuine failure, the two red messages can instead be
+            simulated from the browser's developer console. This is <strong>entirely optional</strong> — skip it and the
+            walkthrough above still constitutes a complete test. It is here for anyone who wants to see the failure
+            styling and wording with their own eyes.
+          </p>
+        </div>
+
+        <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mb-7">
+          <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Safe to run</div>
+          <p class="text-slate-800 leading-relaxed">
+            Neither recipe changes any data, and neither starts a real regeneration — recipe 2 deliberately intercepts the
+            request <em>before</em> it leaves the browser. Everything is undone by reloading the page. All three snippets
+            below were run and confirmed working in a browser before this document was written.
+          </p>
+        </div>
+
+        <h3 class="font-bold text-slate-950 text-lg mb-2">Step 1 — open the console and locate the app</h3>
+        <p class="text-slate-700 leading-relaxed mb-3">
+          Sign in to <code class="k">https://admin.pathwiserouting.com</code>, open the <strong>Clients</strong> page and select
+          a district, then open DevTools (<code class="k">F12</code>, or <code class="k">⌥⌘I</code> on a Mac) and go to the
+          <strong>Console</strong> tab. Paste this and press Enter:
+        </p>
+        <pre class="codeblock mb-3"><span class="cm">// Locate the running app. Read-only — sends no requests, changes nothing.</span>
+const nav  = document.querySelector(<span class="st">'nav-bar'</span>).au.controller.viewModel;
+const app  = nav.constructor._app;
+const page = nav.router.currentInstruction.viewPortInstructions.default.component.viewModel;
+({ appFound: !!app, socketConnected: !!(app &amp;&amp; app.socket &amp;&amp; app.socket.connected),
+   pageFound: !!page, district: page &amp;&amp; page.product &amp;&amp; page.product.name })</pre>
+        <p class="text-slate-700 leading-relaxed mb-7">
+          You should see <code class="k">appFound: true</code>, <code class="k">socketConnected: true</code>,
+          <code class="k">pageFound: true</code> and the district you selected. <strong>If any of those are false or the line
+          errors, stop here</strong> — the rest will not work, and that is a documentation problem, not a test failure. Note
+          it and move on; nothing about sign-off depends on this appendix.
+        </p>
+
+        <h3 class="font-bold text-slate-950 text-lg mb-2">Recipe 1 — the "failed to regenerate" message</h3>
+        <p class="text-slate-700 leading-relaxed mb-3">
+          This hands the page the exact notification the server sends when a rebuild dies partway through. Paste it in the
+          same console session, immediately after step 1:
+        </p>
+        <pre class="codeblock mb-3">app.socket.onevent({ data: [<span class="st">'message'</span>, {
+  name: <span class="st">'fastRoutingInitFailed'</span>,
+  data: { client: <span class="st">'testqa'</span>, error: <span class="st">'simulated: invalid map area for testqa'</span> }
+}]});</pre>
+        <p class="text-slate-700 leading-relaxed mb-2"><strong>Expected:</strong> a red message reading</p>
+        <div class="mb-3"><span class="toast-demo" style="background: rgb(198 40 40); color: white;">2nd gen road network of "testqa" failed to regenerate: simulated: invalid map area for testqa</span></div>
+        <p class="text-slate-700 leading-relaxed mb-7">
+          This is the closest thing to a real failure available here: everything the browser is responsible for runs for
+          real — receiving the notification, deciding it is for you, and rendering it. Only the server's internal hop is
+          stood in for.
+        </p>
+
+        <h3 class="font-bold text-slate-950 text-lg mb-2">Recipe 2 — the "could not be started" message</h3>
+        <p class="text-slate-700 leading-relaxed mb-3">
+          This makes the next regeneration request come back as a failure without ever reaching the server. Paste it, then
+          trigger the action from the menu <strong>exactly as in the walkthrough above</strong>:
+        </p>
+        <pre class="codeblock mb-3"><span class="cm">// Intercepts the request in the browser — no regeneration is started.</span>
+page.api.__origCall = page.api.call.bind(page.api);
+page.api.call = async (a, m, url, d, h) =&gt;
+  String(url).startsWith(<span class="st">'/api/routing/init'</span>)
+    ? { init: false, error: <span class="st">'simulated: connect ECONNREFUSED 10.0.0.5:5600'</span> }
+    : page.api.__origCall(a, m, url, d, h);</pre>
+        <p class="text-slate-700 leading-relaxed mb-2"><strong>Expected:</strong> the neutral message, then a red one — and no green success:</p>
+        <div class="space-y-2 mb-3">
+          <span class="toast-demo" style="background: rgb(66 66 66); color: white;">2nd gen road network re-generation requested — processing…</span>
+          <span class="toast-demo" style="background: rgb(198 40 40); color: white;">Road network re-generation could not be started: simulated: connect ECONNREFUSED 10.0.0.5:5600</span>
+        </div>
+        <p class="text-slate-700 leading-relaxed mb-7">
+          Undo it with <code class="k">page.api.call = page.api.__origCall;</code> or simply reload the page. Until you do,
+          that district's regeneration action stays intercepted in <em>your</em> browser tab only.
+        </p>
+
+        <div class="bg-blue-100 border-2 border-blue-300 rounded-xl p-5 mb-6">
+          <div class="text-blue-900 font-bold text-sm tracking-wider uppercase mb-2">Bonus — a before/after with no broken environment</div>
+          <p class="text-slate-800 leading-relaxed mb-3">
+            Run each recipe once <strong>before</strong> the fix is deployed and once <strong>after</strong>, and you get a
+            direct demonstration of the defect:
+          </p>
+          <ul class="space-y-2 text-slate-800 leading-relaxed">
+            <li class="flex gap-3"><span class="font-bold flex-shrink-0">Recipe 1, before:</span><span><strong>nothing happens at all</strong> — the old build has nothing listening for failures. That silence <em>is</em> the bug.</span></li>
+            <li class="flex gap-3"><span class="font-bold flex-shrink-0">Recipe 2, before:</span><span>a <strong>green</strong> "request submitted" — the old build announced success before asking.</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
+          <div class="text-slate-800 font-bold text-sm tracking-wider uppercase mb-2">What this does and does not prove</div>
+          <p class="text-slate-700 leading-relaxed">
+            These recipes prove the <strong>browser</strong> reports failures correctly. They do not prove the
+            <strong>server</strong> produces those failures — that half is covered by automated tests plus the local
+            configuration-manipulation run described in the previous section. Together the three form complete coverage;
+            individually none of them does.
+          </p>
+        </div>
       </div>
     </section>
 
