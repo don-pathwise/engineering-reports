@@ -116,9 +116,80 @@
           <ul class="space-y-2 text-slate-800 text-lg leading-relaxed">
             <li><strong>Both apps must be deployed.</strong> The fix spans EZRouting and EZRouting Admin. Deploying only EZRouting leaves the behaviour broken — the tenant-scoping half lives in the Admin app.</li>
             <li><strong>Confirm what is actually live.</strong> Check each app's own <code class="k">/version</code> rather than trusting a release tag.</li>
-            <li><strong>Keep the browser tab open for the whole test.</strong> The completion message arrives over a live connection roughly 20 minutes later and is not stored anywhere. Reloading or navigating away means you will miss it — that is a known limitation, not a failure.</li>
+            <li><strong>Keep the browser tab open for the whole test.</strong> The completion message arrives over a live connection once the rebuild finishes — under a minute for a small district like <code class="k">testqa</code>, roughly 20 minutes for a normal one — and is not stored anywhere. Reloading or navigating away means you will miss it — that is a known limitation, not a failure.</li>
             <li><strong>Pick a district you are allowed to regenerate.</strong> This triggers a real map rebuild for that district.</li>
           </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECOMMENDED TENANT -->
+    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+      <div class="p-7 sm:p-9">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Recommended district — use testqa</div>
+          </div>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">Fox Point Joint No. 2 School District, WI (<code class="k">testqa</code>)</h2>
+          <p class="text-slate-700 leading-relaxed">
+            Verified ready on <code class="k">admin.pathwiserouting.com</code>. It is a non-production district with a very
+            small map area, which makes it both safe and fast to regenerate.
+          </p>
+        </div>
+
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto mb-6">
+          <table class="w-full text-sm min-w-[620px]">
+            <colgroup><col class="w-[38%]"><col class="w-28"><col></colgroup>
+            <thead>
+              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+                <th class="text-left px-4 py-3">Checked</th>
+                <th class="text-left px-4 py-3">State</th>
+                <th class="text-left px-4 py-3">Why it matters</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">Uses the 2nd Gen routing engine</td>
+                <td class="px-4 py-3 font-semibold text-emerald-800">Yes</td>
+                <td class="px-4 py-3 text-slate-700">Required — the action only applies to 2nd Gen districts.</td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">Map area (bounding box)</td>
+                <td class="px-4 py-3 font-semibold text-emerald-800">Valid</td>
+                <td class="px-4 py-3 text-slate-700">Roughly 6.5 × 9.5 km near Milwaukee. An invalid area is the main thing that makes a rebuild fail.</td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">Existing map files present</td>
+                <td class="px-4 py-3 font-semibold text-emerald-800">Yes</td>
+                <td class="px-4 py-3 text-slate-700">So the menu item will read <strong>"Download lastest map and reset…"</strong> rather than "Initialize…".</td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">A rebuild already running?</td>
+                <td class="px-4 py-3 font-semibold text-emerald-800">No</td>
+                <td class="px-4 py-3 text-slate-700">Nothing in flight, so your click is the one being measured.</td>
+              </tr>
+              <tr class="align-top hover:bg-slate-50">
+                <td class="px-4 py-3 text-slate-800">Map service reachable</td>
+                <td class="px-4 py-3 font-semibold text-emerald-800">Yes</td>
+                <td class="px-4 py-3 text-slate-700">Confirmed live — the district settings page itself round-trips to the map service to report those file flags.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5">
+          <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Expected timing for testqa</div>
+          <p class="text-slate-800 leading-relaxed">
+            Because the map area is small, this district rebuilds far faster than the ~20 minutes quoted for a normal
+            district. Comparable rebuilds complete each map profile in <strong>10–35 seconds</strong>, so expect the final
+            completion message <strong>usually within a minute, and well under three</strong>. If nothing arrives after about
+            five minutes with the tab still open, treat that as a finding and see "Unexpected results" below.
+          </p>
+          <p class="text-slate-700 leading-relaxed mt-3 text-sm">
+            Note: the menu item always forces a full rebuild, even though this district already has map files — so a genuine
+            rebuild does happen, it is not skipped.
+          </p>
         </div>
       </div>
     </section>
@@ -173,8 +244,9 @@
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-slate-950">Leave the tab open and wait for the completion message</h3>
               <p class="text-slate-700 leading-relaxed">
-                Expect roughly 20 minutes for a normal district; very large districts take longer. This third message is the
-                one that proves the regeneration genuinely finished.
+                For the recommended <code class="k">testqa</code> district, expect this <strong>within a minute</strong> (see
+                the timing note above). For a normal district expect roughly 20 minutes, and longer for very large ones. This
+                third message is the one that proves the regeneration genuinely finished.
               </p>
             </div>
           </div>
@@ -310,16 +382,36 @@
             <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-slate-700">Not testable here — and how it was covered instead</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">The trigger-failure path</h2>
+          <h2 class="text-2xl font-bold text-slate-950 mb-2">The two red-message paths</h2>
         </div>
         <p class="text-slate-700 leading-relaxed mb-4">
-          One branch cannot be exercised by clicking in a healthy environment: the <strong>immediate</strong> red
-          <em>"could not be started"</em> message. It only appears when the trigger itself fails — an unreachable or
-          misconfigured map preprocessor. In UAT the preprocessor is configured and reachable, so a click correctly
-          <em>succeeds</em>, and there is no way to provoke that failure without deliberately breaking the environment.
+          Neither red message can be produced by clicking in a healthy environment.
         </p>
+        <ul class="space-y-3 text-slate-700 leading-relaxed mb-5">
+          <li class="flex gap-3">
+            <span class="text-slate-500 font-bold flex-shrink-0">•</span>
+            <span>The <strong>immediate</strong> <em>"could not be started"</em> message appears only when the trigger itself
+            fails — an unreachable or misconfigured map preprocessor. On Prod UAT the preprocessor is configured and
+            reachable (confirmed live), so a click correctly <em>succeeds</em>.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-slate-500 font-bold flex-shrink-0">•</span>
+            <span>The <strong>later</strong> <em>"failed to regenerate"</em> message appears only when a rebuild that started
+            successfully then breaks. The usual cause is a district whose configured map area is missing or nonsensical.</span>
+          </li>
+        </ul>
+        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5 mb-5">
+          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-2">No district on Prod UAT will produce an error</div>
+          <p class="text-slate-800 leading-relaxed">
+            All <strong>657</strong> districts on Prod UAT were checked read-only for the conditions that make a rebuild fail.
+            <strong>None matched:</strong> every district has a valid, sensibly-shaped map area inside the North America map
+            data — including the <code class="k">qatest</code> district, which the source code comments name as a stub expected
+            to have a blank one. There is therefore <strong>no district a tester can pick to see the red message</strong>; it
+            would require deliberately breaking a district's configuration or the environment itself.
+          </p>
+        </div>
         <p class="text-slate-700 leading-relaxed mb-4">
-          Rather than ask anyone to break UAT, that branch was verified two other ways before this shipped:
+          Rather than ask anyone to break UAT, those branches were verified two other ways before this shipped:
         </p>
         <ul class="space-y-3 text-slate-700 leading-relaxed">
           <li class="flex gap-3">
@@ -339,7 +431,7 @@
         </ul>
         <p class="mt-5 text-slate-700 leading-relaxed">
           So the practical split is: <strong>confirm the success path in UAT by clicking</strong> (this document), and treat the
-          failure path as already covered. If you do happen to see the red "could not be started" message in UAT, that is the
+          failure paths as already covered. If you do happen to see a red message in UAT, that is the
           same verified path firing for real — capture the quoted reason.
         </p>
       </div>

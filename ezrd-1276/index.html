@@ -428,5 +428,65 @@
   Blocks: <a href="https://pathwise.atlassian.net/browse/EZRD-1275" style="color:var(--accent);">EZRD-1275</a>
 </p>
 
+
+<!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
+<style data-report-enhanced>
+  .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 60;
+    background: rgb(2 132 199); transition: width .1s linear; }
+  .anchor-h { position: relative; }
+  .anchor-link { position: absolute; left: -1.15rem; top: 0.12em; opacity: 0; text-decoration: none;
+    color: rgb(148 163 184); font-weight: 600; transition: opacity .12s ease; }
+  .anchor-h:hover .anchor-link, .anchor-link:focus { opacity: 1; }
+  .anchor-link:hover { color: rgb(37 99 235); }
+  @media (max-width: 640px) { .anchor-link { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .reading-progress { transition: none; } }
+  @media print {
+    .reading-progress, .no-print, .anchor-link { display: none !important; }
+    html { font-size: 11.5pt; }
+    body { background: #fff !important; }
+    .main-card, [class*="shadow"] { box-shadow: none !important; }
+    [class*="sticky"] { position: static !important; }
+    section, .main-card, tr, pre, figure { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    [class*="overflow-"] { overflow: visible !important; }
+    table { min-width: 0 !important; width: 100% !important; font-size: 9pt; }
+    pre { white-space: pre-wrap !important; overflow-wrap: anywhere; }
+    a { text-decoration: none; }
+  }
+</style>
+<div class="reading-progress no-print" aria-hidden="true"></div>
+<script data-report-enhanced>
+(function () {
+  if (window.__reportEnhanced) return; window.__reportEnhanced = true;
+  var bar = document.querySelector('.reading-progress'), ticking = false;
+  function upd() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    var top = h.scrollTop || document.body.scrollTop;
+    if (bar) bar.style.width = (max > 0 ? (top / max) * 100 : 0) + '%';
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { requestAnimationFrame(upd); ticking = true; }
+  }, { passive: true });
+  window.addEventListener('resize', upd); upd();
+
+  var used = {};
+  function slug(t) {
+    return t.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'section';
+  }
+  document.querySelectorAll('main h2, section h2').forEach(function (h) {
+    if (h.querySelector('.anchor-link')) return;
+    var id = h.id;
+    if (!id) { id = slug(h.textContent); while (used[id] || document.getElementById(id)) id += '-x'; h.id = id; }
+    used[id] = true;
+    h.classList.add('anchor-h');
+    var a = document.createElement('a');
+    a.className = 'anchor-link'; a.href = '#' + id; a.textContent = '#';
+    a.setAttribute('aria-label', 'Link to this section');
+    h.insertBefore(a, h.firstChild);
+  });
+})();
+</script>
+
 </body>
 </html>
