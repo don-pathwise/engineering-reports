@@ -76,8 +76,10 @@
       <h2 class="text-lg font-bold">Confirm the bug on UAT (before the fix ships)</h2>
     </div>
     <p class="text-sm mb-3">
-      UAT currently runs <code class="k">6b590d05d</code>, which is the commit this fix branches from — so the broken
-      behaviour is reproducible there <strong>right now</strong>. Do this part first; it's your baseline.
+      The fix is <strong>not on UAT yet</strong> (PR #690 is still open), so the broken behaviour is reproducible
+      there right now. Do this part first — it's your baseline. UAT is redeployed often, so rather than trusting a
+      commit hash here, confirm it yourself: if Part A still shows the panel missing the variant, you are on a
+      pre-fix build.
     </p>
 
     <div class="wrap mb-4">
@@ -91,15 +93,15 @@
           <tr><td>Trip that should also be offered</td><td><strong>PM-ALT-ACT-83PM-ALT-ACT-83…</strong> <span class="text-slate-500">(the long repeated name — it's the only one)</span> — runs <strong>Mon, Wed, Fri</strong></td></tr>
           <tr><td>Stop to click</td><td><strong>Indian Creek Parkway North</strong> <span class="text-slate-500">(both trips serve it)</span></td></tr>
           <tr><td>Student</td><td>any unrouted student at <strong>Fox Point-Bayside Middle School</strong> — e.g. <strong>Matthew Anderson</strong>, Stephany Bergnaum, Tamara Conroy, Dawson Daniel</td></tr>
-          <tr><td>Date — <strong>must be a Tuesday or Thursday</strong></td><td>e.g. <strong>04/08/2026</strong>, 06/08/2026, 11/08/2026 <span class="text-slate-500">(both trips run Mon/Wed/Fri, so those days prove nothing)</span></td></tr>
+          <tr><td>Date — <strong>must be a Tuesday or Thursday</strong></td><td>Tue <strong>08/04/2026</strong>, Thu <strong>08/06/2026</strong>, Tue <strong>08/11/2026</strong> — or any other Tue/Thu through 06/30/2027. <span class="text-slate-500">Dates are as the app's picker shows them, <strong>MM/DD/YYYY</strong>. Mon/Wed/Fri prove nothing here: both trips run those days.</span></td></tr>
         </tbody>
       </table>
     </div>
 
     <ol class="steps text-sm">
-      <li>Open the tenant, go to the <strong>Routes</strong> tab, and set the date picker to a <strong>Tuesday or Thursday</strong> (e.g. 04/08/2026).</li>
+      <li>Open the tenant, go to the <strong>Routes</strong> tab, and set the date picker to a <strong>Tuesday or Thursday</strong> — e.g. <strong>08/04/2026</strong> (Tue 4 August 2026; the picker is MM/DD/YYYY).</li>
       <li>Search for <code class="k">Activity Bus - Alternative Route A Test</code>.
-        <div class="expect"><strong>Pre-check:</strong> the badge on the route row should read <strong>9/10 trips</strong>. That &ldquo;missing&rdquo; 10th trip is the Mon/Wed/Fri variant — it's the one that should still be offerable. If the badge says 10/10 you've landed on a Mon/Wed/Fri; change the date.</div>
+        <div class="expect"><strong>Pre-check — this tells you the date is right:</strong> the badge on the route row must show a <strong>split count</strong>, i.e. fewer visible than total (it read <strong>9/10 trips</strong> when this data was captured). The hidden one is the Mon/Wed/Fri variant, and it's the trip that should still be offerable. If the badge shows a single number with no split, every trip runs that day — you've landed on a Mon/Wed/Fri, so change the date before going further.</div>
       </li>
       <li>Click the route to expand it, then make <strong>PM-ALT-ACT-83</strong> visible on the map.</li>
       <li>From <strong>Show Students</strong>, turn on <strong>Show Unrouted Students</strong>.</li>
@@ -109,7 +111,7 @@
     </ol>
 
     <div class="broken text-sm mt-3">
-      <strong>Broken behaviour to confirm:</strong> the panel lists <strong>8</strong> other trips, and the
+      <strong>Broken behaviour to confirm:</strong> the panel lists the other weekday trips (<strong>8</strong> of them when this data was captured) and the
       <strong>Mon, Wed, Fri</strong> variant is <em>not</em> among them. Every row you can see says
       &ldquo;Every weekday&rdquo;. There is no way to put the student on the Mon/Wed/Fri run from here.
     </div>
@@ -123,11 +125,13 @@
       <h2 class="text-lg font-bold">Re-test after the fix deploys to UAT</h2>
     </div>
     <p class="text-sm mb-3">
-      Confirm the deploy first — <a class="text-blue-600 hover:underline" href="https://uat.pathwiserouting.com/version">uat.pathwiserouting.com/version</a>
-      should no longer report <code class="k">6b590d05d</code>. Then repeat <strong>exactly</strong> the steps in Part A.
+      Confirm the fix is actually deployed first — check
+      <a class="text-blue-600 hover:underline" href="https://uat.pathwiserouting.com/version">uat.pathwiserouting.com/version</a>
+      and ask the dev whether that commit contains PR #690 (a UAT deploy does not necessarily include it — UAT
+      picks up other work too). Then repeat <strong>exactly</strong> the steps in Part A.
     </p>
     <div class="expect text-sm">
-      <strong>Expected:</strong> the panel now lists <strong>9</strong> other trips, and the extra one is the long-named
+      <strong>Expected:</strong> the panel lists <strong>exactly one more row than it did in Part A</strong> (9 where Part A showed 8), and that extra row is the long-named
       variant showing <strong>RECURRENCE: Every week on Monday, Wednesday, Friday</strong> — its own days, <em>not</em>
       the route's &ldquo;Every weekday&rdquo;. It also shows a real TIME, DURATION and DISTANCE rather than blanks.
     </div>
@@ -137,7 +141,7 @@
       <li><strong>Correct recurrence on the row.</strong> If the extra row says &ldquo;Every weekday&rdquo; instead of Mon/Wed/Fri, that's a regression — it's showing the route's recurrence, not the trip's.</li>
       <li><strong>Repeat the selection.</strong> Cancel, redo it. Same trips, and <strong>no duplicated rows</strong>.</li>
       <li><strong>Tick it and save.</strong> You should get two success toasts, one per trip. Re-open the student and confirm the second assignment sits on the <strong>Mon/Wed/Fri</strong> schedule — not weekday.</li>
-      <li><strong>Nothing else moved.</strong> The route still shows 9/10 trips on the map, the map still draws only that day's trips, and the sidebar counts are unchanged. The fix deliberately does not widen what the map shows.</li>
+      <li><strong>Nothing else moved.</strong> The route row still shows the same split count as in Part A, the map still draws only that day's trips, and the sidebar counts are unchanged. The fix deliberately does not widen what the map shows.</li>
     </ul>
     <div class="warn text-sm mt-4">
       <strong>Also worth one pass:</strong> a route whose trips all share one recurrence should behave exactly as it
@@ -154,7 +158,7 @@
     <p class="text-sm mb-3">
       For context, and so the reporter's original case can be confirmed directly. Spokane splits nearly every route
       into a Monday run and a Tuesday&ndash;Friday run — the district-wide Monday late-start. In the current
-      <strong>2026 ~ 2027</strong> semester (26/08/2026 &rarr; 17/06/2027):
+      <strong>2026 ~ 2027</strong> semester (08/26/2026 &rarr; 06/17/2027):
     </p>
 
     <div class="wrap mb-3">
@@ -191,7 +195,7 @@
       Tue&ndash;Fri one will be the one missing.
     </div>
     <p class="text-xs text-slate-500 mt-2">
-      Read-only check please — don't save assignments in production. Because the 2026&ndash;27 semester starts 26/08/2026,
+      Read-only check please — don't save assignments in production. Because the 2026&ndash;27 semester starts 08/26/2026,
       Spokane is routing for it right now, which is why this landed as a back-to-school P1.
     </p>
   </div>
@@ -209,7 +213,7 @@
       <li><strong>Tested before shipping:</strong> the whole flow was driven by hand on testqa before and after the change, including saving and confirming both assignments landed on their own schedules.</li>
     </ul>
     <p class="text-xs text-slate-500 mt-4">
-      Data in this guide was read from the UAT and production databases on 03/08/2026. Trip and route names can be
+      Data in this guide was read from the UAT and production databases on 3 August 2026, so the exact trip counts are a snapshot — what matters is the <em>difference</em> between Part A and Part B (one extra row), not the absolute numbers. Trip and route names can be
       renamed by district staff — if a name here no longer matches, look for the pair by recurrence instead.
     </p>
   </div>
