@@ -93,7 +93,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -256,7 +256,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -307,7 +307,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <header class="border-b-2 border-token bg-surface">
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-fill text-emerald-text text-sm font-bold tracking-wide uppercase mb-5 border border-emerald-border">
-        <span class="w-2 h-2 rounded-full bg-emerald-solid"></span>
+        <span class="w-2 h-2 rounded-full bg-emerald-dot"></span>
         Proposed flow · running on EKS
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink mb-3">
@@ -454,7 +454,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-5">
-          <div class="badge-num bg-sky-border text-sky-text step-number flex-shrink-0">1</div>
+          <div class="badge-num bg-sky-fill text-sky-text step-number flex-shrink-0">1</div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
               <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Trigger</div>
@@ -496,7 +496,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-5">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">2</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">2</div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
               <div class="text-sm font-bold tracking-wider uppercase text-purple-text">Configuration</div>
@@ -552,7 +552,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-5">
-          <div class="badge-num bg-amber-border text-amber-text step-number flex-shrink-0">3</div>
+          <div class="badge-num bg-amber-fill text-amber-text step-number flex-shrink-0">3</div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
               <div class="text-sm font-bold tracking-wider uppercase text-amber-text">Worker</div>
@@ -614,7 +614,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-5">
-          <div class="badge-num bg-teal-border text-teal-text step-number flex-shrink-0">4</div>
+          <div class="badge-num bg-teal-fill text-teal-text step-number flex-shrink-0">4</div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
               <div class="text-sm font-bold tracking-wider uppercase text-teal-text">Process</div>
@@ -672,7 +672,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9 pb-5">
         <div class="flex items-start gap-5">
-          <div class="badge-num bg-emerald-border text-emerald-text step-number flex-shrink-0">5</div>
+          <div class="badge-num bg-emerald-fill text-emerald-text step-number flex-shrink-0">5</div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
               <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Destinations</div>
@@ -689,7 +689,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-px bg-token border-t-2 border-token">
         <div class="bg-surface p-7 sm:p-9">
           <div class="flex items-center gap-2 mb-3">
-            <span class="px-2.5 py-1 rounded-md bg-emerald-border text-emerald-text text-xs font-bold tracking-wider uppercase border border-emerald-border">Managed</span>
+            <span class="px-2.5 py-1 rounded-md bg-emerald-fill text-emerald-text text-xs font-bold tracking-wider uppercase border border-emerald-border">Managed</span>
             <span class="text-sm font-bold text-body">191 files</span>
           </div>
           <h3 class="text-xl font-bold text-ink mb-2">sftp.ezrouting.com</h3>
@@ -697,7 +697,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </div>
         <div class="bg-surface p-7 sm:p-9">
           <div class="flex items-center gap-2 mb-3">
-            <span class="px-2.5 py-1 rounded-md bg-rose-border text-rose-text text-xs font-bold tracking-wider uppercase border border-rose-border">External</span>
+            <span class="px-2.5 py-1 rounded-md bg-rose-fill text-rose-text text-xs font-bold tracking-wider uppercase border border-rose-border">External</span>
             <span class="text-sm font-bold text-body">10 files</span>
           </div>
           <h3 class="text-xl font-bold text-ink mb-2">Customer-owned SFTP</h3>
@@ -801,10 +801,10 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <span class="text-slate-400">ezrouting/</span>
 <span class="text-slate-400">├──</span> cron-jobs/
 <span class="text-slate-400">│   ├──</span> cronjob.queues.js                          <span class="px-2 py-0.5 ml-2 rounded bg-sky-800 text-sky-100 text-xs">edit · 2 lines</span>
-<span class="text-slate-400">│   └──</span> <span class="text-emerald-border">export-student-buses/</span>                      <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new directory</span>
-<span class="text-slate-400">│       ├──</span> <span class="text-emerald-border">clients.yaml</span>                          <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new · 201 entries</span>
-<span class="text-slate-400">│       ├──</span> <span class="text-emerald-border">export-student-buses.queues.js</span>        <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new · scheduler + worker</span>
-<span class="text-slate-400">│       └──</span> <span class="text-emerald-border">export.worker.js</span>                      <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new · per-client logic</span>
+<span class="text-slate-400">│   └──</span> <span class="text-emerald-300">export-student-buses/</span>                      <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new directory</span>
+<span class="text-slate-400">│       ├──</span> <span class="text-emerald-300">clients.yaml</span>                          <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new · 201 entries</span>
+<span class="text-slate-400">│       ├──</span> <span class="text-emerald-300">export-student-buses.queues.js</span>        <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new · scheduler + worker</span>
+<span class="text-slate-400">│       └──</span> <span class="text-emerald-300">export.worker.js</span>                      <span class="px-2 py-0.5 ml-2 rounded bg-emerald-800 text-emerald-100 text-xs">new · per-client logic</span>
 <span class="text-slate-400">└──</span> app/cli-tools/
 <span class="text-slate-400">    └──</span> export-student-buses.js                     <span class="px-2 py-0.5 ml-2 rounded bg-sky-800 text-sky-100 text-xs">refactor · expose pure fn</span>
       </div>

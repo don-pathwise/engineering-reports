@@ -137,7 +137,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -300,7 +300,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -352,7 +352,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div>
         <span class="pill bg-sky-fill text-sky-text border-sky-border mb-5">
-          <span class="w-2 h-2 rounded-full bg-sky-solid"></span>
+          <span class="w-2 h-2 rounded-full bg-sky-dot"></span>
           Pathwise · EZRouting Platform
         </span>
         <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink" style="text-wrap: balance;">
@@ -385,9 +385,9 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </div>
         <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by category">
           <button class="chip" data-filter="all" aria-pressed="true">All <span class="count">16</span></button>
-          <button class="chip" data-filter="test" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-emerald-solid"></span>Test Plans <span class="count">10</span></button>
-          <button class="chip" data-filter="rootcause" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-purple-solid"></span>Root Cause <span class="count">3</span></button>
-          <button class="chip" data-filter="infra" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-sky-solid"></span>Migration &amp; Infra <span class="count">3</span></button>
+          <button class="chip" data-filter="test" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-emerald-dot"></span>Test Plans <span class="count">10</span></button>
+          <button class="chip" data-filter="rootcause" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-purple-dot"></span>Root Cause <span class="count">3</span></button>
+          <button class="chip" data-filter="infra" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-sky-dot"></span>Migration &amp; Infra <span class="count">3</span></button>
         </div>
       </div>
     </div>
@@ -400,7 +400,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="report-group bg-surface border-2 border-token rounded-2xl main-card" data-category="test">
       <div class="px-7 sm:px-9 pt-7 sm:pt-8 pb-2">
         <div class="flex items-center gap-3 mb-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-dot"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Test Plans &amp; Walkthroughs</div>
         </div>
         <p class="text-mute text-sm leading-relaxed ml-[1.375rem]">Step-by-step UAT verification for shipped and in-flight changes.</p>
@@ -568,7 +568,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="report-group bg-surface border-2 border-token rounded-2xl main-card" data-category="rootcause">
       <div class="px-7 sm:px-9 pt-7 sm:pt-8 pb-2">
         <div class="flex items-center gap-3 mb-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-purple-dot"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-purple-text">Root Cause &amp; Findings</div>
         </div>
         <p class="text-mute text-sm leading-relaxed ml-[1.375rem]">Investigations: where a bug comes from, and the evidence behind the fix.</p>
@@ -617,7 +617,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="report-group bg-surface border-2 border-token rounded-2xl main-card" data-category="infra">
       <div class="px-7 sm:px-9 pt-7 sm:pt-8 pb-2">
         <div class="flex items-center gap-3 mb-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-sky-dot"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Migration &amp; Infrastructure</div>
         </div>
         <p class="text-mute text-sm leading-relaxed ml-[1.375rem]">EKS cutover plans, environment references, and legacy-parity strategy.</p>

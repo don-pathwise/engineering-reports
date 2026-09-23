@@ -72,7 +72,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -235,7 +235,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -285,7 +285,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <header class="border-b-2 border-token bg-surface">
   <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
     <div class="inline-flex items-center gap-2 rounded-full bg-sky-fill text-sky-text border border-sky-border px-3 py-1 text-xs font-bold tracking-wider uppercase mb-5">
-      <span class="w-2 h-2 rounded-full bg-sky-solid"></span> Feature · Add Bus Schedule
+      <span class="w-2 h-2 rounded-full bg-sky-dot"></span> Feature · Add Bus Schedule
     </div>
     <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink mb-4">EZRD-1180 — Nearest stops outside the walk zone</h1>
     <p class="text-lg sm:text-xl text-body max-w-3xl leading-relaxed">
@@ -305,7 +305,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-dot"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">What this delivers</div>
         </div>
         <h2 class="text-2xl font-bold text-ink mb-2">Out-of-zone stops surface on their own</h2>
@@ -364,7 +364,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
-        <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">1</div>
+        <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">1</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">Set up the condition</div>
           <h2 class="text-2xl font-bold text-ink mb-2">Shrink the walk zone</h2>
@@ -387,7 +387,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
-        <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">2</div>
+        <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">2</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">Choose the subject</div>
           <h2 class="text-2xl font-bold text-ink mb-2">Pick an unrouted student</h2>
@@ -406,7 +406,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
-        <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">3</div>
+        <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">3</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">Run the search</div>
           <h2 class="text-2xl font-bold text-ink mb-2">Open Search &amp; Add Bus Schedule</h2>
@@ -423,16 +423,16 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
-        <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">4</div>
+        <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">4</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">The check</div>
           <h2 class="text-2xl font-bold text-ink mb-2">Verify out-of-zone stops auto-appear</h2>
         </div>
       </div>
       <ul class="space-y-3 text-body pl-1">
-        <li class="flex gap-3"><span class="text-emerald-dot font-bold">✓</span><span><strong>Pass:</strong> the AM (and PM) section shows rows tagged <span class="owz">Outside Walk Zone</span> <strong>without clicking anything</strong> (like the screenshot above).</span></li>
+        <li class="flex gap-3"><span class="text-emerald-text font-bold">✓</span><span><strong>Pass:</strong> the AM (and PM) section shows rows tagged <span class="owz">Outside Walk Zone</span> <strong>without clicking anything</strong> (like the screenshot above).</span></li>
         <li class="flex gap-3"><span class="text-mute font-bold">•</span><span><strong>SHOW 5 MORE</strong> pages through additional out-of-zone stops; the <strong>Top 10 / Top 3</strong> switch changes how many show initially. (An opted-out district shows the old <strong>ALL / Show Top 3 options</strong> switch with no SHOW 5 MORE — the pre-1180 panel.)</span></li>
-        <li class="flex gap-3"><span class="text-rose-dot font-bold">✗</span><span><strong>Regression (old behavior):</strong> out-of-zone rows appear only <em>after</em> clicking SHOW 5 MORE, and the first view is bare or “NO ROUTE FOUND” despite nearby stops — means the fix isn't in effect.</span></li>
+        <li class="flex gap-3"><span class="text-rose-text font-bold">✗</span><span><strong>Regression (old behavior):</strong> out-of-zone rows appear only <em>after</em> clicking SHOW 5 MORE, and the first view is bare or “NO ROUTE FOUND” despite nearby stops — means the fix isn't in effect.</span></li>
       </ul>
     </div>
   </section>
@@ -441,7 +441,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
-        <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">5</div>
+        <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">5</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">Clean up</div>
           <h2 class="text-2xl font-bold text-ink mb-2">Restore the walk zone</h2>

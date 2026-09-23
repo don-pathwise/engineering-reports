@@ -85,7 +85,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -248,7 +248,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -299,7 +299,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div class="flex flex-wrap items-center gap-2 mb-5">
         <span class="pill bg-emerald-fill text-emerald-text border-emerald-border">
-          <span class="w-2 h-2 rounded-full bg-emerald-solid"></span>
+          <span class="w-2 h-2 rounded-full bg-emerald-dot"></span>
           Primary fix verified on UAT
         </span>
         <span class="pill bg-amber-fill text-amber-text border-amber-border">1 open question</span>
@@ -322,7 +322,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Verdict</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">The reported bug is fixed on UAT</h2>
@@ -352,7 +352,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-sky-text">The defect &amp; the fix</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Root cause: stops loaded under the wrong session</h2>
@@ -380,7 +380,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-amber-text">Pre-flight — is it actually on UAT?</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">We verified the fix is in the deployed UAT build first</h2>
@@ -415,7 +415,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-purple-text">How we verified</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">A deterministic session mismatch on testqa</h2>
@@ -430,15 +430,15 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <div class="space-y-4">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
             <div class="flex-1 pt-1"><p class="text-ink leading-relaxed"><strong>Baseline (matching session).</strong> Session picker on 2026~2027, opened the route, read every stop. All 16 stops geocoded, 0 ungeocoded.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
             <div class="flex-1 pt-1"><p class="text-ink leading-relaxed"><strong>Forced the mismatch.</strong> Switched the session picker to Summer 2026 while the route's own session stayed 2026~2027 — the exact condition that used to blank stop addresses.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
             <div class="flex-1 pt-1"><p class="text-ink leading-relaxed"><strong>Re-read the route under the mismatch</strong> and compared stop-by-stop against the baseline.</p></div>
           </div>
         </div>
@@ -459,7 +459,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Result</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Stops stay geocoded under the mismatch</h2>
@@ -542,8 +542,8 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           <h2 class="text-2xl font-bold text-ink mb-2">Where this leaves the ticket</h2>
         </div>
         <ul class="space-y-3 text-ink leading-relaxed">
-          <li class="flex items-start gap-3"><span class="text-emerald-dot font-bold flex-shrink-0 pt-0.5">✓</span><span>Primary defect (stops flipping to ungeocoded under a session mismatch) is <strong>verified fixed</strong> on UAT.</span></li>
-          <li class="flex items-start gap-3"><span class="text-amber-dot font-bold flex-shrink-0 pt-0.5">?</span><span>Route owner / author to confirm the <strong>private-stop</strong> behavior under a session mismatch — intended scoping, or a follow-up.</span></li>
+          <li class="flex items-start gap-3"><span class="text-emerald-text font-bold flex-shrink-0 pt-0.5">✓</span><span>Primary defect (stops flipping to ungeocoded under a session mismatch) is <strong>verified fixed</strong> on UAT.</span></li>
+          <li class="flex items-start gap-3"><span class="text-amber-text font-bold flex-shrink-0 pt-0.5">?</span><span>Route owner / author to confirm the <strong>private-stop</strong> behavior under a session mismatch — intended scoping, or a follow-up.</span></li>
           <li class="flex items-start gap-3"><span class="text-mute font-bold flex-shrink-0 pt-0.5">•</span><span>The intermittent "Show Students" trigger was not force-reproduced; the deterministic mismatch above exercises the same code path directly and is the stronger check.</span></li>
         </ul>
       </div>

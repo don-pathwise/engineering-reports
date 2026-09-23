@@ -87,7 +87,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -250,7 +250,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -302,7 +302,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div class="flex flex-wrap items-center gap-2.5 mb-5">
         <span class="pill bg-emerald-fill text-emerald-text border-emerald-border">
-          <span class="w-2 h-2 rounded-full bg-emerald-solid"></span>
+          <span class="w-2 h-2 rounded-full bg-emerald-dot"></span>
           Passed UAT hardening
         </span>
         <span class="pill bg-page text-body border-token">EZRD-2319 · Defect · P3</span>
@@ -336,7 +336,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Background</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">The residual bottleneck</h2>
@@ -374,7 +374,7 @@ WHERE sandboxId = ? AND semesterId = ?
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-sky-text">The fix</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Cache the route-only stop list too</h2>
@@ -436,7 +436,7 @@ WHERE sandboxId = ? AND semesterId = ?
       <div class="p-7 sm:p-9">
         <div class="mb-7">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-purple-text">Testing walkthrough</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">How it was tested, step by step</h2>
@@ -455,15 +455,15 @@ WHERE sandboxId = ? AND semesterId = ?
         </div>
         <div class="space-y-4 mb-8">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">1</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">1</div>
             <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Read the ticket and the merged code.</strong> Pulled EZRD-2319 and <code class="k">git show</code> of PR #537 (<code class="k">2491dc11</code>) to pin exactly what changed: the route-only stop list in <code class="k">app/stop/stop.js</code> is now Redis-cached, invalidated on the broadened table set.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">2</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">2</div>
             <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Confirmed it's genuinely deployed to UAT.</strong> <code class="k">uat.pathwiserouting.com/version</code> = <code class="k">477ef628</code>; ancestor-checked that the fix commit is its <em>direct parent</em> — so it's actually live, not just trusting the "Hardening in UAT" status (which has been wrong before).</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">3</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">3</div>
             <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Pre-flight.</strong> Checked the <code class="k">kubectl</code> context — it was pointed at production, so I deliberately left it untouched. All testing was read-only / UI-driven; nothing was run against prod.</p></div>
           </div>
         </div>
@@ -475,19 +475,19 @@ WHERE sandboxId = ? AND semesterId = ?
         </div>
         <div class="space-y-4 mb-6">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">4</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">4</div>
             <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Confirmed access and data.</strong> Loaded testqa's Routes tab — one route (<em>Activity Bus - Alternative Route A Test</em>, 4 trips, ~13 stops), enough to exercise the cached route-only path.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">5</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">5</div>
             <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Functional render check.</strong> Expanded the route: every trip, stop name, resolved school name, arrival time, and the map geometry rendered correctly → the cached list's result shape is unchanged, no regression.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">6</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">6</div>
             <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Datadog APM.</strong> Resolved the services (<code class="k">ezrouting</code> / <code class="k">ezrouting-mysql</code>), confirmed UAT = env <code class="k">uat-prd</code> by matching my own request (build <code class="k">477ef62</code>), and located the <code class="k">vwAllStops</code> scan span. Saw <strong>production — still on the pre-fix build — fan out ~20 of these scans in one request</strong>. UAT's own volume was too low to show a clean before/after, so I did not claim one. (Detail in the next section.)</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">7</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">7</div>
             <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>The decisive test — cache invalidation.</strong> Warmed the cache, then renamed a stop the route uses (<code class="k">Chateau Drive Circle</code> → <code class="k">Chateau Drive Circle INVTEST</code>) in the Stops tab — a real write to a watched table (<code class="k">stop</code>). Hard-reloaded the route list to force a fresh server read.</p></div>
           </div>
         </div>
@@ -509,7 +509,7 @@ WHERE sandboxId = ? AND semesterId = ?
 
         <div class="space-y-4 mb-8">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">8</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">8</div>
             <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Corroboration.</strong> APM showed <code class="k">vwAllStops</code> scans on UAT at the exact moments I forced cache misses (the write-reload and the revert-reload), then quiet — consistent with the cache being active rather than scanning on every request.</p></div>
           </div>
         </div>
@@ -521,7 +521,7 @@ WHERE sandboxId = ? AND semesterId = ?
         </div>
         <div class="space-y-4">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">9</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">9</div>
             <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Left testqa clean and wrote it up.</strong> Reverted the rename and confirmed the baseline is restored, then recorded the full investigation (queries, evidence, verdict) in the engineering vault.</p></div>
           </div>
         </div>
@@ -533,7 +533,7 @@ WHERE sandboxId = ? AND semesterId = ?
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Results</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Passes UAT hardening</h2>
@@ -589,7 +589,7 @@ WHERE sandboxId = ? AND semesterId = ?
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Performance</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Why we're confident the scan is gone</h2>

@@ -87,7 +87,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -250,7 +250,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -300,7 +300,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <header class="border-b-2 border-token bg-surface">
   <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
     <span class="pill bg-purple-fill text-purple-text border-purple-border mb-5">
-      <span class="w-2 h-2 rounded-full bg-purple-solid"></span>
+      <span class="w-2 h-2 rounded-full bg-purple-dot"></span>
       Ready for Testing · PR #436
     </span>
     <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink">
@@ -323,7 +323,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-sky-dot"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-sky-text">What's under test</div>
         </div>
         <h2 class="text-2xl font-bold text-ink mb-2">A front-end redesign, not a detection fix</h2>
@@ -410,7 +410,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="p-7 sm:p-9">
       <div class="mb-8">
         <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-purple-dot"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-purple-text">The walkthrough</div>
         </div>
         <h2 class="text-2xl font-bold text-ink mb-2">Step through each behavior</h2>
@@ -425,7 +425,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- 1 -->
         <div class="flex items-start gap-4">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
           <div class="flex-1 pt-0.5">
             <div class="font-bold text-ink mb-1">Cold-open visibility <span class="text-mute font-medium">(the original bug)</span></div>
             <p class="text-body leading-relaxed">Open <strong>Move Trips</strong> on a district that has a known conflict. <strong>Do not</strong> hover or mouse over any row first.</p>
@@ -435,7 +435,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- 2 -->
         <div class="flex items-start gap-4">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
           <div class="flex-1 pt-0.5">
             <div class="font-bold text-ink mb-1">Overlap → stacked lanes (2–4 concurrent)</div>
             <p class="text-body leading-relaxed">Find (or create, by dragging a trip so its time overlaps another on the same route) a row with 2–4 overlapping trips.</p>
@@ -445,7 +445,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- 3 -->
         <div class="flex items-start gap-4">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
           <div class="flex-1 pt-0.5">
             <div class="font-bold text-ink mb-1">Overlap → candycane merged block (5+ concurrent)</div>
             <p class="text-body leading-relaxed">Build a 5+ overlap (see <strong>Constructing a 5+ overlap</strong> below), then look at that row.</p>
@@ -455,7 +455,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- 4 -->
         <div class="flex items-start gap-4">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">4</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">4</div>
           <div class="flex-1 pt-0.5">
             <div class="font-bold text-ink mb-1">Collapse / Expand overlaps toggle</div>
             <p class="text-body leading-relaxed">On any row with an overlap (2+), use the blue <strong>Collapse overlaps / Expand overlaps</strong> pill in the row header.</p>
@@ -465,7 +465,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- 5 -->
         <div class="flex items-start gap-4">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">5</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">5</div>
           <div class="flex-1 pt-0.5">
             <div class="font-bold text-ink mb-1">Deadhead conflict (too close to previous trip)</div>
             <p class="text-body leading-relaxed">Find a route where two consecutive trips are spaced closer than the travel time between them.</p>
@@ -475,7 +475,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- 6 -->
         <div class="flex items-start gap-4">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">6</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">6</div>
           <div class="flex-1 pt-0.5">
             <div class="font-bold text-ink mb-1">Bell-time conflict</div>
             <p class="text-body leading-relaxed">Find a route whose drop-off/pick-up violates a school's bell time (e.g. West Alternative on testqa).</p>
@@ -485,7 +485,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- 7 -->
         <div class="flex items-start gap-4">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">7</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">7</div>
           <div class="flex-1 pt-0.5">
             <div class="font-bold text-ink mb-1">Conflict reasons in the hover tooltip</div>
             <p class="text-body leading-relaxed">Hover a conflicting trip.</p>
@@ -495,7 +495,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- 8 -->
         <div class="flex items-start gap-4">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">8</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">8</div>
           <div class="flex-1 pt-0.5">
             <div class="font-bold text-ink mb-1">Drag ergonomics</div>
             <p class="text-body leading-relaxed">Drag a trip within/between routes; also click a trip without moving it; and drag the <em>last</em> conflicting trip off a conflicting route.</p>
@@ -505,7 +505,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- 9 -->
         <div class="flex items-start gap-4">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">9</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">9</div>
           <div class="flex-1 pt-0.5">
             <div class="font-bold text-ink mb-1">Preview Edits modal (read-only parity)</div>
             <p class="text-body leading-relaxed">From a single route → <strong>Operations → Move Trips to Other Routes</strong>, move a trip, then open the <strong>Preview Edits</strong> tab.</p>
@@ -522,7 +522,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-amber-solid"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-dot"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-amber-text">Setup aside</div>
         </div>
         <h2 class="text-2xl font-bold text-ink mb-2">Constructing a 5+ overlap (for the candycane)</h2>
@@ -535,15 +535,15 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
       <div class="space-y-4">
         <div class="flex items-start gap-3">
-          <div class="badge-num bg-amber-border text-amber-text step-number flex-shrink-0" style="width:2rem;height:2rem;font-size:0.9rem">1</div>
+          <div class="badge-num bg-amber-fill text-amber-text step-number flex-shrink-0" style="width:2rem;height:2rem;font-size:0.9rem">1</div>
           <p class="text-body leading-relaxed pt-1">Pick a destination route and note the start time of one of its trips.</p>
         </div>
         <div class="flex items-start gap-3">
-          <div class="badge-num bg-amber-border text-amber-text step-number flex-shrink-0" style="width:2rem;height:2rem;font-size:0.9rem">2</div>
+          <div class="badge-num bg-amber-fill text-amber-text step-number flex-shrink-0" style="width:2rem;height:2rem;font-size:0.9rem">2</div>
           <p class="text-body leading-relaxed pt-1">Drag trips from other routes onto that route so that <strong>five or more</strong> of them are running during the same window (overlapping in time). The easiest way is to pile several short trips that all start at roughly the same time.</p>
         </div>
         <div class="flex items-start gap-3">
-          <div class="badge-num bg-amber-border text-amber-text step-number flex-shrink-0" style="width:2rem;height:2rem;font-size:0.9rem">3</div>
+          <div class="badge-num bg-amber-fill text-amber-text step-number flex-shrink-0" style="width:2rem;height:2rem;font-size:0.9rem">3</div>
           <p class="text-body leading-relaxed pt-1">Once peak concurrency hits 5, the stacked lanes collapse into a single hatched candycane block with a "5" (or higher) count badge. Click it to expand, use the pill to collapse again.</p>
         </div>
       </div>
@@ -564,7 +564,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-dot"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Regression checks</div>
         </div>
         <h2 class="text-2xl font-bold text-ink mb-2">Two things surfaced in code review</h2>

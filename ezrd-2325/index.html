@@ -71,7 +71,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -234,7 +234,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -284,7 +284,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
   <header class="mb-6">
     <div class="flex flex-wrap items-center gap-2 mb-2">
-      <a href="https://pathwise.atlassian.net/browse/EZRD-2325" class="font-mono text-sm font-semibold text-sky-dot hover:underline">EZRD-2325</a>
+      <a href="https://pathwise.atlassian.net/browse/EZRD-2325" class="font-mono text-sm font-semibold text-sky-text hover:underline">EZRD-2325</a>
       <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-fill text-rose-text">P1 · S2 High</span>
       <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-chip text-body">Testing guide</span>
       <a href="https://github.com/TransActComm/ezrd-mono/pull/690" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-fill text-purple-text hover:underline">PR #690</a>
@@ -334,7 +334,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <table class="data">
         <thead><tr><th>Field</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>URL</td><td><a class="text-sky-dot hover:underline" href="https://uat.pathwiserouting.com/testqa">https://uat.pathwiserouting.com/testqa</a><br><span class="text-mute">The same tenant exists on <a class="text-sky-dot hover:underline" href="https://www.ezrouting.com/testqa">www.ezrouting.com/testqa</a> with the same route name but different ids and 12 trips rather than 10 — the steps work there too, just expect a different split count.</span></td></tr>
+          <tr><td>URL</td><td><a class="text-sky-text hover:underline" href="https://uat.pathwiserouting.com/testqa">https://uat.pathwiserouting.com/testqa</a><br><span class="text-mute">The same tenant exists on <a class="text-sky-text hover:underline" href="https://www.ezrouting.com/testqa">www.ezrouting.com/testqa</a> with the same route name but different ids and 12 trips rather than 10 — the steps work there too, just expect a different split count.</span></td></tr>
           <tr><td>Semester</td><td>2026 ~ 2027 <span class="text-mute">(the current one — no switching needed)</span></td></tr>
           <tr><td>Route</td><td><strong>Activity Bus - Alternative Route A Test</strong></td></tr>
           <tr><td>Trip to select</td><td><strong>PM-ALT-ACT-83</strong> &nbsp;— runs <strong>Mon–Fri</strong></td></tr>
@@ -375,7 +375,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <p class="text-sm mb-3">
       <strong>This is the test to run.</strong> The fix is deployed as of 4 August 2026 — verified by checking that the
       merge commit for PR #690 is an ancestor of the build reported by
-      <a class="text-sky-dot hover:underline" href="https://uat.pathwiserouting.com/version">/version</a>, and that the
+      <a class="text-sky-text hover:underline" href="https://uat.pathwiserouting.com/version">/version</a>, and that the
       served UI bundle contains the new code. Note that the branch commits alone will look absent, because the PR was
       squash-merged; check the merge commit. Now follow the steps in Part A and expect the result below.
     </p>
@@ -423,7 +423,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <p class="text-sm mb-3">
       <strong>172 routes</strong> carry both. Spokane names the Monday trip with an <code class="k">-M</code> suffix,
       which makes the pairs easy to spot. On route <strong>126</strong>
-      (<a class="text-sky-dot hover:underline" href="https://www.ezrouting.com/spokanewa">www.ezrouting.com/spokanewa</a>):
+      (<a class="text-sky-text hover:underline" href="https://www.ezrouting.com/spokanewa">www.ezrouting.com/spokanewa</a>):
     </p>
 
     <div class="wrap mb-3">

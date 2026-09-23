@@ -87,7 +87,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -250,7 +250,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -300,7 +300,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <header class="border-b-2 border-token bg-surface">
   <div class="max-w-5xl mx-auto px-6 py-12">
     <div class="inline-flex items-center gap-2 rounded-full bg-sky-fill text-sky-text border border-sky-border px-3 py-1 text-xs font-bold tracking-wider uppercase mb-5">
-      <span class="w-2 h-2 rounded-full bg-sky-solid"></span>
+      <span class="w-2 h-2 rounded-full bg-sky-dot"></span>
       UAT test steps · testqa
     </div>
     <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink mb-5">
@@ -365,7 +365,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="p-7 sm:p-9">
       <div class="mb-5">
         <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-amber-solid"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-dot"></span>
           <div class="text-sm font-bold tracking-wider uppercase text-amber-text">Read once</div>
         </div>
         <h2 class="text-2xl font-bold text-ink mb-2">Two things that will otherwise trip you up</h2>
@@ -398,7 +398,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-rose-border text-rose-text step-number flex-shrink-0">1</div>
+        <div class="badge-num bg-rose-fill text-rose-text step-number flex-shrink-0">1</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-rose-text mb-1">Check 1</div>
           <h2 class="text-2xl font-bold text-ink mb-2">A destination you can't use now says so</h2>
@@ -451,7 +451,7 @@ different trip.</pre>
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-emerald-border text-emerald-text step-number flex-shrink-0">2</div>
+        <div class="badge-num bg-emerald-fill text-emerald-text step-number flex-shrink-0">2</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-emerald-text mb-1">Check 2</div>
           <h2 class="text-2xl font-bold text-ink mb-2">A good split still works, and the button locks</h2>
@@ -492,7 +492,7 @@ different trip.</pre>
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-rose-border text-rose-text step-number flex-shrink-0">3</div>
+        <div class="badge-num bg-rose-fill text-rose-text step-number flex-shrink-0">3</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-rose-text mb-1">Check 3</div>
           <h2 class="text-2xl font-bold text-ink mb-2">A save that fails now tells you</h2>
@@ -546,7 +546,7 @@ Reopen this trip and check each bus before service.</pre>
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-rose-border text-rose-text step-number flex-shrink-0">4</div>
+        <div class="badge-num bg-rose-fill text-rose-text step-number flex-shrink-0">4</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-rose-text mb-1">Check 4</div>
           <h2 class="text-2xl font-bold text-ink mb-2">The important one — a stop on two buses</h2>
@@ -628,7 +628,7 @@ Reopen this trip and check each bus before service.</pre>
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-sky-border text-sky-text step-number flex-shrink-0">5</div>
+        <div class="badge-num bg-sky-fill text-sky-text step-number flex-shrink-0">5</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-sky-text mb-1">Check 5</div>
           <h2 class="text-2xl font-bold text-ink mb-2">Support can now see the save happened</h2>
@@ -674,7 +674,7 @@ Reopen this trip and check each bus before service.</pre>
   <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-amber-border text-amber-text step-number flex-shrink-0">6</div>
+        <div class="badge-num bg-amber-fill text-amber-text step-number flex-shrink-0">6</div>
         <div class="flex-1 pt-1">
           <div class="text-sm font-bold tracking-wider uppercase text-amber-text mb-1">Cleanup</div>
           <h2 class="text-2xl font-bold text-ink mb-2">Putting the test data back</h2>

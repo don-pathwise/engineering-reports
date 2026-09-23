@@ -64,7 +64,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -227,7 +227,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -277,7 +277,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <header class="border-b-2 border-token bg-surface">
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div class="inline-flex items-center gap-2 rounded-full bg-rose-fill text-rose-text border border-rose-border px-3 py-1 text-xs font-bold uppercase tracking-wider mb-5">
-        <span class="w-2 h-2 rounded-full bg-rose-solid"></span> P1 · Clark · Ready for QA
+        <span class="w-2 h-2 rounded-full bg-rose-dot"></span> P1 · Clark · Ready for QA
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink">EZRD-2049 — Lock SSC Change Requests After Submission</h1>
       <p class="mt-5 text-lg sm:text-xl text-body max-w-3xl leading-relaxed">
@@ -320,7 +320,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Setup</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Before you start</h2>
@@ -338,7 +338,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-8">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-purple-text">Walkthrough</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Test steps</h2>
@@ -347,7 +347,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <div class="space-y-6">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink mb-1">Submit a change request</h3>
               <p class="text-body leading-relaxed">Open a student, change a field (e.g. a contact phone number), and click <strong>Submit</strong>. Expect a <em>“Change request submitted”</em> confirmation.</p>
@@ -355,7 +355,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink mb-1">Reopen the student — verify it is locked</h3>
               <p class="text-body leading-relaxed mb-2">Go back to the home page and open the same student again. Confirm all of:</p>
@@ -370,7 +370,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink mb-1">Submit a correction as a new request</h3>
               <p class="text-body leading-relaxed">Click <strong>“Submit a new request.”</strong> The form becomes editable again, populated from the student’s <em>current</em> data (not your pending change). Change a field and click <strong>Submit</strong> → expect the confirmation. The form should then <strong>re-lock</strong> on its own (no page reload needed).</p>
@@ -378,7 +378,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">4</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">4</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink mb-1">Confirm two independent requests</h3>
               <p class="text-body leading-relaxed">Expand <strong>Change Request History</strong> — both requests appear as separate Pending rows. Then, as a <strong>tenant admin</strong>, open <strong>Settings → Change Requests</strong>: both requests for that student are listed as <strong>separate rows</strong>, each with its own View / Accept / Decline. Neither overwrote the other.</p>
@@ -386,7 +386,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">5</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">5</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink mb-1">Transportation is locked too</h3>
               <p class="text-body leading-relaxed">Using a student that <em>has</em> a transportation request on a pending change, confirm that while locked the transportation method/session dropdowns, weekday checkboxes, notes, and any “other site” fields are all read-only, the per-row delete icon is hidden, and “Add Transportation” is hidden.</p>
@@ -394,7 +394,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">6</div>
+            <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">6</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink mb-1">Regression — regular parent unaffected</h3>
               <p class="text-body leading-relaxed">Sign in as a <strong>regular parent</strong> with a pending request for their child. Confirm the form is still <strong>editable</strong> and re-submitting updates the same request in place (unchanged behavior).</p>
@@ -409,7 +409,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Acceptance criteria</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">What “pass” looks like</h2>

@@ -105,7 +105,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -268,7 +268,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -318,7 +318,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <header class="border-b-2 border-token bg-surface">
     <div class="max-w-[110rem] mx-auto px-6 py-12 sm:py-16">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-fill text-amber-text border border-amber-border mb-6">
-        <span class="w-2 h-2 rounded-full bg-amber-solid"></span>
+        <span class="w-2 h-2 rounded-full bg-amber-dot"></span>
         <span class="text-xs font-bold tracking-wider uppercase">Draft · Planning Artifact</span>
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink mb-4">
@@ -346,7 +346,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section id="tldr" class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">1</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">1</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-purple-text">Bottom line</div>
@@ -358,21 +358,21 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </div>
         <ul class="space-y-3 ml-2">
           <li class="flex items-start gap-3">
-            <div class="w-2 h-2 rounded-full bg-purple-solid mt-2 flex-shrink-0"></div>
+            <div class="w-2 h-2 rounded-full bg-purple-dot mt-2 flex-shrink-0"></div>
             <div class="text-ink"><span class="font-semibold">Only two legacy jobs already keep durable copies of what they produce or consume:</span>
               <code class="k">export-ezr-data</code> (S3 backup) and <code class="k">import-fuellogs</code> (raw CSV archived to S3). Everything else writes to <code class="k">/tmp/</code>, ships via SFTP, or mutates a DB — and forgets.</div>
           </li>
           <li class="flex items-start gap-3">
-            <div class="w-2 h-2 rounded-full bg-purple-solid mt-2 flex-shrink-0"></div>
+            <div class="w-2 h-2 rounded-full bg-purple-dot mt-2 flex-shrink-0"></div>
             <div class="text-ink"><span class="font-semibold">Three of the &ldquo;blocked&rdquo; reports are actually free wins:</span>
               <code class="k">export-contact-list-reports</code>, <code class="k">export-dismissal-reports</code>, and <code class="k">export-punch-reports</code> all write date-stamped files that persist on disk or SFTP — easy to grab for parity even though the source code isn't migrated yet.</div>
           </li>
           <li class="flex items-start gap-3">
-            <div class="w-2 h-2 rounded-full bg-purple-solid mt-2 flex-shrink-0"></div>
+            <div class="w-2 h-2 rounded-full bg-purple-dot mt-2 flex-shrink-0"></div>
             <div class="text-ink"><span class="font-semibold">All DB-mutating jobs need a snapshot-before-and-after harness</span>, not a file diff. That's eight of the 22 entries. A generic <code class="k">mysqldump &rarr; structural diff</code> helper would cover all of them.</div>
           </li>
           <li class="flex items-start gap-3">
-            <div class="w-2 h-2 rounded-full bg-purple-solid mt-2 flex-shrink-0"></div>
+            <div class="w-2 h-2 rounded-full bg-purple-dot mt-2 flex-shrink-0"></div>
             <div class="text-ink"><span class="font-semibold">Two jobs produce nothing comparable:</span> <code class="k">schoolToolPost</code> POSTs to a third-party REST API (no file output, side-effect is on SchoolTool), and <code class="k">gps-service reload</code> is a pm2 control — obsolete on EKS.</div>
           </li>
         </ul>
@@ -426,7 +426,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section id="per-job-audit" class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-teal-border text-teal-text step-number flex-shrink-0">3</div>
+          <div class="badge-num bg-teal-fill text-teal-text step-number flex-shrink-0">3</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-teal-text">The audit</div>
@@ -689,7 +689,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section id="rollup" class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-sky-border text-sky-text step-number flex-shrink-0">4</div>
+          <div class="badge-num bg-sky-fill text-sky-text step-number flex-shrink-0">4</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Roll-up</div>
@@ -738,7 +738,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section id="parity-buckets" class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-emerald-border text-emerald-text step-number flex-shrink-0">5</div>
+          <div class="badge-num bg-emerald-fill text-emerald-text step-number flex-shrink-0">5</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Buckets</div>
@@ -820,7 +820,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section id="failure-detection" class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-rose-border text-rose-text step-number flex-shrink-0">6</div>
+          <div class="badge-num bg-rose-fill text-rose-text step-number flex-shrink-0">6</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-rose-text">Cutover window</div>
@@ -1145,7 +1145,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section id="next-steps" class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">7</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">7</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-purple-text">Plan</div>
@@ -1216,11 +1216,11 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         <div class="flex-1">
           <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-3">Open questions to resolve before each migration<a href="#open-questions" class="permalink" aria-label="Permalink to open questions">#</a></div>
           <ul class="space-y-2 text-ink">
-            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-solid mt-2.5 flex-shrink-0"></div><div>Does <code class="k">aarzhou</code> run <code class="k">tmpwatch</code> or <code class="k">systemd-tmpfiles</code> against <code class="k">/tmp/</code>? If yes, snapshot timing is critical for any &ldquo;Timed&rdquo;-bucket job.</div></li>
-            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-solid mt-2.5 flex-shrink-0"></div><div>For the 🔴 EC2-only CLI tools: who owns retrieval and commit — Joey, Aaron, or original author?</div></li>
-            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-solid mt-2.5 flex-shrink-0"></div><div>Does the customer SFTP for <code class="k">export-punch-reports</code> actually retain daily <code class="k wrap">PUNCHED_TIME_&lt;DATE&gt;.csv</code> files indefinitely, or rolling window?</div></li>
-            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-solid mt-2.5 flex-shrink-0"></div><div>Does <code class="k">ftp.wheresthebus.com</code> retain prior <code class="k">students-stops</code> uploads or overwrite?</div></li>
-            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-solid mt-2.5 flex-shrink-0"></div><div>For <code class="k">export-dismissal-reports</code>: confirm the actual filename pattern by listing <code class="k wrap">aarzhou:/home/aarzhou/apps/ezrouting/files/pwcsva/reports/</code> after a fresh 11:00 run.</div></li>
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-dot mt-2.5 flex-shrink-0"></div><div>Does <code class="k">aarzhou</code> run <code class="k">tmpwatch</code> or <code class="k">systemd-tmpfiles</code> against <code class="k">/tmp/</code>? If yes, snapshot timing is critical for any &ldquo;Timed&rdquo;-bucket job.</div></li>
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-dot mt-2.5 flex-shrink-0"></div><div>For the 🔴 EC2-only CLI tools: who owns retrieval and commit — Joey, Aaron, or original author?</div></li>
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-dot mt-2.5 flex-shrink-0"></div><div>Does the customer SFTP for <code class="k">export-punch-reports</code> actually retain daily <code class="k wrap">PUNCHED_TIME_&lt;DATE&gt;.csv</code> files indefinitely, or rolling window?</div></li>
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-dot mt-2.5 flex-shrink-0"></div><div>Does <code class="k">ftp.wheresthebus.com</code> retain prior <code class="k">students-stops</code> uploads or overwrite?</div></li>
+            <li class="flex items-start gap-3"><div class="w-1.5 h-1.5 rounded-full bg-amber-dot mt-2.5 flex-shrink-0"></div><div>For <code class="k">export-dismissal-reports</code>: confirm the actual filename pattern by listing <code class="k wrap">aarzhou:/home/aarzhou/apps/ezrouting/files/pwcsva/reports/</code> after a fresh 11:00 run.</div></li>
           </ul>
         </div>
       </div>

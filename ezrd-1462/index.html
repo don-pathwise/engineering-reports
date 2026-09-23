@@ -89,7 +89,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -252,7 +252,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -303,7 +303,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <header class="border-b-2 border-token bg-surface">
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-fill text-amber-text text-sm font-bold tracking-wide uppercase mb-5 border border-amber-border">
-        <span class="w-2 h-2 rounded-full bg-amber-solid"></span>
+        <span class="w-2 h-2 rounded-full bg-amber-dot"></span>
         In flight · revised 2026-05-13
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink mb-3">
@@ -412,7 +412,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-rose-border text-rose-text step-number flex-shrink-0">1</div>
+          <div class="badge-num bg-rose-fill text-rose-text step-number flex-shrink-0">1</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-rose-text">AWS Secrets Manager</div>
@@ -515,7 +515,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-sky-border text-sky-text step-number flex-shrink-0">2</div>
+          <div class="badge-num bg-sky-fill text-sky-text step-number flex-shrink-0">2</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Pod env vars</div>
@@ -569,7 +569,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-amber-border text-amber-text step-number flex-shrink-0">3</div>
+          <div class="badge-num bg-amber-fill text-amber-text step-number flex-shrink-0">3</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-amber-text">Other workstreams</div>
@@ -650,7 +650,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-emerald-border text-emerald-text step-number flex-shrink-0">4</div>
+          <div class="badge-num bg-emerald-fill text-emerald-text step-number flex-shrink-0">4</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
               <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">No action required</div>
@@ -705,7 +705,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">5</div>
+          <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">5</div>
           <div class="flex-1 pt-1">
             <div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">Sequence</div>
             <h2 class="text-2xl font-bold text-ink mb-2">Cutover order of operations</h2>

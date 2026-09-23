@@ -98,7 +98,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -261,7 +261,7 @@
     --accent-amber-fill: oklch(0.962 0.058 95.6);
     --accent-amber-border: oklch(0.879 0.153 91.6);
     --accent-amber-text: oklch(0.473 0.125 46.2);
-    --accent-amber-dot: oklch(0.666 0.157 58.3);
+    --accent-amber-dot: oklch(0.555 0.146 49.0);
     --accent-amber-solid: oklch(0.473 0.125 46.2);
     --accent-emerald-fill: oklch(0.950 0.051 163.1);
     --accent-emerald-border: oklch(0.845 0.130 165.0);
@@ -311,7 +311,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <header class="border-b-2 border-token bg-surface">
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div class="pill bg-emerald-fill text-emerald-text border-emerald-border mb-5">
-        <span class="w-2 h-2 rounded-full bg-emerald-solid"></span>
+        <span class="w-2 h-2 rounded-full bg-emerald-dot"></span>
         Ready to test
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink">EZRD-1949 — Map Regeneration</h1>
@@ -334,7 +334,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-sky-text">What changed</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Two defects, one click</h2>
@@ -384,7 +384,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Recommended district — use testqa</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Fox Point Joint No. 2 School District, WI (<code class="k">testqa</code>)</h2>
@@ -455,7 +455,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-purple-text">The test</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Trigger a regeneration and watch three messages</h2>
@@ -464,21 +464,21 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <div class="space-y-5">
           <div class="flex items-start gap-4">
-            <div class="badge-num stepnum bg-purple-border text-purple-text step-number flex-shrink-0">1</div>
+            <div class="badge-num stepnum bg-purple-fill text-purple-text step-number flex-shrink-0">1</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink">Open the admin dashboard</h3>
               <p class="text-body leading-relaxed">Go to <code class="k">https://admin.pathwiserouting.com</code> and sign in.</p>
             </div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num stepnum bg-purple-border text-purple-text step-number flex-shrink-0">2</div>
+            <div class="badge-num stepnum bg-purple-fill text-purple-text step-number flex-shrink-0">2</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink">Open Clients and select a district</h3>
               <p class="text-body leading-relaxed">Choose the district you intend to regenerate. Note its name — you will need it to confirm the right tenant was used.</p>
             </div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num stepnum bg-purple-border text-purple-text step-number flex-shrink-0">3</div>
+            <div class="badge-num stepnum bg-purple-fill text-purple-text step-number flex-shrink-0">3</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink">Open the Actions menu and trigger the regeneration</h3>
               <p class="text-body leading-relaxed">
@@ -489,14 +489,14 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             </div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num stepnum bg-purple-border text-purple-text step-number flex-shrink-0">4</div>
+            <div class="badge-num stepnum bg-purple-fill text-purple-text step-number flex-shrink-0">4</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink">Check the first two messages immediately</h3>
               <p class="text-body leading-relaxed">These appear within a second or two of each other. See the expected results below.</p>
             </div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num stepnum bg-purple-border text-purple-text step-number flex-shrink-0">5</div>
+            <div class="badge-num stepnum bg-purple-fill text-purple-text step-number flex-shrink-0">5</div>
             <div class="flex-1 pt-1">
               <h3 class="font-bold text-ink">Leave the tab open and wait for the completion message</h3>
               <p class="text-body leading-relaxed">
@@ -515,14 +515,14 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Expected results — this is a pass</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Three messages, in this order</h2>
         </div>
 
         <div class="space-y-3 mb-6">
-          <span class="toast-demo" style="background: var(--code-panel-bg); color: var(--code-panel-fg);">2nd gen road network re-generation requested — processing…</span>
+          <span class="toast-demo" style="background: rgb(66 66 66); color: white;">2nd gen road network re-generation requested — processing…</span>
           <span class="toast-demo bg-emerald-solid text-white">2nd gen road network re-generation started</span>
           <span class="toast-demo bg-emerald-solid text-white">2nd gen road network of "&lt;your district&gt;" initialized successfully</span>
         </div>
@@ -576,7 +576,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-rose-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-rose-text">Unexpected results — what to report</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">A red message is not necessarily this ticket failing</h2>
@@ -699,7 +699,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-dot"></span>
             <div class="text-sm font-bold tracking-wider uppercase text-purple-text">Optional appendix — not required for sign-off</div>
           </div>
           <h2 class="text-2xl font-bold text-ink mb-2">Seeing the red messages without breaking anything</h2>

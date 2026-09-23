@@ -109,7 +109,15 @@ ACCENTS_HEX = {
     "light": {
         "rose":    {"fill": "#ffe4e6", "border": "#fda4af", "text": "#9f1239", "dot": "#e11d48", "solid": _SOLID_HEX["rose"]},
         "sky":     {"fill": "#e0f2fe", "border": "#7dd3fc", "text": "#075985", "dot": "#0284c7", "solid": _SOLID_HEX["sky"]},
-        "amber":   {"fill": "#fef3c7", "border": "#fcd34d", "text": "#92400e", "dot": "#d97706", "solid": _SOLID_HEX["amber"]},
+        # dot was amber-600 (#d97706) until Task 6 fix round 1: the extended
+        # check_contrast.py found bare/standalone amber dots (the "In
+        # flight" status-pill dot at ezrd-1462/index.html:306, and any dot
+        # sitting on raw --page) at 2.86-2.91:1, under the 3:1 non-text
+        # floor, because amber's sRGB luminance is high relative to its
+        # OKLCH lightness even at step 600. amber-700 clears every neutral
+        # and the accent's own fill at 4.5:1+ in light theme while staying
+        # visibly distinct from `text`/`solid` (both amber-800).
+        "amber":   {"fill": "#fef3c7", "border": "#fcd34d", "text": "#92400e", "dot": "#b45309", "solid": _SOLID_HEX["amber"]},
         "emerald": {"fill": "#d1fae5", "border": "#6ee7b7", "text": "#065f46", "dot": "#059669", "solid": _SOLID_HEX["emerald"]},
         "purple":  {"fill": "#f3e8ff", "border": "#d8b4fe", "text": "#6b21a8", "dot": "#9333ea", "solid": _SOLID_HEX["purple"]},
         "teal":    {"fill": "#ccfbf1", "border": "#5eead4", "text": "#115e59", "dot": "#0d9488", "solid": _SOLID_HEX["teal"]},
