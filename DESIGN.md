@@ -87,27 +87,29 @@ self-describing.
 ## Components
 
 - **Section card**: `bg-surface border-2 border-token rounded-lg` + `.main-card` shadow, `p-7 sm:p-9`. Unnumbered head (accent dot + kicker) by default; numbered `.badge-num` circle only for real ordered sequences.
-- **Radius scale (measured against the corpus, not the token file — see
-  below)**: cards and callouts `rounded-lg` (8px, e.g. `main-card` sections
-  and callout banners — 164 occurrences repo-wide). Table/tile panels and the
-  tinted code-block *container* `rounded-md` (6px, 202 occurrences) — the
-  container that wraps a `<pre>` is `rounded-md` in all 8 measured instances,
-  never `rounded-lg`. The `<pre>` element itself genuinely varies: `rounded-lg`
-  (8px) in the 4 already-dark, theme-invariant code panels
-  (`ezrd-2008`/`ezrd-2019`, `--code-panel-bg`), `rounded-md` (6px) in the
-  other 9 (accent-tinted). Inline code (`code.k`, and the equivalent inline
-  `bg-chip … rounded` chips) is `rounded` — Tailwind's default, 4px — measured
-  identically on every one of the 14 pages that define a `code.k` rule (all
-  `border-radius: 0.25rem`), and via the same `rounded` utility everywhere
-  else. Pills, dots and the theme switch stay `rounded-full` (93 occurrences)
-  — they are capsules by definition.
+- **Radius scale (the rule each component actually takes, not the token
+  file — see below)**: cards and callouts `rounded-lg` (8px). Table/tile
+  panels and the tinted code-block *container* `rounded-md` (6px) — the
+  container that wraps a `<pre>` is `rounded-md`, never `rounded-lg`. Inline
+  code (`code.k`, and the equivalent inline `bg-chip … rounded` chips) is
+  `rounded` — Tailwind's default, `0.25rem`. Pills, dots and the theme switch
+  stay `rounded-full` — they are capsules by definition.
 
-  `tools/tokens.py`'s `RADII` dict (`card` 8px / `panel` 6px / `code` 8px /
-  `pre` 5px / `chip` 3px) is emitted as five `--radius-*` custom properties
-  into every page by `tools/theme_block.py`, but nothing in the corpus or the
-  tooling consumes them via `var(--radius-*)` (grepped repo-wide: zero hits).
-  Treat those five figures as dead, unconsumed config, not as the shipped
-  scale — the actual Tailwind-class radii above are what's live.
+  The `<pre>` element itself is the one place this isn't a single rule: it's
+  `rounded-lg` on the already-dark, theme-invariant code panels
+  (`--code-panel-bg`), `rounded-md` on the accent-tinted ones, and a few
+  older pages hand-roll their own `<pre>`/`code.k` radius in a local
+  `<style>` block instead of using either utility. Treat that as a known
+  inconsistency to clean up if you're touching one of those pages, not as a
+  pattern to copy in a new report — write a new page with `rounded-md` on
+  both the container and the `<pre>` unless it's one of the theme-invariant
+  dark panels, in which case both are `rounded-lg`.
+
+  `tools/tokens.py`'s `RADII` dict (`card`/`panel`/`code`/`pre`/`chip`) is
+  emitted as five `--radius-*` custom properties into every page by
+  `tools/theme_block.py`, but nothing in the corpus or the tooling consumes
+  them via `var(--radius-*)`. Treat those as dead, unconsumed config, not as
+  the shipped scale — the Tailwind classes above are what's live.
 - **Pill**: `inline-flex rounded-full`, uppercase `0.72rem` tracked, `border-width:1px`. Status pills earn color per row/item; section-header pills usually don't.
 - **Callout banner**: full-width tinted card (`bg-{accent}-fill border-2 border-{accent}-border rounded-lg`), no badge.
 - **Table**: token neutral panel (`bg-surface-2 border-2 border-token rounded-md`), uppercase tracked header row (`bg-chip`), `divide-y divide-hairline` body, wrapper `overflow-x-auto` + `min-w-[…]` + `<colgroup>` so wide tables scroll (never clip) inside the card.
