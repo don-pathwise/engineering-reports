@@ -8,6 +8,8 @@ enhance every report page except the root index.html (which has its own system).
     python3 apply-report-enhancements.py ezrd-1462/index.html   # one page
 """
 import sys, glob, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools"))
+from theme_block import HEAD_BOOT, style_block, TOGGLE_HTML, MARKER as THEME_MARKER
 
 BLOCK = """
 <!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
@@ -73,13 +75,26 @@ BLOCK = """
 MARKER = "data-report-enhanced"
 
 
+def inject_theme(html):
+    """Add the boot script and token block to <head>. Idempotent.
+
+    Both go in <head>, not before </body>: the boot must set data-theme before
+    the body paints, and the block carries Tailwind colour aliases that must be
+    defined before the CDN evaluates.
+    """
+    if THEME_MARKER in html:
+        return html, False
+    head_end = html.find("</head>")
+    if head_end == -1:
+        raise ValueError("no </head>")
+    html = html[:head_end] + HEAD_BOOT + "\n" + style_block() + "\n" + html[head_end:]
+    return html, True
+
+
 def targets(args):
     if args:
         return args
-    files = []
-    for f in glob.glob("*/*.html"):
-        files.append(f)
-    return sorted(files)
+    return sorted(glob.glob("*/*.html") + glob.glob("index.html"))
 
 
 def main():
@@ -90,16 +105,24 @@ def main():
             print(f"  ! missing: {f}")
             continue
         html = open(f, encoding="utf-8").read()
-        if MARKER in html:
+        touched = False
+
+        if MARKER not in html:
+            idx = html.rfind("</body>")
+            if idx == -1:
+                print(f"  ! no </body>: {f}")
+                continue
+            html = html[:idx] + BLOCK + "\n" + html[idx:]
+            touched = True
+
+        html, themed = inject_theme(html)
+        touched = touched or themed
+
+        if touched:
+            open(f, "w", encoding="utf-8").write(html)
+            changed.append(f)
+        else:
             skipped.append(f)
-            continue
-        idx = html.rfind("</body>")
-        if idx == -1:
-            print(f"  ! no </body>: {f}")
-            continue
-        html = html[:idx] + BLOCK + "\n" + html[idx:]
-        open(f, "w", encoding="utf-8").write(html)
-        changed.append(f)
 
     print(f"enhanced {len(changed)} file(s):")
     for f in changed:
