@@ -15,6 +15,15 @@ HEAD_BOOT = """<script data-report-theme-boot>
     t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
   document.documentElement.setAttribute('data-theme', t);
+  // The toggle button doesn't exist yet (we're in <head>), so its
+  // aria-checked can't be synced here. Do it as soon as the body has
+  // parsed, whether or not the slider builds a bar for this page --
+  // otherwise a dark first load reports "off" to assistive tech until
+  // the reader's first click.
+  document.addEventListener('DOMContentLoaded', function () {
+    var sw = document.querySelector('.theme-switch');
+    if (sw) sw.setAttribute('aria-checked', document.documentElement.getAttribute('data-theme') === 'dark' ? 'true' : 'false');
+  });
 })();
 </script>"""
 
@@ -47,14 +56,15 @@ SLIDER_CSS = """
     display: flex; align-items: center; justify-content: space-between; gap: 18px; }
   .seg-track { position: relative; display: grid; flex-grow: 1; max-width: 760px;
     padding: 4px; border-radius: 9px; background: var(--page); border: 1px solid var(--border);
-    box-shadow: inset 0 2px 5px rgb(0 0 0 / .45), inset 0 -1px 0 rgb(255 255 255 / .04); }
+    box-shadow: inset 0 2px 5px rgb(0 0 0 / .45), inset 0 -1px 0 rgb(255 255 255 / .04);
+    overflow-x: auto; }
   .seg-thumb { position: absolute; top: 4px; bottom: 4px; border-radius: 6px;
     pointer-events: none; background: var(--surface-2); border: 1px solid var(--border);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / .10), 0 1px 2px rgb(0 0 0 / .45);
     transition: left .28s cubic-bezier(.4, 0, .2, 1), width .28s cubic-bezier(.4, 0, .2, 1); }
   .seg-btn { position: relative; z-index: 1; display: inline-flex; align-items: center;
     justify-content: center; gap: 8px; padding: 8px 14px; border: 0; background: transparent;
-    border-radius: 6px; font: inherit; font-size: 13px; font-weight: 600;
+    border-radius: 6px; font: inherit; font-size: 13px; font-weight: 600; min-width: 180px;
     white-space: nowrap; cursor: pointer; color: var(--ink-mute); transition: color .2s ease; }
   .seg-btn[aria-pressed="true"] { color: var(--ink); }
   .seg-dot { width: 7px; height: 7px; border-radius: 999px; flex-shrink: 0; }
@@ -77,15 +87,31 @@ SLIDER_JS = """<script data-report-slider>
     track.className = 'seg-track';
     track.setAttribute('role', 'group');
     track.setAttribute('aria-label', 'Jump to section');
-    track.style.gridTemplateColumns = 'repeat(' + heads.length + ', minmax(0, 1fr))';
+    // min-content-based min: a column never shrinks below its own button's
+    // text (no clipping/overlap for a long heading), 1fr still grows every
+    // column evenly to fill the track when there's room, so short labels
+    // stay visually equal-width in the common case. .seg-btn's min-width
+    // (180px, measured against this repo's real report headings so a
+    // typical short 2-3 word label like "Test Environment" never looks
+    // cramped) sets the floor for those short labels.
+    track.style.gridTemplateColumns = 'repeat(' + heads.length + ', minmax(max-content, 1fr))';
     var thumb = document.createElement('div');
     thumb.className = 'seg-thumb';
     thumb.setAttribute('aria-hidden', 'true');
     track.appendChild(thumb);
 
+    // Positioned from the segment button's own layout box (offsetLeft/Width
+    // are relative to .seg-track's padding edge and scroll-invariant), not a
+    // percentage-of-track formula: once columns can differ in width (above)
+    // and the track can scroll horizontally (.seg-track { overflow-x: auto }
+    // in SLIDER_CSS), "100% of the track" no longer equals "100% of the
+    // scrollable content", so a percentage-based thumb would drift out of
+    // register with its segment as soon as a page needed to scroll the bar.
     function place(i) {
-      thumb.style.left = 'calc(4px + (100% - 8px) * ' + i + ' / ' + heads.length + ')';
-      thumb.style.width = 'calc((100% - 8px) / ' + heads.length + ')';
+      var b = btns[i];
+      if (!b) return;
+      thumb.style.left = b.offsetLeft + 'px';
+      thumb.style.width = b.offsetWidth + 'px';
     }
 
     var btns = heads.map(function (h, i) {
@@ -112,7 +138,6 @@ SLIDER_JS = """<script data-report-slider>
       btns.forEach(function (b, n) { b.setAttribute('aria-pressed', n === i ? 'true' : 'false'); });
       place(i);
     }
-    select(0);
 
     inner.appendChild(track);
     var sw = document.querySelector('.theme-switch');
@@ -120,6 +145,11 @@ SLIDER_JS = """<script data-report-slider>
     bar.appendChild(inner);
     var main = document.querySelector('main');
     main.parentNode.insertBefore(bar, main);
+
+    // place() measures real layout (offsetLeft/offsetWidth), so the first
+    // call has to happen after the bar is actually in the document -- a
+    // detached node's offsets are always 0.
+    select(0);
 
     // Track reading position: the last heading whose top crossed 33% of the viewport.
     var ticking = false;
