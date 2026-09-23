@@ -295,18 +295,18 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 });
 </script>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+<body class="bg-page text-ink font-sans antialiased">
 
-<header class="border-b-2 border-slate-300 bg-white">
+<header class="border-b-2 border-token bg-surface">
   <div class="max-w-5xl mx-auto px-6 py-12">
-    <div class="inline-flex items-center gap-2 rounded-full bg-sky-100 text-sky-900 border border-sky-300 px-3 py-1 text-xs font-bold tracking-wider uppercase mb-5">
-      <span class="w-2 h-2 rounded-full bg-sky-600"></span>
+    <div class="inline-flex items-center gap-2 rounded-full bg-sky-fill text-sky-text border border-sky-border px-3 py-1 text-xs font-bold tracking-wider uppercase mb-5">
+      <span class="w-2 h-2 rounded-full bg-sky-solid"></span>
       UAT test steps · testqa
     </div>
-    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-5">
+    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink mb-5">
       EZRD-1757 — UAT Test Steps
     </h1>
-    <p class="text-lg text-slate-700 max-w-3xl leading-relaxed">
+    <p class="text-lg text-body max-w-3xl leading-relaxed">
       Splitting a bus route across other buses could fail and tell the dispatcher <em>nothing</em> — no error,
       and in one case not even a success message. Five checks confirm it now reports. Every route, trip and date
       below was confirmed live against <strong>Prod UAT</strong> for tenant <strong>testqa</strong>, so you can
@@ -317,12 +317,12 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
 <main class="max-w-5xl mx-auto px-6 py-12 space-y-6">
 
-  <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+  <section class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
     <div class="flex items-start gap-4">
-      <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+      <div class="text-amber-text text-2xl flex-shrink-0 leading-none">⚠</div>
       <div>
-        <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Check the build first</div>
-        <p class="text-slate-800 text-lg leading-relaxed">
+        <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-1">Check the build first</div>
+        <p class="text-ink text-lg leading-relaxed">
           Open <code class="k wrap">https://preparation.pathwiserouting.com/version</code> and confirm with the
           dev team that the commit shown includes EZRD-1757. If it doesn't, everything below will behave the
           <em>old</em> way — no messages at all — and you'll be recording the bug rather than the fix.
@@ -331,18 +331,18 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </div>
   </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-slate-200 text-slate-900 step-number flex-shrink-0">0</div>
+        <div class="badge-num bg-chip text-ink step-number flex-shrink-0">0</div>
         <div class="flex-1 pt-1">
-          <div class="text-sm font-bold tracking-wider uppercase text-slate-600 mb-1">Setup</div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Get to the right screen and day</h2>
-          <p class="text-slate-700 leading-relaxed">Do this once. Every check starts here.</p>
+          <div class="text-sm font-bold tracking-wider uppercase text-mute mb-1">Setup</div>
+          <h2 class="text-2xl font-bold text-ink mb-2">Get to the right screen and day</h2>
+          <p class="text-body leading-relaxed">Do this once. Every check starts here.</p>
         </div>
       </div>
 
-      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+      <ol class="space-y-3 text-body leading-relaxed list-decimal pl-6">
         <li>Go to <code class="k wrap">https://preparation.pathwiserouting.com/testqa</code> and sign in. You land on <strong>Routes / Trips</strong>.</li>
         <li>The routes list will be <strong>empty</strong> on today's date. That's correct — today falls in a school term with almost no routes. You need to change the day.</li>
         <li>Click the <span class="click">calendar icon</span> just left of the date in the top bar. A month grid opens with <code class="k">‹ MONTH YEAR ›</code> across the top.</li>
@@ -350,9 +350,9 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         <li>Click day <span class="click">13</span>. The date should read <code class="k">05/13/2026</code>.</li>
       </ol>
 
-      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
-        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">You're ready when</div>
-        <p class="text-slate-800 leading-relaxed">
+      <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mt-6">
+        <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">You're ready when</div>
+        <p class="text-ink leading-relaxed">
           The list fills with routes including <code class="k">West Elementary</code>,
           <code class="k">TestQA3</code>, <code class="k">Emergency Transport - West Alternative</code> and
           several <code class="k">Activity Bus - Alternative Route A</code> entries — 12 routes in total.
@@ -361,20 +361,20 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </div>
   </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-5">
         <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-amber-800">Read once</div>
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-solid"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-amber-text">Read once</div>
         </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">Two things that will otherwise trip you up</h2>
+        <h2 class="text-2xl font-bold text-ink mb-2">Two things that will otherwise trip you up</h2>
       </div>
 
       <div class="space-y-4">
-        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">There are five environments and two of them look like "UAT"</div>
-          <p class="text-slate-800 leading-relaxed">
+        <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-5">
+          <div class="font-bold text-ink mb-1">There are five environments and two of them look like "UAT"</div>
+          <p class="text-ink leading-relaxed">
             <code class="k wrap">pathwiserouting.com</code> is the <strong>Prod UAT</strong> environment and is the
             one these steps target. It is <em>not</em> the same as UAT (EKS)
             (<code class="k wrap">ezd-uat.runpathwise.com</code>) or UAT (EC2)
@@ -383,9 +383,9 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             hostnames in these steps.
           </p>
         </div>
-        <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">Two routes are named "High Route B" and they behave oppositely</div>
-          <p class="text-slate-800 leading-relaxed">
+        <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-5">
+          <div class="font-bold text-ink mb-1">Two routes are named "High Route B" and they behave oppositely</div>
+          <p class="text-ink leading-relaxed">
             <code class="k">Athletic Transport - High Route B</code> is <strong>not</strong> available on this day
             and will produce the error. <code class="k">Emergency Transport - High Route B</code> <strong>is</strong>
             available and saves normally. Read the first word, not the last three.
@@ -395,21 +395,21 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </div>
   </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0">1</div>
+        <div class="badge-num bg-rose-border text-rose-text step-number flex-shrink-0">1</div>
         <div class="flex-1 pt-1">
-          <div class="text-sm font-bold tracking-wider uppercase text-rose-800 mb-1">Check 1</div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">A destination you can't use now says so</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <div class="text-sm font-bold tracking-wider uppercase text-rose-text mb-1">Check 1</div>
+          <h2 class="text-2xl font-bold text-ink mb-2">A destination you can't use now says so</h2>
+          <p class="text-body leading-relaxed">
             The one a dispatcher actually hits, and it works every time. Nothing is saved, so there's nothing to
             undo. <strong>Start here.</strong>
           </p>
         </div>
       </div>
 
-      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+      <ol class="space-y-3 text-body leading-relaxed list-decimal pl-6">
         <li>
           Find the <code class="k">West Elementary</code> row. <strong>It is in the second of the two route
           tables on the page</strong> — scroll down past the first one. Don't bother clicking the
@@ -419,26 +419,26 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         <li>In the <strong>TRIP</strong> column, <strong>hover</strong> over <code class="k">Test3 (6:00 AM ~ 7:27 AM)</code> — a <span class="click">pencil</span> icon appears to the right of the times. It is only there while the mouse is on that row, so move straight across to it. Click it. You may need to scroll the table sideways to see it.</li>
         <li><strong>View/Edit Trip</strong> opens with 27 stops. Click <span class="click">BREAK UP</span> at the bottom.</li>
         <li>A list of 30 candidate destination trips appears. Tick the checkbox for:
-          <div class="bg-rose-100 border-2 border-rose-300 rounded-lg px-4 py-3 mt-2 pickbox text-slate-900">
+          <div class="bg-rose-fill border-2 border-rose-border rounded-lg px-4 py-3 mt-2 pickbox text-ink">
             Activity Bus - South Middle &nbsp;·&nbsp; AM-MS-ACT-46
           </div>
         </li>
         <li>Click <span class="click">CALCULATE</span>.</li>
       </ol>
 
-      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
-        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
-        <p class="text-slate-800 leading-relaxed mb-3">A red banner, top right:</p>
-        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">"AM-MS-ACT-46" cannot be used as a destination: its
+      <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mt-6">
+        <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-ink leading-relaxed mb-3">A red banner, top right:</p>
+        <pre class="ui-quote text-ink bg-surface rounded-md p-4 border-2 border-emerald-border overflow-x-auto">"AM-MS-ACT-46" cannot be used as a destination: its
 route is not loaded for this service day. Select a
 different trip.</pre>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           The dialog stays on the destination list and <strong>CALCULATE works again</strong> so you can change
           your pick. Previously this click did nothing whatsoever — no banner, no movement, button still live.
         </p>
       </div>
 
-      <p class="text-slate-600 text-sm leading-relaxed mt-4">
+      <p class="text-mute text-sm leading-relaxed mt-4">
         16 of the 30 candidates behave this way. Others you can repeat it with:
         <code class="k">Activity Bus - East Alternative / AM-ALT-ACT-58</code>,
         <code class="k">Athletic Transport - High Route B / AM-HS-ATH-62</code>,
@@ -448,24 +448,24 @@ different trip.</pre>
     </div>
   </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-emerald-200 text-emerald-900 step-number flex-shrink-0">2</div>
+        <div class="badge-num bg-emerald-border text-emerald-text step-number flex-shrink-0">2</div>
         <div class="flex-1 pt-1">
-          <div class="text-sm font-bold tracking-wider uppercase text-emerald-800 mb-1">Check 2</div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">A good split still works, and the button locks</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <div class="text-sm font-bold tracking-wider uppercase text-emerald-text mb-1">Check 2</div>
+          <h2 class="text-2xl font-bold text-ink mb-2">A good split still works, and the button locks</h2>
+          <p class="text-body leading-relaxed">
             Confirms nothing was broken, and shows the new double-click guard.
             <strong>This one saves real data</strong> — undo it with check 6 before moving on.
           </p>
         </div>
       </div>
 
-      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+      <ol class="space-y-3 text-body leading-relaxed list-decimal pl-6">
         <li>Same trip: <code class="k">West Elementary</code> → pencil on <code class="k">Test3</code> → <span class="click">BREAK UP</span>.</li>
         <li>Tick <strong>both</strong> of these — both are available on this day, so Calculate will go through:
-          <div class="bg-emerald-100 border-2 border-emerald-300 rounded-lg px-4 py-3 mt-2 pickbox text-slate-900">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-lg px-4 py-3 mt-2 pickbox text-ink">
             TestQA3 &nbsp;·&nbsp; Test<br>
             Emergency Transport - West Alternative &nbsp;·&nbsp; AM-ALT-EMRG-52
           </div>
@@ -475,45 +475,45 @@ different trip.</pre>
         <li>Click <span class="click">SAVE</span>, then <span class="click">YES</span>. <strong>Watch the SAVE button as you do.</strong></li>
       </ol>
 
-      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
-        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
-        <p class="text-slate-800 leading-relaxed mb-3">
+      <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mt-6">
+        <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-ink leading-relaxed mb-3">
           SAVE greys out while the writes run — that's the new guard, and it's what stops a second impatient click
           from writing everything twice. Then a green banner:
         </p>
-        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">Trip stops have been moved to the new trips</pre>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <pre class="ui-quote text-ink bg-surface rounded-md p-4 border-2 border-emerald-border overflow-x-auto">Trip stops have been moved to the new trips</pre>
+        <p class="text-ink leading-relaxed mt-3">
           You'll be asked whether to notify parents — answer <span class="click">NO</span> for a test.
         </p>
       </div>
     </div>
   </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0">3</div>
+        <div class="badge-num bg-rose-border text-rose-text step-number flex-shrink-0">3</div>
         <div class="flex-1 pt-1">
-          <div class="text-sm font-bold tracking-wider uppercase text-rose-800 mb-1">Check 3</div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">A save that fails now tells you</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <div class="text-sm font-bold tracking-wider uppercase text-rose-text mb-1">Check 3</div>
+          <h2 class="text-2xl font-bold text-ink mb-2">A save that fails now tells you</h2>
+          <p class="text-body leading-relaxed">
             The ticket's headline complaint. You make the save fail using the browser's own Network panel — still
             just clicking, only in developer tools rather than the app.
           </p>
         </div>
       </div>
 
-      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+      <ol class="space-y-3 text-body leading-relaxed list-decimal pl-6">
         <li>Set up exactly as check 2 and stop at the preview screen with the <strong>SAVE</strong> button. Don't click it yet.</li>
         <li>Open developer tools (<code class="k">⌥⌘I</code> on Mac, <code class="k">F12</code> on Windows) and pick the <span class="click">Network</span> tab.</li>
         <li>In the throttling dropdown — it reads <strong>No throttling</strong>, near the top right of that panel — choose <span class="click">Offline</span>.</li>
         <li>Now click <span class="click">SAVE</span>, then <span class="click">YES</span>.</li>
       </ol>
 
-      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
-        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
-        <p class="text-slate-800 leading-relaxed mb-3">A dialog you must dismiss with <span class="click">OK</span>:</p>
-        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">This break-up did not finish saving.
+      <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mt-6">
+        <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-ink leading-relaxed mb-3">A dialog you must dismiss with <span class="click">OK</span>:</p>
+        <pre class="ui-quote text-ink bg-surface rounded-md p-4 border-2 border-emerald-border overflow-x-auto">This break-up did not finish saving.
 
 Stopped at PM-HS-EMRG-88: The server could not be
 reached. Check your connection and try again.
@@ -521,13 +521,13 @@ reached. Check your connection and try again.
 The bus it stopped at may or may not have been written,
 so a stop that moved can currently show on two buses.
 Reopen this trip and check each bus before service.</pre>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           The bus named after <strong>Stopped at</strong> is whichever destination it was writing when the
           connection dropped, so it may differ from the one above. There is no
           <strong>Confirmed saved</strong> line here — nothing had been written yet — and that line appearing
           is what separates this check from check 4.
         </p>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           The break-up dialog <strong>stays open behind it</strong> so you can retry. Two things to check
           specifically, because both were real defects caught in review: the text must not contain
           <code class="k">[object Object]</code>, and it must not claim <em>nothing</em> was saved — the
@@ -536,34 +536,34 @@ Reopen this trip and check each bus before service.</pre>
         </p>
       </div>
 
-      <div class="bg-amber-100 border-2 border-amber-300 rounded-xl p-5 mt-4">
-        <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-2">Before you continue</div>
-        <p class="text-slate-800 leading-relaxed">Set throttling back to <strong>No throttling</strong>, or every later check fails too.</p>
+      <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-5 mt-4">
+        <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-2">Before you continue</div>
+        <p class="text-ink leading-relaxed">Set throttling back to <strong>No throttling</strong>, or every later check fails too.</p>
       </div>
     </div>
   </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0">4</div>
+        <div class="badge-num bg-rose-border text-rose-text step-number flex-shrink-0">4</div>
         <div class="flex-1 pt-1">
-          <div class="text-sm font-bold tracking-wider uppercase text-rose-800 mb-1">Check 4</div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">The important one — a stop on two buses</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <div class="text-sm font-bold tracking-wider uppercase text-rose-text mb-1">Check 4</div>
+          <h2 class="text-2xl font-bold text-ink mb-2">The important one — a stop on two buses</h2>
+          <p class="text-body leading-relaxed">
             The fiddliest, because you have to act mid-save. Worth it: this failure produces the same customer
             complaint as EZRD-1653, by a different route.
           </p>
         </div>
       </div>
 
-      <p class="text-slate-700 leading-relaxed mb-4">
+      <p class="text-body leading-relaxed mb-4">
         A split isn't one save. It writes each destination bus separately and the <strong>original bus last</strong> —
         and that final write is what records that the stops left. Fail in between and a destination has claimed
         stops the original still thinks are its own.
       </p>
 
-      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+      <ol class="space-y-3 text-body leading-relaxed list-decimal pl-6">
         <li>Set up as check 2 but pick <strong>only one</strong> destination — <code class="k">Test</code>. That makes exactly two saves (the destination, then the original), so there is only one moment to catch. Reach the <strong>SAVE</strong> screen.</li>
         <li>In <span class="click">Network</span>, set throttling to <span class="click">Slow 3G</span>. This stretches each save so you have time to act between them.</li>
         <li>Type <code class="k">api/trip</code> in the Network filter box so you only see the save calls.</li>
@@ -571,8 +571,8 @@ Reopen this trip and check each bus before service.</pre>
         <li>The moment the <strong>first</strong> <code class="k">api/trip</code> request completes, switch throttling to <span class="click">Offline</span>. The second save — the original bus — is the one that must fail.</li>
       </ol>
 
-      <div class="bg-sky-100 border-2 border-sky-300 rounded-xl p-5 mt-4 mb-2">
-        <p class="text-slate-800 leading-relaxed">
+      <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5 mt-4 mb-2">
+        <p class="text-ink leading-relaxed">
           <strong>Why one destination, not two.</strong> With two destinations there are three saves, and killing the
           connection after the first stops it on the <em>second destination</em> — you would then see that trip's name
           rather than <code class="k">Test3</code> below, which is still a pass but a more confusing one. One
@@ -581,10 +581,10 @@ Reopen this trip and check each bus before service.</pre>
         </p>
       </div>
 
-      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
-        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
-        <p class="text-slate-800 leading-relaxed mb-3">A dialog you must dismiss with <strong>OK</strong> — not a banner that fades:</p>
-        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">This break-up did not finish saving.
+      <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mt-6">
+        <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-ink leading-relaxed mb-3">A dialog you must dismiss with <strong>OK</strong> — not a banner that fades:</p>
+        <pre class="ui-quote text-ink bg-surface rounded-md p-4 border-2 border-emerald-border overflow-x-auto">This break-up did not finish saving.
 
 Confirmed saved: Test.
 Stopped at Test3: The server could not be reached.
@@ -593,76 +593,76 @@ Check your connection and try again.
 The bus it stopped at may or may not have been written,
 so a stop that moved can currently show on two buses.
 Reopen this trip and check each bus before service.</pre>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           Both lines matter. <strong>Confirmed saved</strong> must name the bus that <em>did</em> save
           (<code class="k">Test</code>) — that is the line missing in check 3, and it is the whole point of this
           check. <strong>Stopped at</strong> must name the original bus (<code class="k">Test3</code>), because
           that is the save you killed. A dialog rather than a banner is deliberate — a banner fades after three
           seconds, which is not long enough for "check each bus before service."
         </p>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           If the timing slips and <em>both</em> saves get through, you will get check 2's green banner instead —
           no harm done, just undo and try again. If neither gets through you will get check 3's dialog, with no
           <strong>Confirmed saved</strong> line.
         </p>
       </div>
 
-      <div class="bg-sky-100 border-2 border-sky-300 rounded-xl p-5 mt-4">
-        <div class="text-sky-900 font-bold text-sm tracking-wider uppercase mb-2">Now confirm the warning is true</div>
-        <p class="text-slate-800 leading-relaxed mb-3">Set throttling back to <strong>No throttling</strong>, close the dialog, then:</p>
-        <ol class="space-y-2 text-slate-800 leading-relaxed list-decimal pl-6">
+      <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5 mt-4">
+        <div class="text-sky-text font-bold text-sm tracking-wider uppercase mb-2">Now confirm the warning is true</div>
+        <p class="text-ink leading-relaxed mb-3">Set throttling back to <strong>No throttling</strong>, close the dialog, then:</p>
+        <ol class="space-y-2 text-ink leading-relaxed list-decimal pl-6">
           <li>Open <code class="k">TestQA3</code> → <code class="k">Test</code> via its pencil. The stops it took are listed, each labelled <strong>Moved from … Test3</strong>.</li>
           <li>Now open <code class="k">West Elementary</code> → <code class="k">Test3</code>. Those same stop names are <strong>still there</strong>, as ordinary stops with no "moved" label.</li>
         </ol>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           The same stops, live on two buses at once, and in the old build nothing told anyone.
         </p>
       </div>
 
-      <p class="text-slate-600 text-sm leading-relaxed mt-4">
+      <p class="text-mute text-sm leading-relaxed mt-4">
         If you can't land the timing, don't sink time into it — check 3 already proves the reporting works.
       </p>
     </div>
   </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-sky-200 text-sky-900 step-number flex-shrink-0">5</div>
+        <div class="badge-num bg-sky-border text-sky-text step-number flex-shrink-0">5</div>
         <div class="flex-1 pt-1">
-          <div class="text-sm font-bold tracking-wider uppercase text-sky-800 mb-1">Check 5</div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Support can now see the save happened</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <div class="text-sm font-bold tracking-wider uppercase text-sky-text mb-1">Check 5</div>
+          <h2 class="text-2xl font-bold text-ink mb-2">Support can now see the save happened</h2>
+          <p class="text-body leading-relaxed">
             No developer tools needed — the easiest check on the list. The entry is written by Trip Preparation but
             read in EZRouting; the two share one audit trail.
           </p>
         </div>
       </div>
 
-      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+      <ol class="space-y-3 text-body leading-relaxed list-decimal pl-6">
         <li>Do any save first — check 2 is easiest.</li>
         <li>Go to <code class="k wrap">https://uat.pathwiserouting.com/testqa</code> and sign in.</li>
         <li>Open <span class="click">Settings</span> → <span class="click">Audit</span>.</li>
         <li>Search for <code class="k">[EZD]</code>.</li>
       </ol>
 
-      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
-        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
-        <p class="text-slate-800 leading-relaxed mb-3">One fresh entry per bus written, timestamped just now:</p>
-        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-emerald-300 overflow-x-auto">[EZD] Saved Test on 2026-05-13: 12 stop(s) moved in
+      <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mt-6">
+        <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Pass — you should see</div>
+        <p class="text-ink leading-relaxed mb-3">One fresh entry per bus written, timestamped just now:</p>
+        <pre class="ui-quote text-ink bg-surface rounded-md p-4 border-2 border-emerald-border overflow-x-auto">[EZD] Saved Test on 2026-05-13: 12 stop(s) moved in
 (27 stop(s) stored)</pre>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           Counts depend on how you split, so don't match them exactly — what matters is that entries exist and name
           the right trip and date. Before this change there were <strong>no</strong> entries for trip saves at all,
           so any entry here is the pass. A save the server rejects also gets one, with
           <code class="k">— REJECTED</code> and a code appended.
         </p>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           This pairing has now been confirmed end to end: a save made in Trip Preparation on Prod UAT appears
           in this EZRouting instance's audit trail, so the two do read the same tenant database. If no entry
           appears, treat it as a real failure.
         </p>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           One known gap, already raised separately: the <strong>User</strong> column reads
           <code class="k">System</code> rather than the dispatcher who saved. The entry is still correct — this
           is not a failure of this check — but support cannot yet tell <em>who</em> made the change.
@@ -671,66 +671,66 @@ Reopen this trip and check each bus before service.</pre>
     </div>
   </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-6">
-        <div class="badge-num bg-amber-200 text-amber-900 step-number flex-shrink-0">6</div>
+        <div class="badge-num bg-amber-border text-amber-text step-number flex-shrink-0">6</div>
         <div class="flex-1 pt-1">
-          <div class="text-sm font-bold tracking-wider uppercase text-amber-800 mb-1">Cleanup</div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Putting the test data back</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <div class="text-sm font-bold tracking-wider uppercase text-amber-text mb-1">Cleanup</div>
+          <h2 class="text-2xl font-bold text-ink mb-2">Putting the test data back</h2>
+          <p class="text-body leading-relaxed">
             Checks 2 and 4 write real changes for 05/13/2026. There's a one-click undo per trip.
           </p>
         </div>
       </div>
 
-      <ol class="space-y-3 text-slate-700 leading-relaxed list-decimal pl-6">
+      <ol class="space-y-3 text-body leading-relaxed list-decimal pl-6">
         <li>Hover the trip's row in the routes list — a <span class="click">✏ pencil</span> appears next to the trip name. Click it. Do this for <code class="k">Test3</code>, then <code class="k">Test</code>, then <code class="k">AM-ALT-EMRG-52</code>.</li>
         <li>In the stop table, look at the <strong>far right column of the header row</strong>. If the trip has changes there's an <span class="click">↺ undo</span> icon there — click it to revert the whole trip at once. You may need to scroll the stop table sideways to bring that column into view.</li>
         <li>Individual changed stops each have their own <span class="click">↺</span> in the last column, if you'd rather undo one at a time.</li>
         <li>Undoing from <em>either</em> side reverts both buses — the server clears the "moved to" flag on the original and the "moved from" flag on the destination in one operation, so you don't have to undo each end separately.</li>
       </ol>
 
-      <div class="bg-rose-100 border-2 border-rose-300 rounded-xl p-5 mt-6">
-        <div class="text-rose-900 font-bold text-sm tracking-wider uppercase mb-2">Expect undo to fail — this is known</div>
-        <p class="text-slate-800 leading-relaxed">
+      <div class="bg-rose-fill border-2 border-rose-border rounded-xl p-5 mt-6">
+        <div class="text-rose-text font-bold text-sm tracking-wider uppercase mb-2">Expect undo to fail — this is known</div>
+        <p class="text-ink leading-relaxed">
           On Prod UAT this undo currently <strong>does not work</strong> on this data, and it lies about it. It
           shows a red <code class="k">[object Object]</code> banner <em>and</em> a green "Trip changes undone"
           banner at the same time, while the server rejects the request and reverts nothing — the
           "Moved from …" labels stay right where they were. Reproduced on every attempt, across two trips and two
           service days, so assume you'll hit it.
         </p>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           The cause has been identified and it is <strong>not</strong> part of this change. Undo recomputes stop
           times, which calls the routing engine, and the engine can't place one of these stops on the map — the
           server actually replies with something useful:
         </p>
-        <pre class="ui-quote text-slate-900 bg-white rounded-md p-4 border-2 border-rose-300 overflow-x-auto mt-2">errcode: E_ROUTING
+        <pre class="ui-quote text-ink bg-surface rounded-md p-4 border-2 border-rose-border overflow-x-auto mt-2">errcode: E_ROUTING
 message: Cannot find point 1: 43.15749,-87.60159</pre>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           The undo screen throws that message away and prints <code class="k">[object Object]</code> instead —
           the same defect this ticket fixed on the break-up screen, in a screen this ticket didn't touch.
         </p>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           It is a separate pre-existing defect in the undo screen, <strong>not</strong> a failure of anything on
           this page — already raised, don't log it again. What to do:
         </p>
-        <ul class="space-y-2 text-slate-800 leading-relaxed list-disc pl-6 mt-2">
+        <ul class="space-y-2 text-ink leading-relaxed list-disc pl-6 mt-2">
           <li>Never take the green banner as proof. Re-read the stop table; if the labels are still there, nothing was undone.</li>
           <li><strong>Don't try to unpick it by hand</strong> — moving stops back manually makes a second, messier change on top of the first.</li>
           <li>Note which trips and service days you touched and hand the list to the dev team. Leaving them dirty is fine; this is a test tenant.</li>
         </ul>
       </div>
 
-      <div class="bg-emerald-100 border-2 border-emerald-300 rounded-xl p-5 mt-6">
-        <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Back to clean when</div>
-        <p class="text-slate-800 leading-relaxed">
+      <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mt-6">
+        <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Back to clean when</div>
+        <p class="text-ink leading-relaxed">
           <code class="k">Test3</code> shows all <strong>27</strong> stops again with no "moved" labels and reads
           <strong>6:00 AM ~ 7:27 AM</strong> in the routes list, and the two destination trips show no moved-in stops.
           A destination that took stops also reverts to its original end time — <code class="k">Test</code> back to
           <strong>6:06 AM</strong>.
         </p>
-        <p class="text-slate-800 leading-relaxed mt-3">
+        <p class="text-ink leading-relaxed mt-3">
           <strong>If you can't get there, that's expected right now</strong> — see the box above. Don't treat a
           dirty tenant as a failed test; none of the five checks depend on cleanup succeeding.
         </p>
@@ -738,19 +738,19 @@ message: Cannot find point 1: 43.15749,-87.60159</pre>
     </div>
   </section>
 
-  <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-2xl main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-4">
         <div class="flex items-center gap-3 mb-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-slate-600">Not a failure</div>
+          <span class="w-2.5 h-2.5 rounded-full bg-mute"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-mute">Not a failure</div>
         </div>
-        <h2 class="text-2xl font-bold text-slate-950 mb-2">Things that look wrong but aren't</h2>
+        <h2 class="text-2xl font-bold text-ink mb-2">Things that look wrong but aren't</h2>
       </div>
       <div class="space-y-4">
-        <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">There are two route tables, and the tabs don't switch</div>
-          <p class="text-slate-800 leading-relaxed">
+        <div class="bg-page border-2 border-token rounded-xl p-5">
+          <div class="font-bold text-ink mb-1">There are two route tables, and the tabs don't switch</div>
+          <p class="text-ink leading-relaxed">
             <strong>UNCOVERED ROUTES</strong> and <strong>COVERED ROUTES</strong> look like tabs but clicking them
             does nothing — both tables are drawn one after the other down the page. So the trips you need are
             split across two lists: <code class="k">Test</code> and <code class="k">AM-ALT-EMRG-52</code> are in
@@ -758,35 +758,35 @@ message: Cannot find point 1: 43.15749,-87.60159</pre>
             pre-existing bug in the tab control, unrelated to what you're testing — already known, don't log it.
           </p>
         </div>
-        <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">The destination buses show a red ⚠ and 0 / 1</div>
-          <p class="text-slate-800 leading-relaxed">
+        <div class="bg-page border-2 border-token rounded-xl p-5">
+          <div class="font-bold text-ink mb-1">The destination buses show a red ⚠ and 0 / 1</div>
+          <p class="text-ink leading-relaxed">
             <code class="k">Test</code> and <code class="k">AM-ALT-EMRG-52</code> have no driver or vehicle
             assigned, so they're flagged as uncovered. They are still perfectly valid break-up destinations —
             "uncovered" is not the same as "not loaded for this service day", which is what check 1 is about.
           </p>
         </div>
-        <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">You still can't use those destination buses</div>
-          <p class="text-slate-800 leading-relaxed">Check 1 now tells you the route isn't available. It doesn't make it available. That's a separate ticket — don't log it against this one.</p>
+        <div class="bg-page border-2 border-token rounded-xl p-5">
+          <div class="font-bold text-ink mb-1">You still can't use those destination buses</div>
+          <p class="text-ink leading-relaxed">Check 1 now tells you the route isn't available. It doesn't make it available. That's a separate ticket — don't log it against this one.</p>
         </div>
-        <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">A half-saved split is still possible</div>
-          <p class="text-slate-800 leading-relaxed">Check 4 warns you and tells you where to look. Making the whole split succeed-or-fail as one unit is separately tracked.</p>
+        <div class="bg-page border-2 border-token rounded-xl p-5">
+          <div class="font-bold text-ink mb-1">A half-saved split is still possible</div>
+          <p class="text-ink leading-relaxed">Check 4 warns you and tells you where to look. Making the whole split succeed-or-fail as one unit is separately tracked.</p>
         </div>
-        <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">A repeated stop name can be legitimate</div>
-          <p class="text-slate-800 leading-relaxed">A bus can serve the same physical stop twice. What matters is that each row is explainable — a "Moved from" label, or an original stop. Two identical rows at the same arrival minute with no label is the EZRD-1653 symptom, which is its own fix.</p>
+        <div class="bg-page border-2 border-token rounded-xl p-5">
+          <div class="font-bold text-ink mb-1">A repeated stop name can be legitimate</div>
+          <p class="text-ink leading-relaxed">A bus can serve the same physical stop twice. What matters is that each row is explainable — a "Moved from" label, or an original stop. Two identical rows at the same arrival minute with no label is the EZRD-1653 symptom, which is its own fix.</p>
         </div>
-        <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-5">
-          <div class="font-bold text-slate-900 mb-1">Moving a single stop can still fail quietly</div>
-          <p class="text-slate-800 leading-relaxed">This change covers the <strong>Break Up</strong> flow. The <strong>MOVE</strong> button in View/Edit Trip has the same gap and is a tracked follow-up, so a silent failure there is expected, not a regression.</p>
+        <div class="bg-page border-2 border-token rounded-xl p-5">
+          <div class="font-bold text-ink mb-1">Moving a single stop can still fail quietly</div>
+          <p class="text-ink leading-relaxed">This change covers the <strong>Break Up</strong> flow. The <strong>MOVE</strong> button in View/Edit Trip has the same gap and is a tracked follow-up, so a silent failure there is expected, not a regression.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="text-slate-500 text-sm text-center pt-6">
+  <div class="text-mute text-sm text-center pt-6">
     Routes, trips and availability confirmed live against preparation.pathwiserouting.com for tenant testqa · service day 2026-05-13 · 30 candidates, 14 available, 16 not.
   </div>
 

@@ -293,20 +293,20 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 });
 </script>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+<body class="bg-page text-ink font-sans antialiased">
 
-  <header class="border-b-2 border-slate-300 bg-white">
+  <header class="border-b-2 border-token bg-surface">
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div class="flex flex-wrap items-center gap-2 mb-5">
-        <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span class="pill bg-emerald-fill text-emerald-text border-emerald-border">
+          <span class="w-2 h-2 rounded-full bg-emerald-solid"></span>
           Primary fix verified on UAT
         </span>
-        <span class="pill bg-amber-100 text-amber-900 border-amber-300">1 open question</span>
+        <span class="pill bg-amber-fill text-amber-text border-amber-border">1 open question</span>
       </div>
-      <div class="text-sm font-bold tracking-wider uppercase text-slate-500 mb-2">EZRD-1664 · UAT Verification Report</div>
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-4">Stop addresses intermittently ungeocoded</h1>
-      <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+      <div class="text-sm font-bold tracking-wider uppercase text-mute mb-2">EZRD-1664 · UAT Verification Report</div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink mb-4">Stop addresses intermittently ungeocoded</h1>
+      <p class="text-lg sm:text-xl text-body max-w-3xl leading-relaxed">
         On the Routes tab, assigning students intermittently flipped correctly-geocoded stops to a red
         "ungeocoded" warning and hid them from the stop list; a refresh restored them. This report covers how we
         confirmed the fix is live on UAT, how we verified it in the <code class="k">testqa</code> tenant, the result,
@@ -318,26 +318,26 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
 
     <!-- Verdict -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Verdict</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Verdict</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">The reported bug is fixed on UAT</h2>
+          <h2 class="text-2xl font-bold text-ink mb-2">The reported bug is fixed on UAT</h2>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
-          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
-            <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-2">Confirmed fixed</div>
-            <p class="text-slate-800 leading-relaxed">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+            <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Confirmed fixed</div>
+            <p class="text-ink leading-relaxed">
               With the active session deliberately different from a route's own session — the exact condition that
               caused the bug — every stop that loads stays fully geocoded. No red "ungeocoded" icons, no refresh needed.
             </p>
           </div>
-          <div class="bg-amber-50 border-2 border-amber-200 rounded-xl p-5">
-            <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-2">Open question</div>
-            <p class="text-slate-800 leading-relaxed">
+          <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-5">
+            <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-2">Open question</div>
+            <p class="text-ink leading-relaxed">
               Under the same mismatch, a <strong>private</strong> stop referenced by the route disappears from the stop
               list (it's present under the matching session). Fixed for shared stops; the private-stop path may still be
               scoped to the active session. One decision needed — see below.
@@ -348,15 +348,15 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Defect & fix -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">The defect &amp; the fix</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-text">The defect &amp; the fix</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Root cause: stops loaded under the wrong session</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-ink mb-2">Root cause: stops loaded under the wrong session</h2>
+          <p class="text-body leading-relaxed">
             The Routes tab filters by <em>date</em>, so a route can be viewed while the top session picker is on a
             <em>different</em> school session. When loading a route's stops, the server looked up each stop's address
             under the <strong>selected session</strong> instead of the <strong>route's own session</strong>. When the two
@@ -364,9 +364,9 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             reset things.
           </p>
         </div>
-        <div class="bg-sky-50 border-2 border-sky-200 rounded-xl p-5">
-          <div class="text-sky-900 font-bold text-sm tracking-wider uppercase mb-2">The fix — PR #520 (EZRD-1664)</div>
-          <p class="text-slate-800 leading-relaxed">
+        <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
+          <div class="text-sky-text font-bold text-sm tracking-wider uppercase mb-2">The fix — PR #520 (EZRD-1664)</div>
+          <p class="text-ink leading-relaxed">
             The route-expand path now hydrates stops and their addresses under the <strong>route's own</strong>
             <code class="k wrap">(sandboxId, semesterId)</code>, not the request/session context. A session mismatch can no
             longer blank a stop's address. Confirmed display-only — no stop data was ever lost.
@@ -376,34 +376,34 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Deployment check -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-amber-800">Pre-flight — is it actually on UAT?</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-amber-text">Pre-flight — is it actually on UAT?</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">We verified the fix is in the deployed UAT build first</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-ink mb-2">We verified the fix is in the deployed UAT build first</h2>
+          <p class="text-body leading-relaxed">
             "Hardening in UAT" doesn't always mean the code is live, so before testing we checked the running UAT image
             against the fix's merge commit. First pass looked like it wasn't deployed — that turned out to be a stale
             local gitops checkout. Against the current UAT image, the fix <strong>is</strong> included.
           </p>
         </div>
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
           <table class="w-full text-sm min-w-[560px]">
             <colgroup><col class="w-[30%]"><col><col class="w-24"></colgroup>
             <thead>
-              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+              <tr class="bg-chip text-ink text-xs font-bold tracking-wider uppercase">
                 <th class="text-left px-4 py-3">Item</th>
                 <th class="text-left px-4 py-3">Detail</th>
                 <th class="text-left px-4 py-3">Result</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200">
+            <tbody class="divide-y divide-hairline">
               <tr class="align-top"><td class="px-4 py-3 font-semibold">Fix merged</td><td class="px-4 py-3">PR #520 → merge <code class="k">e22f453f3</code></td><td class="px-4 py-3">✅</td></tr>
               <tr class="align-top"><td class="px-4 py-3 font-semibold">UAT image</td><td class="px-4 py-3">Tag <code class="k">uat-9c3be52</code></td><td class="px-4 py-3">live</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold">Fix in UAT image?</td><td class="px-4 py-3">Merge commit is an ancestor of the UAT tag's commit</td><td class="px-4 py-3 text-emerald-800 font-bold">Yes</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Fix in UAT image?</td><td class="px-4 py-3">Merge commit is an ancestor of the UAT tag's commit</td><td class="px-4 py-3 text-emerald-text font-bold">Yes</td></tr>
             </tbody>
           </table>
         </div>
@@ -411,15 +411,15 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- How we verified -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-purple-800">How we verified</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-purple-text">How we verified</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">A deterministic session mismatch on testqa</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-ink mb-2">A deterministic session mismatch on testqa</h2>
+          <p class="text-body leading-relaxed">
             The original bug is <em>intermittent</em>, so instead of chasing it we recreated its precondition on purpose:
             view a route while a <em>different</em> session is selected, and confirm every stop stays geocoded. Fixture:
             the testqa route <strong>"Activity Bus – Alternative Route A Test"</strong>, which belongs to the
@@ -430,22 +430,22 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <div class="space-y-4">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
-            <div class="flex-1 pt-1"><p class="text-slate-800 leading-relaxed"><strong>Baseline (matching session).</strong> Session picker on 2026~2027, opened the route, read every stop. All 16 stops geocoded, 0 ungeocoded.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
+            <div class="flex-1 pt-1"><p class="text-ink leading-relaxed"><strong>Baseline (matching session).</strong> Session picker on 2026~2027, opened the route, read every stop. All 16 stops geocoded, 0 ungeocoded.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
-            <div class="flex-1 pt-1"><p class="text-slate-800 leading-relaxed"><strong>Forced the mismatch.</strong> Switched the session picker to Summer 2026 while the route's own session stayed 2026~2027 — the exact condition that used to blank stop addresses.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
+            <div class="flex-1 pt-1"><p class="text-ink leading-relaxed"><strong>Forced the mismatch.</strong> Switched the session picker to Summer 2026 while the route's own session stayed 2026~2027 — the exact condition that used to blank stop addresses.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
-            <div class="flex-1 pt-1"><p class="text-slate-800 leading-relaxed"><strong>Re-read the route under the mismatch</strong> and compared stop-by-stop against the baseline.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
+            <div class="flex-1 pt-1"><p class="text-ink leading-relaxed"><strong>Re-read the route under the mismatch</strong> and compared stop-by-stop against the baseline.</p></div>
           </div>
         </div>
 
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl p-5 mt-6">
-          <div class="text-slate-700 font-bold text-sm tracking-wider uppercase mb-2">Method note</div>
-          <p class="text-slate-800 leading-relaxed">
+        <div class="bg-surface-2 border-2 border-token rounded-xl p-5 mt-6">
+          <div class="text-body font-bold text-sm tracking-wider uppercase mb-2">Method note</div>
+          <p class="text-ink leading-relaxed">
             The v3 Routes UI renders through an encrypted channel, so we read verification data directly from the live
             application state (the decrypted objects the UI itself renders) rather than from screenshots — giving an
             exact per-stop geocoded status for the route under each session.
@@ -455,52 +455,52 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Results -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Result</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Result</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Stops stay geocoded under the mismatch</h2>
+          <h2 class="text-2xl font-bold text-ink mb-2">Stops stay geocoded under the mismatch</h2>
         </div>
 
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto mb-5">
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto mb-5">
           <table class="w-full text-sm min-w-[620px]">
             <colgroup><col class="w-[34%]"><col><col></colgroup>
             <thead>
-              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+              <tr class="bg-chip text-ink text-xs font-bold tracking-wider uppercase">
                 <th class="text-left px-4 py-3"></th>
                 <th class="text-left px-4 py-3">Baseline · matching session</th>
                 <th class="text-left px-4 py-3">Test · mismatched session</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200">
+            <tbody class="divide-y divide-hairline">
               <tr class="align-top"><td class="px-4 py-3 font-semibold">Session selected</td><td class="px-4 py-3">2026 ~ 2027</td><td class="px-4 py-3">Summer 2026</td></tr>
               <tr class="align-top"><td class="px-4 py-3 font-semibold">Route's own session</td><td class="px-4 py-3">2026 ~ 2027</td><td class="px-4 py-3">2026 ~ 2027</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold">Mismatch?</td><td class="px-4 py-3">no</td><td class="px-4 py-3 font-bold text-emerald-800">yes</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Mismatch?</td><td class="px-4 py-3">no</td><td class="px-4 py-3 font-bold text-emerald-text">yes</td></tr>
               <tr class="align-top"><td class="px-4 py-3 font-semibold">Stops hydrated / geocoded</td><td class="px-4 py-3">16 / 16</td><td class="px-4 py-3 font-bold">15 / 15</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold">Ungeocoded (red icon)</td><td class="px-4 py-3">0</td><td class="px-4 py-3 font-bold text-emerald-800">0</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold">Ungeocoded (red icon)</td><td class="px-4 py-3">0</td><td class="px-4 py-3 font-bold text-emerald-text">0</td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="grid grid-cols-3 gap-3">
-          <div class="bg-white border-2 border-slate-300 rounded-xl p-4 text-center">
-            <div class="text-2xl font-extrabold text-emerald-900 tabular-nums">15 / 15</div>
-            <div class="text-xs text-slate-600 mt-1 uppercase tracking-wider">geocoded under mismatch</div>
+          <div class="bg-surface border-2 border-token rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold text-emerald-text tabular-nums">15 / 15</div>
+            <div class="text-xs text-mute mt-1 uppercase tracking-wider">geocoded under mismatch</div>
           </div>
-          <div class="bg-white border-2 border-slate-300 rounded-xl p-4 text-center">
-            <div class="text-2xl font-extrabold text-emerald-900 tabular-nums">0</div>
-            <div class="text-xs text-slate-600 mt-1 uppercase tracking-wider">red ungeocoded icons</div>
+          <div class="bg-surface border-2 border-token rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold text-emerald-text tabular-nums">0</div>
+            <div class="text-xs text-mute mt-1 uppercase tracking-wider">red ungeocoded icons</div>
           </div>
-          <div class="bg-white border-2 border-slate-300 rounded-xl p-4 text-center">
-            <div class="text-2xl font-extrabold text-emerald-900 tabular-nums">0</div>
-            <div class="text-xs text-slate-600 mt-1 uppercase tracking-wider">refreshes needed</div>
+          <div class="bg-surface border-2 border-token rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold text-emerald-text tabular-nums">0</div>
+            <div class="text-xs text-mute mt-1 uppercase tracking-wider">refreshes needed</div>
           </div>
         </div>
 
-        <p class="text-slate-700 leading-relaxed mt-5">
+        <p class="text-body leading-relaxed mt-5">
           Pre-fix, the mismatched-session case is exactly what flipped stops to the red ungeocoded warning. On the current
           UAT build every stop that loads resolves under the route's own session and stays geocoded — the reported
           symptom is gone.
@@ -509,12 +509,12 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Secondary finding -->
-    <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+    <section class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
       <div class="flex items-start gap-4">
-        <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+        <div class="text-amber-text text-2xl flex-shrink-0 leading-none">⚠</div>
         <div>
-          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Secondary finding — private stop disappears under the mismatch</div>
-          <p class="text-slate-800 text-lg leading-relaxed">
+          <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-1">Secondary finding — private stop disappears under the mismatch</div>
+          <p class="text-ink text-lg leading-relaxed">
             Under the mismatched session the route references <strong>16</strong> stops but only <strong>15</strong>
             hydrate — the missing one is a <strong>private</strong> stop, which is present under the matching session.
             So the reported red-icon symptom is fixed for shared stops, but a private stop still <em>disappears</em> from
@@ -522,7 +522,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             wording. It looks like the fix's route-session scoping covers shared stops while the private-stop fetch path
             may still key off the active session.
           </p>
-          <p class="text-slate-800 text-lg leading-relaxed mt-3">
+          <p class="text-ink text-lg leading-relaxed mt-3">
             <strong>Decision needed:</strong> confirm whether private-stop session scoping is intentional or a missed
             case, before this fully clears hardening. It's a separate observation and does not affect the primary
             pass/fail above.
@@ -532,24 +532,24 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Recommendation -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-slate-700">Recommendation</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-mute"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-body">Recommendation</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Where this leaves the ticket</h2>
+          <h2 class="text-2xl font-bold text-ink mb-2">Where this leaves the ticket</h2>
         </div>
-        <ul class="space-y-3 text-slate-800 leading-relaxed">
-          <li class="flex items-start gap-3"><span class="text-emerald-600 font-bold flex-shrink-0 pt-0.5">✓</span><span>Primary defect (stops flipping to ungeocoded under a session mismatch) is <strong>verified fixed</strong> on UAT.</span></li>
-          <li class="flex items-start gap-3"><span class="text-amber-600 font-bold flex-shrink-0 pt-0.5">?</span><span>Route owner / author to confirm the <strong>private-stop</strong> behavior under a session mismatch — intended scoping, or a follow-up.</span></li>
-          <li class="flex items-start gap-3"><span class="text-slate-400 font-bold flex-shrink-0 pt-0.5">•</span><span>The intermittent "Show Students" trigger was not force-reproduced; the deterministic mismatch above exercises the same code path directly and is the stronger check.</span></li>
+        <ul class="space-y-3 text-ink leading-relaxed">
+          <li class="flex items-start gap-3"><span class="text-emerald-dot font-bold flex-shrink-0 pt-0.5">✓</span><span>Primary defect (stops flipping to ungeocoded under a session mismatch) is <strong>verified fixed</strong> on UAT.</span></li>
+          <li class="flex items-start gap-3"><span class="text-amber-dot font-bold flex-shrink-0 pt-0.5">?</span><span>Route owner / author to confirm the <strong>private-stop</strong> behavior under a session mismatch — intended scoping, or a follow-up.</span></li>
+          <li class="flex items-start gap-3"><span class="text-mute font-bold flex-shrink-0 pt-0.5">•</span><span>The intermittent "Show Students" trigger was not force-reproduced; the deterministic mismatch above exercises the same code path directly and is the stronger check.</span></li>
         </ul>
       </div>
     </section>
 
-    <div class="text-slate-500 text-sm text-center pt-6">
+    <div class="text-mute text-sm text-center pt-6">
       EZRD-1664 · fix PR #520 (merge <code class="k">e22f453f3</code>) · verified on UAT image <code class="k">uat-9c3be52</code> · tenant testqa
     </div>
 

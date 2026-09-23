@@ -295,36 +295,36 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 });
 </script>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+<body class="bg-page text-ink font-sans antialiased">
 
   <!-- ===== Hero ===== -->
-  <header class="border-b-2 border-slate-300 bg-white">
+  <header class="border-b-2 border-token bg-surface">
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div class="flex flex-wrap items-center gap-2.5 mb-5">
-        <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span class="pill bg-emerald-fill text-emerald-text border-emerald-border">
+          <span class="w-2 h-2 rounded-full bg-emerald-solid"></span>
           Passed UAT hardening
         </span>
-        <span class="pill bg-slate-100 text-slate-700 border-slate-300">EZRD-2319 · Defect · P3</span>
+        <span class="pill bg-page text-body border-token">EZRD-2319 · Defect · P3</span>
       </div>
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950" style="text-wrap: balance;">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink" style="text-wrap: balance;">
         Route-list stop-cache fix
       </h1>
-      <p class="mt-4 text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+      <p class="mt-4 text-lg sm:text-xl text-body max-w-3xl leading-relaxed">
         After EZRD-2111 removed the Redis fan-out, the route list's residual cost was a heavy
         MySQL view scan that re-ran on <em>every</em> request. This change caches it. Below is
         what the fix does, and a step-by-step account of how it was tested on UAT.
       </p>
-      <p class="mt-5 text-sm text-slate-600 flex flex-wrap items-center gap-x-2 gap-y-1">
+      <p class="mt-5 text-sm text-mute flex flex-wrap items-center gap-x-2 gap-y-1">
         <span>Verified on <code class="k">uat.pathwiserouting.com</code></span>
-        <span class="text-slate-400">·</span>
+        <span class="text-mute">·</span>
         <span>tenant <code class="k">testqa</code></span>
-        <span class="text-slate-400">·</span>
+        <span class="text-mute">·</span>
         <span>build <code class="k">477ef62</code></span>
-        <span class="text-slate-400">·</span>
+        <span class="text-mute">·</span>
         <span>2026-07-23</span>
-        <span class="text-slate-400">·</span>
-        <a href="https://pathwise.atlassian.net/browse/EZRD-2319" class="text-sky-700 hover:text-sky-900 hover:underline font-medium">EZRD-2319 ↗</a>
+        <span class="text-mute">·</span>
+        <a href="https://pathwise.atlassian.net/browse/EZRD-2319" class="text-sky-text hover:text-sky-text hover:underline font-medium">EZRD-2319 ↗</a>
       </p>
     </div>
   </header>
@@ -332,21 +332,21 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
 
     <!-- ===== Background ===== -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Background</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Background</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">The residual bottleneck</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-ink mb-2">The residual bottleneck</h2>
+          <p class="text-body leading-relaxed">
             EZRD-2111 already cut the route list's per-request Redis traffic from ~2,757 commands
             down to ~30. With Redis no longer the bottleneck, the remaining cost moved to MySQL.
           </p>
         </div>
 
-        <p class="text-slate-700 leading-relaxed mb-4">
+        <p class="text-body leading-relaxed mb-4">
           A single <code class="k">GET /api/routes</code> (the route-list tab) issued dozens of
           queries, dominated by one scan over the <code class="k">vwAllStops</code> view. The
           reason it re-ran <em>every</em> time: the route-list path asks for the "stops used in
@@ -356,12 +356,12 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           this tailed toward ~18s and tripped the EZRD-2111 latency guard.
         </p>
 
-        <div class="bg-sky-100 border-2 border-sky-300 rounded-xl p-5">
-          <div class="text-xs font-bold uppercase tracking-wider text-sky-800 mb-2">The query that re-ran on the hot path</div>
-          <pre class="font-mono text-sm text-slate-900 bg-white rounded-md p-4 border-2 border-sky-300 overflow-x-auto leading-relaxed">SELECT * FROM vwAllStops
+        <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
+          <div class="text-xs font-bold uppercase tracking-wider text-sky-text mb-2">The query that re-ran on the hot path</div>
+          <pre class="font-mono text-sm text-ink bg-surface rounded-md p-4 border-2 border-sky-border overflow-x-auto leading-relaxed">SELECT * FROM vwAllStops
 WHERE sandboxId = ? AND semesterId = ?
   AND id IN (SELECT stopId FROM tripstop JOIN trip JOIN route …)</pre>
-          <p class="text-slate-700 text-sm leading-relaxed mt-3">
+          <p class="text-body text-sm leading-relaxed mt-3">
             <code class="k">vwAllStops</code> is a 3-table view (~32 columns). This ran it, plus the
             <code class="k">IN (subquery)</code>, for the whole route set on every poll.
           </p>
@@ -370,22 +370,22 @@ WHERE sandboxId = ? AND semesterId = ?
     </section>
 
     <!-- ===== The fix ===== -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">The fix</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-text">The fix</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Cache the route-only stop list too</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-ink mb-2">Cache the route-only stop list too</h2>
+          <p class="text-body leading-relaxed">
             The route-only variant already had its own distinct cache key — it just wasn't being
             written to or read from. The fix caches it like the full-district list, so the hot
             route-list read no longer re-runs the view scan.
           </p>
         </div>
 
-        <p class="text-slate-700 leading-relaxed mb-4">
+        <p class="text-body leading-relaxed mb-4">
           The one subtlety: a route's stop <em>membership</em> changes when trip data changes (not
           only when the stop's own tables change), and each cached row carries the resolved school
           name. So the route-only list is invalidated on a <strong>broader set of tables</strong>
@@ -393,21 +393,21 @@ WHERE sandboxId = ? AND semesterId = ?
         </p>
 
         <div class="grid sm:grid-cols-2 gap-3 mb-5">
-          <div class="bg-slate-50 border-2 border-slate-300 rounded-xl p-4">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Full-district list · unchanged</div>
+          <div class="bg-surface-2 border-2 border-token rounded-xl p-4">
+            <div class="text-xs font-bold uppercase tracking-wider text-mute mb-2">Full-district list · unchanged</div>
             <div class="flex flex-wrap gap-1.5">
               <span class="mono-chip">stop</span>
               <span class="mono-chip">stopextra</span>
               <span class="mono-chip">address</span>
             </div>
           </div>
-          <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-4">
-            <div class="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">Route-only list · now cached + broadened</div>
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-4">
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-text mb-2">Route-only list · now cached + broadened</div>
             <div class="flex flex-wrap gap-1.5">
               <span class="mono-chip">stop</span>
               <span class="mono-chip">stopextra</span>
               <span class="mono-chip">address</span>
-              <span class="text-emerald-700 font-bold px-1">+</span>
+              <span class="text-emerald-text font-bold px-1">+</span>
               <span class="mono-chip">tripstop</span>
               <span class="mono-chip">trip</span>
               <span class="mono-chip">route</span>
@@ -416,10 +416,10 @@ WHERE sandboxId = ? AND semesterId = ?
           </div>
         </div>
 
-        <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-5">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
           <div class="flex items-start gap-3">
-            <div class="text-emerald-800 text-xl leading-none flex-shrink-0">✓</div>
-            <p class="text-slate-800 leading-relaxed">
+            <div class="text-emerald-text text-xl leading-none flex-shrink-0">✓</div>
+            <p class="text-ink leading-relaxed">
               <strong>Result shape is unchanged</strong>, so every consumer of the stop list is
               unaffected. The change is surgical — one function in <code class="k">app/stop/stop.js</code>
               plus a unit test covering the cross-request cache hit, route-table invalidation, the
@@ -432,15 +432,15 @@ WHERE sandboxId = ? AND semesterId = ?
     </section>
 
     <!-- ===== Testing walkthrough (the readout) ===== -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-7">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-purple-800">Testing walkthrough</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-purple-text">Testing walkthrough</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">How it was tested, step by step</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-ink mb-2">How it was tested, step by step</h2>
+          <p class="text-body leading-relaxed">
             A caching fix has two things to prove: that the cache actually suppresses the scan
             (performance), and — the real risk — that the newly-cached list still <em>invalidates</em>
             so the UI never serves a stale route. Here is the full sequence, from reading the code
@@ -450,54 +450,54 @@ WHERE sandboxId = ? AND semesterId = ?
 
         <!-- Phase A -->
         <div class="phase-label mb-4">
-          <span class="text-xs font-bold uppercase tracking-wider text-purple-800">Grounding · before touching anything live</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-purple-text">Grounding · before touching anything live</span>
           <span class="rule"></span>
         </div>
         <div class="space-y-4 mb-8">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">1</div>
-            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Read the ticket and the merged code.</strong> Pulled EZRD-2319 and <code class="k">git show</code> of PR #537 (<code class="k">2491dc11</code>) to pin exactly what changed: the route-only stop list in <code class="k">app/stop/stop.js</code> is now Redis-cached, invalidated on the broadened table set.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">1</div>
+            <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Read the ticket and the merged code.</strong> Pulled EZRD-2319 and <code class="k">git show</code> of PR #537 (<code class="k">2491dc11</code>) to pin exactly what changed: the route-only stop list in <code class="k">app/stop/stop.js</code> is now Redis-cached, invalidated on the broadened table set.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">2</div>
-            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Confirmed it's genuinely deployed to UAT.</strong> <code class="k">uat.pathwiserouting.com/version</code> = <code class="k">477ef628</code>; ancestor-checked that the fix commit is its <em>direct parent</em> — so it's actually live, not just trusting the "Hardening in UAT" status (which has been wrong before).</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">2</div>
+            <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Confirmed it's genuinely deployed to UAT.</strong> <code class="k">uat.pathwiserouting.com/version</code> = <code class="k">477ef628</code>; ancestor-checked that the fix commit is its <em>direct parent</em> — so it's actually live, not just trusting the "Hardening in UAT" status (which has been wrong before).</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">3</div>
-            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Pre-flight.</strong> Checked the <code class="k">kubectl</code> context — it was pointed at production, so I deliberately left it untouched. All testing was read-only / UI-driven; nothing was run against prod.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">3</div>
+            <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Pre-flight.</strong> Checked the <code class="k">kubectl</code> context — it was pointed at production, so I deliberately left it untouched. All testing was read-only / UI-driven; nothing was run against prod.</p></div>
           </div>
         </div>
 
         <!-- Phase B -->
         <div class="phase-label mb-4">
-          <span class="text-xs font-bold uppercase tracking-wider text-purple-800">Live checks · UAT (uat-prd), tenant testqa</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-purple-text">Live checks · UAT (uat-prd), tenant testqa</span>
           <span class="rule"></span>
         </div>
         <div class="space-y-4 mb-6">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">4</div>
-            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Confirmed access and data.</strong> Loaded testqa's Routes tab — one route (<em>Activity Bus - Alternative Route A Test</em>, 4 trips, ~13 stops), enough to exercise the cached route-only path.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">4</div>
+            <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Confirmed access and data.</strong> Loaded testqa's Routes tab — one route (<em>Activity Bus - Alternative Route A Test</em>, 4 trips, ~13 stops), enough to exercise the cached route-only path.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">5</div>
-            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Functional render check.</strong> Expanded the route: every trip, stop name, resolved school name, arrival time, and the map geometry rendered correctly → the cached list's result shape is unchanged, no regression.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">5</div>
+            <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Functional render check.</strong> Expanded the route: every trip, stop name, resolved school name, arrival time, and the map geometry rendered correctly → the cached list's result shape is unchanged, no regression.</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">6</div>
-            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Datadog APM.</strong> Resolved the services (<code class="k">ezrouting</code> / <code class="k">ezrouting-mysql</code>), confirmed UAT = env <code class="k">uat-prd</code> by matching my own request (build <code class="k">477ef62</code>), and located the <code class="k">vwAllStops</code> scan span. Saw <strong>production — still on the pre-fix build — fan out ~20 of these scans in one request</strong>. UAT's own volume was too low to show a clean before/after, so I did not claim one. (Detail in the next section.)</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">6</div>
+            <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Datadog APM.</strong> Resolved the services (<code class="k">ezrouting</code> / <code class="k">ezrouting-mysql</code>), confirmed UAT = env <code class="k">uat-prd</code> by matching my own request (build <code class="k">477ef62</code>), and located the <code class="k">vwAllStops</code> scan span. Saw <strong>production — still on the pre-fix build — fan out ~20 of these scans in one request</strong>. UAT's own volume was too low to show a clean before/after, so I did not claim one. (Detail in the next section.)</p></div>
           </div>
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">7</div>
-            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>The decisive test — cache invalidation.</strong> Warmed the cache, then renamed a stop the route uses (<code class="k">Chateau Drive Circle</code> → <code class="k">Chateau Drive Circle INVTEST</code>) in the Stops tab — a real write to a watched table (<code class="k">stop</code>). Hard-reloaded the route list to force a fresh server read.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">7</div>
+            <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>The decisive test — cache invalidation.</strong> Warmed the cache, then renamed a stop the route uses (<code class="k">Chateau Drive Circle</code> → <code class="k">Chateau Drive Circle INVTEST</code>) in the Stops tab — a real write to a watched table (<code class="k">stop</code>). Hard-reloaded the route list to force a fresh server read.</p></div>
           </div>
         </div>
 
-        <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-5 mb-6 ml-0 sm:ml-[3.25rem]">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mb-6 ml-0 sm:ml-[3.25rem]">
           <div class="flex items-start gap-3">
-            <div class="text-emerald-800 text-xl leading-none flex-shrink-0">✓</div>
+            <div class="text-emerald-text text-xl leading-none flex-shrink-0">✓</div>
             <div>
-              <div class="text-emerald-900 font-bold text-sm tracking-wider uppercase mb-1">Result — step 7</div>
-              <p class="text-slate-800 leading-relaxed">
+              <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-1">Result — step 7</div>
+              <p class="text-ink leading-relaxed">
                 The route-only stop <strong>list showed the new name in every trip</strong>
                 (TRIP #1 / #2 / #3 / PM) and on the map — <strong>not</strong> the stale cached
                 name. Reverting the rename restored the original throughout. The newly-cached
@@ -509,41 +509,41 @@ WHERE sandboxId = ? AND semesterId = ?
 
         <div class="space-y-4 mb-8">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">8</div>
-            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Corroboration.</strong> APM showed <code class="k">vwAllStops</code> scans on UAT at the exact moments I forced cache misses (the write-reload and the revert-reload), then quiet — consistent with the cache being active rather than scanning on every request.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">8</div>
+            <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Corroboration.</strong> APM showed <code class="k">vwAllStops</code> scans on UAT at the exact moments I forced cache misses (the write-reload and the revert-reload), then quiet — consistent with the cache being active rather than scanning on every request.</p></div>
           </div>
         </div>
 
         <!-- Phase C -->
         <div class="phase-label mb-4">
-          <span class="text-xs font-bold uppercase tracking-wider text-purple-800">Cleanup &amp; record</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-purple-text">Cleanup &amp; record</span>
           <span class="rule"></span>
         </div>
         <div class="space-y-4">
           <div class="flex items-start gap-4">
-            <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">9</div>
-            <div class="flex-1 pt-1"><p class="text-slate-700 leading-relaxed"><strong>Left testqa clean and wrote it up.</strong> Reverted the rename and confirmed the baseline is restored, then recorded the full investigation (queries, evidence, verdict) in the engineering vault.</p></div>
+            <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0" style="width:2.25rem;height:2.25rem;font-size:1rem;">9</div>
+            <div class="flex-1 pt-1"><p class="text-body leading-relaxed"><strong>Left testqa clean and wrote it up.</strong> Reverted the rename and confirmed the baseline is restored, then recorded the full investigation (queries, evidence, verdict) in the engineering vault.</p></div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ===== Results ===== -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Results</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Results</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Passes UAT hardening</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-ink mb-2">Passes UAT hardening</h2>
+          <p class="text-body leading-relaxed">
             Deployed, no functional regression, and the cache-invalidation risk this fix introduces
             is confirmed correct on the live build.
           </p>
         </div>
 
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
           <table class="w-full text-sm min-w-[720px]">
             <colgroup>
               <col class="w-[26%]" />
@@ -551,32 +551,32 @@ WHERE sandboxId = ? AND semesterId = ?
               <col class="w-32" />
             </colgroup>
             <thead>
-              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+              <tr class="bg-chip text-ink text-xs font-bold tracking-wider uppercase">
                 <th class="text-left px-4 py-3">Check</th>
                 <th class="text-left px-4 py-3">How</th>
                 <th class="text-left px-4 py-3">Result</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200">
+            <tbody class="divide-y divide-hairline">
               <tr class="align-top">
-                <td class="px-4 py-3 font-semibold text-slate-900">Actually deployed to UAT</td>
-                <td class="px-4 py-3 text-slate-700"><code class="k">/version</code> = <code class="k">477ef628</code>; the fix commit is its direct parent (ancestor-checked, not just trusting the Jira status).</td>
-                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Confirmed</span></td>
+                <td class="px-4 py-3 font-semibold text-ink">Actually deployed to UAT</td>
+                <td class="px-4 py-3 text-body"><code class="k">/version</code> = <code class="k">477ef628</code>; the fix commit is its direct parent (ancestor-checked, not just trusting the Jira status).</td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-fill text-emerald-text border-emerald-border">Confirmed</span></td>
               </tr>
               <tr class="align-top">
-                <td class="px-4 py-3 font-semibold text-slate-900">No functional regression</td>
-                <td class="px-4 py-3 text-slate-700">Route list + full stop hydration (names, schools, times, coordinates, map geometry) render correctly across all trips.</td>
-                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Pass</span></td>
+                <td class="px-4 py-3 font-semibold text-ink">No functional regression</td>
+                <td class="px-4 py-3 text-body">Route list + full stop hydration (names, schools, times, coordinates, map geometry) render correctly across all trips.</td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-fill text-emerald-text border-emerald-border">Pass</span></td>
               </tr>
               <tr class="align-top">
-                <td class="px-4 py-3 font-semibold text-slate-900">Cache invalidation <span class="text-slate-500 font-normal">(the real risk)</span></td>
-                <td class="px-4 py-3 text-slate-700">Changed a stop on the route → the list showed the new value, not the stale cached one. Verified both directions (step 7 above).</td>
-                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Pass</span></td>
+                <td class="px-4 py-3 font-semibold text-ink">Cache invalidation <span class="text-mute font-normal">(the real risk)</span></td>
+                <td class="px-4 py-3 text-body">Changed a stop on the route → the list showed the new value, not the stale cached one. Verified both directions (step 7 above).</td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-fill text-emerald-text border-emerald-border">Pass</span></td>
               </tr>
               <tr class="align-top">
-                <td class="px-4 py-3 font-semibold text-slate-900">Performance</td>
-                <td class="px-4 py-3 text-slate-700">Scan suppressed on the hot path; only reruns when route data changes. Qualitative — magnitude not reproduced on tiny <code class="k">testqa</code>.</td>
-                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">Pass</span></td>
+                <td class="px-4 py-3 font-semibold text-ink">Performance</td>
+                <td class="px-4 py-3 text-body">Scan suppressed on the hot path; only reruns when route data changes. Qualitative — magnitude not reproduced on tiny <code class="k">testqa</code>.</td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-fill text-emerald-text border-emerald-border">Pass</span></td>
               </tr>
             </tbody>
           </table>
@@ -585,36 +585,36 @@ WHERE sandboxId = ? AND semesterId = ?
     </section>
 
     <!-- ===== Performance evidence ===== -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Performance</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Performance</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Why we're confident the scan is gone</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-ink mb-2">Why we're confident the scan is gone</h2>
+          <p class="text-body leading-relaxed">
             The <code class="k">vwAllStops</code> scan is a literal, searchable DB span in APM, so
             its presence per request is directly observable.
           </p>
         </div>
 
         <div class="grid grid-cols-3 gap-3 mb-5">
-          <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
-            <div class="text-2xl font-extrabold text-sky-900 tabular-nums">≈20</div>
-            <div class="text-xs text-slate-600 mt-1 leading-snug">scans in one route-list request — pre-fix build (still on production)</div>
+          <div class="bg-surface border-2 border-token rounded-xl p-4">
+            <div class="text-2xl font-extrabold text-sky-text tabular-nums">≈20</div>
+            <div class="text-xs text-mute mt-1 leading-snug">scans in one route-list request — pre-fix build (still on production)</div>
           </div>
-          <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
-            <div class="text-2xl font-extrabold text-sky-900 tabular-nums">≈0</div>
-            <div class="text-xs text-slate-600 mt-1 leading-snug">on a warm route-list read — post-fix (UAT); reruns only when route data changes</div>
+          <div class="bg-surface border-2 border-token rounded-xl p-4">
+            <div class="text-2xl font-extrabold text-sky-text tabular-nums">≈0</div>
+            <div class="text-xs text-mute mt-1 leading-snug">on a warm route-list read — post-fix (UAT); reruns only when route data changes</div>
           </div>
-          <div class="bg-white border-2 border-slate-300 rounded-xl p-4">
-            <div class="text-2xl font-extrabold text-sky-900 tabular-nums">1.47s</div>
-            <div class="text-xs text-slate-600 mt-1 leading-snug">heaviest single scan, pre-fix — mid-size tenant under load (per ticket, dev-eks)</div>
+          <div class="bg-surface border-2 border-token rounded-xl p-4">
+            <div class="text-2xl font-extrabold text-sky-text tabular-nums">1.47s</div>
+            <div class="text-xs text-mute mt-1 leading-snug">heaviest single scan, pre-fix — mid-size tenant under load (per ticket, dev-eks)</div>
           </div>
         </div>
 
-        <p class="text-slate-700 leading-relaxed">
+        <p class="text-body leading-relaxed">
           On <strong>production</strong> — still running the pre-fix build — a single route-list
           request fanned out <strong>~20</strong> of these scans in under half a second: the
           uncached behavior. On <strong>UAT</strong> (fixed build) the scan appears only when route
@@ -628,15 +628,15 @@ WHERE sandboxId = ? AND semesterId = ?
     </section>
 
     <!-- ===== Scope & caveats ===== -->
-    <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+    <section class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
       <div class="flex items-start gap-4">
-        <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+        <div class="text-amber-text text-2xl flex-shrink-0 leading-none">⚠</div>
         <div>
-          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-3">Scope &amp; caveats — what this verification does and doesn't claim</div>
-          <ul class="space-y-2.5 text-slate-800 leading-relaxed">
-            <li class="flex gap-2.5"><span class="text-amber-700 flex-shrink-0">•</span><span><strong>Magnitude not reproduced on UAT.</strong> <code class="k">testqa</code> is a single small route, so the headline 1.47s figure can't show there — it lives in the ticket's dev-eks trace. What was shown is that the scan is gone from the hot path.</span></li>
-            <li class="flex gap-2.5"><span class="text-amber-700 flex-shrink-0">•</span><span><strong>Not yet in production.</strong> Prod still runs the pre-fix build and still does the scan — the latency win lands when this ships to prod.</span></li>
-            <li class="flex gap-2.5"><span class="text-amber-700 flex-shrink-0">•</span><span><strong>Column-narrow / base-table JOIN rewrite deferred.</strong> The ticket's sharpened alternative (drop the view, select only the needed columns) was intentionally set aside in favor of caching — smaller blast radius. It's still available if the cache-miss path matters at scale.</span></li>
+          <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-3">Scope &amp; caveats — what this verification does and doesn't claim</div>
+          <ul class="space-y-2.5 text-ink leading-relaxed">
+            <li class="flex gap-2.5"><span class="text-amber-text flex-shrink-0">•</span><span><strong>Magnitude not reproduced on UAT.</strong> <code class="k">testqa</code> is a single small route, so the headline 1.47s figure can't show there — it lives in the ticket's dev-eks trace. What was shown is that the scan is gone from the hot path.</span></li>
+            <li class="flex gap-2.5"><span class="text-amber-text flex-shrink-0">•</span><span><strong>Not yet in production.</strong> Prod still runs the pre-fix build and still does the scan — the latency win lands when this ships to prod.</span></li>
+            <li class="flex gap-2.5"><span class="text-amber-text flex-shrink-0">•</span><span><strong>Column-narrow / base-table JOIN rewrite deferred.</strong> The ticket's sharpened alternative (drop the view, select only the needed columns) was intentionally set aside in favor of caching — smaller blast radius. It's still available if the cache-miss path matters at scale.</span></li>
           </ul>
         </div>
       </div>
@@ -645,11 +645,11 @@ WHERE sandboxId = ? AND semesterId = ?
   </main>
 
   <footer class="max-w-6xl mx-auto px-6 pb-12 pt-2">
-    <div class="text-slate-500 text-sm text-center">
+    <div class="text-mute text-sm text-center">
       EZRD-2319 · UAT verification ·
-      <a href="https://pathwise.atlassian.net/browse/EZRD-2319" class="text-slate-600 hover:text-slate-900 hover:underline">Jira</a> ·
+      <a href="https://pathwise.atlassian.net/browse/EZRD-2319" class="text-mute hover:text-ink hover:underline">Jira</a> ·
       PR #537 (<code class="k">2491dc11</code>) ·
-      <a href="../" class="text-slate-600 hover:text-slate-900 hover:underline">all reports</a>
+      <a href="../" class="text-mute hover:text-ink hover:underline">all reports</a>
     </div>
   </footer>
 

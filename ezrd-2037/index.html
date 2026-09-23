@@ -273,18 +273,18 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 });
 </script>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+<body class="bg-page text-ink font-sans antialiased">
 
-  <header class="border-b-2 border-slate-300 bg-white">
+  <header class="border-b-2 border-token bg-surface">
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
-      <div class="pill bg-emerald-100 text-emerald-900 border-emerald-300 mb-5">
-        <span class="w-2 h-2 rounded-full bg-emerald-600"></span> Render verified in Chrome · branch running locally
+      <div class="pill bg-emerald-fill text-emerald-text border-emerald-border mb-5">
+        <span class="w-2 h-2 rounded-full bg-emerald-solid"></span> Render verified in Chrome · branch running locally
       </div>
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950">EZRD-2037 — Testing Plan</h1>
-      <p class="mt-4 text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink">EZRD-2037 — Testing Plan</h1>
+      <p class="mt-4 text-lg sm:text-xl text-body max-w-3xl leading-relaxed">
         “Processing” and “Completed” statuses for SSC New/Change Requests. Accepting a request that <strong>needs a transportation review</strong> now moves it to <strong>Processing</strong>; confirming the “I have reviewed the transportation…” checkbox moves it to <strong>Completed</strong>. This plan tells you exactly which requests trigger the new behavior and how to test each outcome on the local <strong>testqa</strong> tenant (Fox Point Joint No. 2, WI).
       </p>
-      <p class="mt-4 text-sm text-slate-600">
+      <p class="mt-4 text-sm text-mute">
         App: <code class="k">https://traveltrackerrouting.transact.com/testqa</code> &nbsp;·&nbsp; Branch: <code class="k">feature/EZRD-2037-processing-completed-statuses</code> &nbsp;·&nbsp; Sign in with your admin account
       </p>
     </div>
@@ -293,15 +293,15 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
 
     <!-- Before you start -->
-    <section class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-6 sm:p-7">
+    <section class="bg-sky-fill border-2 border-sky-border rounded-2xl p-6 sm:p-7">
       <div class="flex items-start gap-4">
-        <div class="text-sky-900 text-2xl flex-shrink-0 leading-none">✅</div>
+        <div class="text-sky-text text-2xl flex-shrink-0 leading-none">✅</div>
         <div>
-          <div class="text-sky-900 font-bold text-sm tracking-wider uppercase mb-1">Before you start — is it turned on?</div>
-          <p class="text-slate-800 text-lg leading-relaxed">
+          <div class="text-sky-text font-bold text-sm tracking-wider uppercase mb-1">Before you start — is it turned on?</div>
+          <p class="text-ink text-lg leading-relaxed">
             This feature only works for districts that have the <strong>Student Support Coordinator (SSC) feature</strong> switched on — the <code class="k">superparent</code> toggle in the admin Clients settings. If a district doesn’t have it, accepting a request just marks it “Accepted” the way it always has, and you won’t see Processing or Completed at all. <strong>testqa already has it on, so you’re good to go.</strong>
           </p>
-          <p class="text-slate-700 leading-relaxed mt-3">
+          <p class="text-body leading-relaxed mt-3">
             Don’t confuse this with the <strong>⚙️ gear</strong> in the queue header (“Transportation Review Settings”). That gear does <em>not</em> turn the feature on or off — it only controls <em>which kinds of changes</em> count as needing a review (and therefore go to Processing). Two separate things.
           </p>
         </div>
@@ -309,30 +309,30 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Status lifecycle -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">The feature</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-text">The feature</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Status lifecycle</h2>
-          <p class="text-slate-700 leading-relaxed">Two new status values. The Accept / Decline buttons and the review checkbox are unchanged — only the resulting status is new.</p>
+          <h2 class="text-2xl font-bold text-ink mb-2">Status lifecycle</h2>
+          <p class="text-body leading-relaxed">Two new status values. The Accept / Decline buttons and the review checkbox are unchanged — only the resulting status is new.</p>
         </div>
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
           <table class="w-full text-sm min-w-[720px]">
             <colgroup><col class="w-40"><col><col class="w-[32%]"></colgroup>
             <thead>
-              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+              <tr class="bg-chip text-ink text-xs font-bold tracking-wider uppercase">
                 <th class="text-left px-4 py-3">Status</th><th class="text-left px-4 py-3">Means</th><th class="text-left px-4 py-3">Set when</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200">
-              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#e0e0e0;color:#333">Pending</span></td><td class="px-4 py-3 text-slate-700">Awaiting admin review</td><td class="px-4 py-3 text-slate-600">SSC submits (unchanged)</td></tr>
-              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span></td><td class="px-4 py-3 text-slate-700">Accepted, <strong>no</strong> transportation review needed</td><td class="px-4 py-3 text-slate-600">Accept, when the change doesn’t need review</td></tr>
-              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span> <span class="text-slate-400 text-xs">new</span></td><td class="px-4 py-3 text-slate-700">Accepted, transportation review <strong>pending</strong></td><td class="px-4 py-3 text-slate-600">Accept, when the change <strong>needs review</strong></td></tr>
-              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#e1bee7;color:#6a1b9a">Completed</span> <span class="text-slate-400 text-xs">new</span></td><td class="px-4 py-3 text-slate-700">Transportation reviewed — routing resolved <span class="text-slate-500">(terminal)</span></td><td class="px-4 py-3 text-slate-600">“I have reviewed the transportation…” checked + saved</td></tr>
-              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#ffcdd2;color:#b71c1c">Declined</span></td><td class="px-4 py-3 text-slate-700">Rejected</td><td class="px-4 py-3 text-slate-600">Decline (unchanged)</td></tr>
+            <tbody class="divide-y divide-hairline">
+              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#e0e0e0;color:#333">Pending</span></td><td class="px-4 py-3 text-body">Awaiting admin review</td><td class="px-4 py-3 text-mute">SSC submits (unchanged)</td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span></td><td class="px-4 py-3 text-body">Accepted, <strong>no</strong> transportation review needed</td><td class="px-4 py-3 text-mute">Accept, when the change doesn’t need review</td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span> <span class="text-mute text-xs">new</span></td><td class="px-4 py-3 text-body">Accepted, transportation review <strong>pending</strong></td><td class="px-4 py-3 text-mute">Accept, when the change <strong>needs review</strong></td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#e1bee7;color:#6a1b9a">Completed</span> <span class="text-mute text-xs">new</span></td><td class="px-4 py-3 text-body">Transportation reviewed — routing resolved <span class="text-mute">(terminal)</span></td><td class="px-4 py-3 text-mute">“I have reviewed the transportation…” checked + saved</td></tr>
+              <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#ffcdd2;color:#b71c1c">Declined</span></td><td class="px-4 py-3 text-body">Rejected</td><td class="px-4 py-3 text-mute">Decline (unchanged)</td></tr>
             </tbody>
           </table>
         </div>
@@ -340,60 +340,60 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Criteria: what triggers Processing -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-sky-800">The rule</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-sky-text">The rule</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">What makes a request go to Processing</h2>
-          <p class="text-slate-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-ink mb-2">What makes a request go to Processing</h2>
+          <p class="text-body leading-relaxed">
             One test decides it: <strong>does accepting this request need a transportation review?</strong> (In code, <code class="k">needsTransportationReview()</code>.) If yes → <span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span>. If no → <span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span>. This is exactly what the <strong>Transportation Review Needed</strong> ⚠️ column in the queue already flags.
           </p>
         </div>
 
         <!-- Always triggers -->
-        <div class="mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><h3 class="text-sm font-bold tracking-wider uppercase text-emerald-800">Always triggers Processing</h3></div>
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto mb-6">
+        <div class="mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-solid"></span><h3 class="text-sm font-bold tracking-wider uppercase text-emerald-text">Always triggers Processing</h3></div>
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto mb-6">
           <table class="w-full text-sm min-w-[640px]">
             <colgroup><col class="w-[42%]"><col></colgroup>
-            <tbody class="divide-y divide-slate-200">
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Transportation requested</td><td class="px-4 py-3 text-slate-600">Parent/SSC asks for transportation (a transportation entry is on the request)</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Transportation removal</td><td class="px-4 py-3 text-slate-600">Removes transportation while the student has an existing route/agenda</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Primary address change</td><td class="px-4 py-3 text-slate-600">The primary address differs from the current one</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Address deleted</td><td class="px-4 py-3 text-slate-600">An address on the student is removed</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">School change</td><td class="px-4 py-3 text-slate-600">The student’s school changes</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Rider-type change</td><td class="px-4 py-3 text-slate-600">Rider type changes (e.g. Rider ↔ Not a Rider)</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Accepting builds a route</td><td class="px-4 py-3 text-slate-600">If accepting auto-generates bus schedules/agendas, it’s marked review-needed even if nothing above applied</td></tr>
+            <tbody class="divide-y divide-hairline">
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Transportation requested</td><td class="px-4 py-3 text-mute">Parent/SSC asks for transportation (a transportation entry is on the request)</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Transportation removal</td><td class="px-4 py-3 text-mute">Removes transportation while the student has an existing route/agenda</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Primary address change</td><td class="px-4 py-3 text-mute">The primary address differs from the current one</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Address deleted</td><td class="px-4 py-3 text-mute">An address on the student is removed</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">School change</td><td class="px-4 py-3 text-mute">The student’s school changes</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Rider-type change</td><td class="px-4 py-3 text-mute">Rider type changes (e.g. Rider ↔ Not a Rider)</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Accepting builds a route</td><td class="px-4 py-3 text-mute">If accepting auto-generates bus schedules/agendas, it’s marked review-needed even if nothing above applied</td></tr>
             </tbody>
           </table>
         </div>
 
         <!-- Configurable -->
-        <div class="mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-600"></span><h3 class="text-sm font-bold tracking-wider uppercase text-amber-800">Triggers only if the district turns it on</h3></div>
-        <p class="text-slate-600 text-sm mb-3">Enabled per-district under the ⚙️ gear in the queue header → <em>Transportation Review Settings</em>. <strong>testqa has none of these enabled</strong>, so on your local these behave like “never triggers.”</p>
-        <div class="bg-amber-50 border-2 border-amber-300 rounded-xl overflow-x-auto mb-6">
+        <div class="mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-solid"></span><h3 class="text-sm font-bold tracking-wider uppercase text-amber-text">Triggers only if the district turns it on</h3></div>
+        <p class="text-mute text-sm mb-3">Enabled per-district under the ⚙️ gear in the queue header → <em>Transportation Review Settings</em>. <strong>testqa has none of these enabled</strong>, so on your local these behave like “never triggers.”</p>
+        <div class="bg-amber-fill border-2 border-amber-border rounded-xl overflow-x-auto mb-6">
           <table class="w-full text-sm min-w-[640px]">
             <colgroup><col class="w-[42%]"><col></colgroup>
-            <tbody class="divide-y divide-amber-200">
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">New student</td><td class="px-4 py-3 text-slate-600">A brand-new student request — only if <code class="k">newStudent</code> is enabled</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Withdrawal</td><td class="px-4 py-3 text-slate-600">A withdrawal request — only if <code class="k">withdrawal</code> is enabled</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Transportation attributes</td><td class="px-4 py-3 text-slate-600">Transportation code, half-day, bus session, IEP, SPED, wheelchair, or bus aide changes — each is its own toggle</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Flagged custom field (UDF)</td><td class="px-4 py-3 text-slate-600">A user-defined field the district marked as review-relevant</td></tr>
+            <tbody class="divide-y divide-amber-border">
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">New student</td><td class="px-4 py-3 text-mute">A brand-new student request — only if <code class="k">newStudent</code> is enabled</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Withdrawal</td><td class="px-4 py-3 text-mute">A withdrawal request — only if <code class="k">withdrawal</code> is enabled</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Transportation attributes</td><td class="px-4 py-3 text-mute">Transportation code, half-day, bus session, IEP, SPED, wheelchair, or bus aide changes — each is its own toggle</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Flagged custom field (UDF)</td><td class="px-4 py-3 text-mute">A user-defined field the district marked as review-relevant</td></tr>
             </tbody>
           </table>
         </div>
 
         <!-- Never -->
-        <div class="mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-500"></span><h3 class="text-sm font-bold tracking-wider uppercase text-slate-700">Never triggers — stays Accepted</h3></div>
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+        <div class="mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-mute"></span><h3 class="text-sm font-bold tracking-wider uppercase text-body">Never triggers — stays Accepted</h3></div>
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
           <table class="w-full text-sm min-w-[640px]">
             <colgroup><col class="w-[42%]"><col></colgroup>
-            <tbody class="divide-y divide-slate-200">
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Basic-info edits</td><td class="px-4 py-3 text-slate-600">Name, date of birth, gender, ethnicity, family ID</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Contact / parent changes</td><td class="px-4 py-3 text-slate-600">Adding or editing contacts, phones, emails</td></tr>
-              <tr class="align-top"><td class="px-4 py-3 font-semibold text-slate-800">Non-flagged custom fields</td><td class="px-4 py-3 text-slate-600">UDF changes the district hasn’t marked as review-relevant</td></tr>
+            <tbody class="divide-y divide-hairline">
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Basic-info edits</td><td class="px-4 py-3 text-mute">Name, date of birth, gender, ethnicity, family ID</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Contact / parent changes</td><td class="px-4 py-3 text-mute">Adding or editing contacts, phones, emails</td></tr>
+              <tr class="align-top"><td class="px-4 py-3 font-semibold text-ink">Non-flagged custom fields</td><td class="px-4 py-3 text-mute">UDF changes the district hasn’t marked as review-relevant</td></tr>
             </tbody>
           </table>
         </div>
@@ -401,69 +401,69 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- The queue column as predictor -->
-    <section class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-6 sm:p-7">
+    <section class="bg-sky-fill border-2 border-sky-border rounded-2xl p-6 sm:p-7">
       <div class="flex items-start gap-4">
-        <div class="text-sky-900 text-2xl flex-shrink-0 leading-none">👁</div>
+        <div class="text-sky-text text-2xl flex-shrink-0 leading-none">👁</div>
         <div>
-          <div class="text-sky-900 font-bold text-sm tracking-wider uppercase mb-1">Shortcut for the tester</div>
-          <p class="text-slate-800 text-lg leading-relaxed">In the New/Change Requests queue, the <strong>Transportation Review Needed</strong> ⚠️ column already flags the same “needs review” condition. <strong>A row with ⚠️ will go to Processing; a row without it will go to Accepted.</strong> It’s a reliable predictor for testing. (Strictly, the final decision is re-computed at accept time, so it can differ if the student’s data or the district’s review settings changed after the request was created, or if accepting generates a new route — edge cases you won’t hit in normal testqa testing.)</p>
+          <div class="text-sky-text font-bold text-sm tracking-wider uppercase mb-1">Shortcut for the tester</div>
+          <p class="text-ink text-lg leading-relaxed">In the New/Change Requests queue, the <strong>Transportation Review Needed</strong> ⚠️ column already flags the same “needs review” condition. <strong>A row with ⚠️ will go to Processing; a row without it will go to Accepted.</strong> It’s a reliable predictor for testing. (Strictly, the final decision is re-computed at accept time, so it can differ if the student’s data or the district’s review settings changed after the request was created, or if accepting generates a new route — edge cases you won’t hit in normal testqa testing.)</p>
         </div>
       </div>
     </section>
 
     <!-- Testqa reality -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-            <div class="text-sm font-bold tracking-wider uppercase text-purple-800">What’s on your local right now</div>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+            <div class="text-sm font-bold tracking-wider uppercase text-purple-text">What’s on your local right now</div>
           </div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">Real testqa requests to test with</h2>
-          <p class="text-slate-700 leading-relaxed">There are <strong>190 pending requests</strong>. Because testqa has no review settings enabled, only the one <em>school change</em> qualifies for Processing — that’s the row with the ⚠️.</p>
+          <h2 class="text-2xl font-bold text-ink mb-2">Real testqa requests to test with</h2>
+          <p class="text-body leading-relaxed">There are <strong>190 pending requests</strong>. Because testqa has no review settings enabled, only the one <em>school change</em> qualifies for Processing — that’s the row with the ⚠️.</p>
         </div>
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
           <table class="w-full text-sm min-w-[820px]">
             <colgroup><col class="w-[22%]"><col class="w-16"><col><col class="w-40"></colgroup>
             <thead>
-              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+              <tr class="bg-chip text-ink text-xs font-bold tracking-wider uppercase">
                 <th class="text-left px-4 py-3">Kind</th><th class="text-left px-4 py-3">Count</th><th class="text-left px-4 py-3">Example requests (student)</th><th class="text-left px-4 py-3">Accept →</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200">
+            <tbody class="divide-y divide-hairline">
               <tr class="align-top">
-                <td class="px-4 py-3 font-semibold text-slate-800">School change ⚠️</td>
-                <td class="px-4 py-3 text-slate-700">1</td>
-                <td class="px-4 py-3 text-slate-600"><strong>John Adams</strong> (student ID 228990) — the ⚠️ row on page 1</td>
+                <td class="px-4 py-3 font-semibold text-ink">School change ⚠️</td>
+                <td class="px-4 py-3 text-body">1</td>
+                <td class="px-4 py-3 text-mute"><strong>John Adams</strong> (student ID 228990) — the ⚠️ row on page 1</td>
                 <td class="px-4 py-3"><span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span></td>
               </tr>
               <tr class="align-top">
-                <td class="px-4 py-3 font-semibold text-slate-800">Withdrawal</td>
-                <td class="px-4 py-3 text-slate-700">186</td>
-                <td class="px-4 py-3 text-slate-600">Marilyne Collier (380), Ernestina Bins (712), Carlos Green (Test1733) …</td>
+                <td class="px-4 py-3 font-semibold text-ink">Withdrawal</td>
+                <td class="px-4 py-3 text-body">186</td>
+                <td class="px-4 py-3 text-mute">Marilyne Collier (380), Ernestina Bins (712), Carlos Green (Test1733) …</td>
                 <td class="px-4 py-3"><span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span></td>
               </tr>
               <tr class="align-top">
-                <td class="px-4 py-3 font-semibold text-slate-800">New student</td>
-                <td class="px-4 py-3 text-slate-700">3</td>
-                <td class="px-4 py-3 text-slate-600">Benjamin Adams (800499), William King (634594), Camila Hernandez</td>
+                <td class="px-4 py-3 font-semibold text-ink">New student</td>
+                <td class="px-4 py-3 text-body">3</td>
+                <td class="px-4 py-3 text-mute">Benjamin Adams (800499), William King (634594), Camila Hernandez</td>
                 <td class="px-4 py-3"><span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p class="text-slate-600 text-sm mt-4">Note: “New student” and “Withdrawal” <em>would</em> trigger Processing at districts that enable those toggles — testqa simply doesn’t, which is a valid config to test against.</p>
+        <p class="text-mute text-sm mt-4">Note: “New student” and “Withdrawal” <em>would</em> trigger Processing at districts that enable those toggles — testqa simply doesn’t, which is a valid config to test against.</p>
       </div>
     </section>
 
     <!-- Step 1 -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">1</div>
-          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">Open the queue</div><h2 class="text-2xl font-bold text-slate-950 mb-2">Log in and find the requests</h2></div>
+          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">1</div>
+          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">Open the queue</div><h2 class="text-2xl font-bold text-ink mb-2">Log in and find the requests</h2></div>
         </div>
-        <ol class="space-y-2 text-slate-700 leading-relaxed list-decimal ml-5">
+        <ol class="space-y-2 text-body leading-relaxed list-decimal ml-5">
           <li>Go to <code class="k">https://traveltrackerrouting.transact.com/testqa</code>, sign in with your admin account.</li>
           <li>Open <strong>New/Change Requests</strong>: <code class="k">…/testqa#/settings/changes</code>.</li>
           <li>Spot the one row with a ⚠️ in the <strong>Transportation Review Needed</strong> column — that’s <strong>John Adams</strong> (the school change). Everything else has no ⚠️.</li>
@@ -472,13 +472,13 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Step 2 -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">2</div>
-          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">The Processing path</div><h2 class="text-2xl font-bold text-slate-950 mb-2">Accept the ⚠️ request → Processing</h2></div>
+          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">2</div>
+          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">The Processing path</div><h2 class="text-2xl font-bold text-ink mb-2">Accept the ⚠️ request → Processing</h2></div>
         </div>
-        <ol class="space-y-2 text-slate-700 leading-relaxed list-decimal ml-5">
+        <ol class="space-y-2 text-body leading-relaxed list-decimal ml-5">
           <li>On the <strong>John Adams</strong> row, click <strong>Accept</strong> and confirm.</li>
           <li>Open the student: Students → search <strong>Adams, John</strong> → open his <strong>Student Details</strong>.</li>
           <li>Expand <strong>Change Request History</strong> at the bottom.</li>
@@ -488,13 +488,13 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Step 3 -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">3</div>
-          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">The Completed path</div><h2 class="text-2xl font-bold text-slate-950 mb-2">Confirm the review → Completed</h2></div>
+          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">3</div>
+          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">The Completed path</div><h2 class="text-2xl font-bold text-ink mb-2">Confirm the review → Completed</h2></div>
         </div>
-        <ol class="space-y-2 text-slate-700 leading-relaxed list-decimal ml-5">
+        <ol class="space-y-2 text-body leading-relaxed list-decimal ml-5">
           <li>On John Adams’ <strong>General</strong> tab, check “<em>I have reviewed the transportation…</em>” and click <strong>Save</strong>.</li>
           <li>Re-open <strong>Change Request History</strong>.</li>
           <li><strong>Expected:</strong> status now reads <span class="tag" style="background:#e1bee7;color:#6a1b9a">Completed</span> (purple), and the review card/checkbox is <strong>gone</strong> (can’t be undone from the UI).</li>
@@ -504,53 +504,53 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Step 4 -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">4</div>
-          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">The control case</div><h2 class="text-2xl font-bold text-slate-950 mb-2">Accept a no-⚠️ request → stays Accepted</h2></div>
+          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">4</div>
+          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">The control case</div><h2 class="text-2xl font-bold text-ink mb-2">Accept a no-⚠️ request → stays Accepted</h2></div>
         </div>
-        <p class="text-slate-700 leading-relaxed">Accept any request <em>without</em> a ⚠️ (a withdrawal like Marilyne Collier, or a new student). Its Change Request History should read <span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span> — proving Processing is scoped to review-needed requests and nothing else changed.</p>
+        <p class="text-body leading-relaxed">Accept any request <em>without</em> a ⚠️ (a withdrawal like Marilyne Collier, or a new student). Its Change Request History should read <span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span> — proving Processing is scoped to review-needed requests and nothing else changed.</p>
       </div>
     </section>
 
     <!-- Step 5 -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">5</div>
-          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">SSC view (optional)</div><h2 class="text-2xl font-bold text-slate-950 mb-2">Pills + status filter for the Student Support Coordinator</h2></div>
+          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">5</div>
+          <div class="flex-1 pt-1"><div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">SSC view (optional)</div><h2 class="text-2xl font-bold text-ink mb-2">Pills + status filter for the Student Support Coordinator</h2></div>
         </div>
-        <p class="text-slate-700 leading-relaxed">Signed in as an <strong>SSC user</strong>, the homepage list of submitted requests shows the new <span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span> / <span class="tag" style="background:#e1bee7;color:#6a1b9a">Completed</span> pills, and the <strong>Status</strong> filter dropdown includes “Processing” and “Completed.” (Needs the SSC role; the admin views in Steps 2–4 are the quickest check.)</p>
+        <p class="text-body leading-relaxed">Signed in as an <strong>SSC user</strong>, the homepage list of submitted requests shows the new <span class="tag" style="background:#bbdefb;color:#0d47a1">Processing</span> / <span class="tag" style="background:#e1bee7;color:#6a1b9a">Completed</span> pills, and the <strong>Status</strong> filter dropdown includes “Processing” and “Completed.” (Needs the SSC role; the admin views in Steps 2–4 are the quickest check.)</p>
       </div>
     </section>
 
     <!-- Want more coverage -->
-    <section class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 sm:p-7">
+    <section class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
       <div class="flex items-start gap-4">
-        <div class="text-amber-900 text-2xl flex-shrink-0 leading-none">⚠</div>
+        <div class="text-amber-text text-2xl flex-shrink-0 leading-none">⚠</div>
         <div>
-          <div class="text-amber-900 font-bold text-sm tracking-wider uppercase mb-1">Want to test more trigger types?</div>
-          <p class="text-slate-800 text-lg leading-relaxed">testqa only has the one qualifying request today. To exercise the other triggers you can either (a) turn on <code class="k">newStudent</code> / <code class="k">withdrawal</code> under the ⚙️ Transportation Review Settings — then the 189 pending new/withdrawal requests would all go to Processing on accept — or (b) create a fresh request with an address change or a transportation request. Say the word and I’ll set either up. Also: pill colors match the design (Processing blue, Completed purple).</p>
+          <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-1">Want to test more trigger types?</div>
+          <p class="text-ink text-lg leading-relaxed">testqa only has the one qualifying request today. To exercise the other triggers you can either (a) turn on <code class="k">newStudent</code> / <code class="k">withdrawal</code> under the ⚙️ Transportation Review Settings — then the 189 pending new/withdrawal requests would all go to Processing on accept — or (b) create a fresh request with an address change or a transportation request. Say the word and I’ll set either up. Also: pill colors match the design (Processing blue, Completed purple).</p>
         </div>
       </div>
     </section>
 
     <!-- Already verified -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-5">
-          <div class="flex items-center gap-3 mb-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span><div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Already verified</div></div>
-          <h2 class="text-2xl font-bold text-slate-950 mb-2">What’s confirmed on this branch</h2>
+          <div class="flex items-center gap-3 mb-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span><div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Already verified</div></div>
+          <h2 class="text-2xl font-bold text-ink mb-2">What’s confirmed on this branch</h2>
         </div>
-        <ul class="space-y-2 text-slate-700 leading-relaxed list-disc ml-5">
+        <ul class="space-y-2 text-body leading-relaxed list-disc ml-5">
           <li><strong>Rendering, live in Chrome on testqa:</strong> Processing (blue) and Completed (purple) render in the student <em>Change Request History</em>; the request <em>detail panel</em> shows the new status header; the admin <em>New/Change Requests History</em> loads with pills and no crash — the history views that would previously have broken on the new values.</li>
           <li><strong>Backend logic, unit-tested (148 tests green):</strong> single &amp; batch approve set Processing only when a transportation review is needed (else Accepted); confirming the review flips the student’s Processing requests to Completed; the supersede sweep is guarded so it never touches Processing/Completed rows.</li>
         </ul>
       </div>
     </section>
 
-    <div class="text-slate-500 text-sm text-center pt-6">EZRD-2037 · local testqa · branch feature/EZRD-2037-processing-completed-statuses</div>
+    <div class="text-mute text-sm text-center pt-6">EZRD-2037 · local testqa · branch feature/EZRD-2037-processing-completed-statuses</div>
   </main>
 
 <!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->

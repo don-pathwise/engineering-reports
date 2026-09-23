@@ -276,19 +276,19 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 });
 </script>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+<body class="bg-page text-ink font-sans antialiased">
 
-<header class="border-b-2 border-slate-300 bg-white">
+<header class="border-b-2 border-token bg-surface">
   <div class="max-w-6xl mx-auto px-6 py-12">
     <div class="flex items-center gap-2 mb-5">
-      <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">
-        <span class="w-2 h-2 rounded-full bg-emerald-600"></span> Verification guide · EZRD-1653
+      <span class="pill bg-emerald-fill text-emerald-text border-emerald-border">
+        <span class="w-2 h-2 rounded-full bg-emerald-solid"></span> Verification guide · EZRD-1653
       </span>
     </div>
-    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-4">
+    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink mb-4">
       Splitting a trip added stops nobody assigned
     </h1>
-    <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+    <p class="text-lg sm:text-xl text-body max-w-3xl leading-relaxed">
       Two runs of the same steps. On <strong>production</strong> you should still see the bug — extra stops on the
       receiving buses that nobody assigned to them. On <strong>UAT</strong>, with the fix deployed, the same
       split should come out clean.
@@ -305,30 +305,30 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-6">
 
   <!-- ORIENTATION -->
-  <section id="what" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
-    <div class="kicker text-slate-700 mb-4"><span class="kdot"></span> Orientation</div>
-    <h2 class="text-2xl font-bold text-slate-950 mb-4">What you're doing, in plain terms</h2>
-    <p class="text-slate-700 leading-relaxed mb-4 max-w-3xl">
+  <section id="what" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-body mb-4"><span class="kdot"></span> Orientation</div>
+    <h2 class="text-2xl font-bold text-ink mb-4">What you're doing, in plain terms</h2>
+    <p class="text-body leading-relaxed mb-4 max-w-3xl">
       Trip Preparation is the “today isn't going to plan” tool. When a bus loses its driver, a dispatcher covers its
       stops using other buses — often by <strong>splitting one trip's stops across two other buses</strong>. That's the
       action you're going to perform, and it's what the reporting district was doing when they hit this.
     </p>
-    <p class="text-slate-700 leading-relaxed mb-6 max-w-3xl">
+    <p class="text-body leading-relaxed mb-6 max-w-3xl">
       Trip Prep edits apply to <strong>one service day</strong> and don't change the permanent route plan — which is
       why moved stops are labelled “Moved from route …” and carry an undo arrow.
     </p>
     <div class="grid md:grid-cols-2 gap-4">
-      <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5">
-        <div class="text-xs font-extrabold uppercase tracking-wider text-rose-800 mb-2">The bug</div>
-        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+      <div class="rounded-xl border-2 border-rose-border bg-rose-fill p-5">
+        <div class="text-xs font-extrabold uppercase tracking-wider text-rose-text mb-2">The bug</div>
+        <p class="text-body text-[.95rem] leading-relaxed">
           Each receiving bus gained extra stops with no “Moved from” label — typically a school the bus doesn't serve,
           dragged in because a student's pickup got separated from it. Those stops reached the driver tablets and parent
           apps, so a bus showed a longer route with times that didn't match.
         </p>
       </div>
-      <div class="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-5">
-        <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-800 mb-2">The fix</div>
-        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+      <div class="rounded-xl border-2 border-emerald-border bg-emerald-fill p-5">
+        <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-text mb-2">The fix</div>
+        <p class="text-body text-[.95rem] leading-relaxed">
           Those stops were scratch work from the arrival-time calculation, never meant to be saved. They're now
           discarded before the split is stored, so the bus keeps only the stops it was actually given.
         </p>
@@ -337,18 +337,18 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- PROD -->
-  <section id="prod" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
-    <div class="kicker text-rose-800 mb-4"><span class="kdot"></span> Run 1</div>
-    <h2 class="text-2xl font-bold text-slate-950 mb-2">Verify bug on prod</h2>
-    <p class="text-slate-700 leading-relaxed mb-6 max-w-3xl">
+  <section id="prod" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-rose-text mb-4"><span class="kdot"></span> Run 1</div>
+    <h2 class="text-2xl font-bold text-ink mb-2">Verify bug on prod</h2>
+    <p class="text-body leading-relaxed mb-6 max-w-3xl">
       Production does not have the fix, so this run should <strong>reproduce the bug</strong> and give you the
       “before” evidence. Open Trip Preparation for <code class="k">testqa</code> from the production EZDistrict home.
     </p>
 
-    <div class="rounded-xl border-2 border-rose-300 bg-rose-50 p-5 mb-5">
-      <div class="text-xs font-extrabold uppercase tracking-wider text-rose-800 mb-2">Service day</div>
-      <p class="text-slate-900 text-lg font-bold mb-1">08 / 05 / 2026 &nbsp;<span class="text-slate-500 text-sm font-semibold">(Wednesday)</span></p>
-      <p class="text-slate-700 text-[.9rem]">
+    <div class="rounded-xl border-2 border-rose-border bg-rose-fill p-5 mb-5">
+      <div class="text-xs font-extrabold uppercase tracking-wider text-rose-text mb-2">Service day</div>
+      <p class="text-ink text-lg font-bold mb-1">08 / 05 / 2026 &nbsp;<span class="text-mute text-sm font-semibold">(Wednesday)</span></p>
+      <p class="text-body text-[.9rem]">
         Checked against the database: all three trips below run that day, and the day has no existing changes on it.
         Which trips a day offers depends on each trip's recurrence, so don't substitute another date casually —
         <strong>07/31, 08/03, 08/04, 08/06 and 08/07</strong> were also confirmed to offer all three if you need one.
@@ -358,33 +358,33 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="overflow-x-auto mb-5">
       <table class="w-full text-[.93rem] border-collapse">
         <thead>
-          <tr class="border-b-2 border-slate-300">
-            <th class="text-left font-bold text-slate-800 py-2 pr-4">Role</th>
-            <th class="text-left font-bold text-slate-800 py-2 pr-4">Route</th>
-            <th class="text-left font-bold text-slate-800 py-2 pr-4">Which tab</th>
-            <th class="text-left font-bold text-slate-800 py-2 pr-4">Trip</th>
-            <th class="text-left font-bold text-slate-800 py-2">Note this before you start</th>
+          <tr class="border-b-2 border-token">
+            <th class="text-left font-bold text-ink py-2 pr-4">Role</th>
+            <th class="text-left font-bold text-ink py-2 pr-4">Route</th>
+            <th class="text-left font-bold text-ink py-2 pr-4">Which tab</th>
+            <th class="text-left font-bold text-ink py-2 pr-4">Trip</th>
+            <th class="text-left font-bold text-ink py-2">Note this before you start</th>
           </tr>
         </thead>
-        <tbody class="text-slate-700">
-          <tr class="border-b border-slate-200 bg-rose-50">
-            <td class="py-2.5 pr-4 font-bold text-rose-900">Break&nbsp;up</td>
+        <tbody class="text-body">
+          <tr class="border-b border-hairline bg-rose-fill">
+            <td class="py-2.5 pr-4 font-bold text-rose-text">Break&nbsp;up</td>
             <td class="py-2.5 pr-4 font-semibold">West Elementary</td>
-            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span></td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-mute">COVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">Test3</code></td>
             <td class="py-2.5">27 stops · 6:00 – 7:27 AM</td>
           </tr>
-          <tr class="border-b border-slate-200">
-            <td class="py-2.5 pr-4 font-bold text-slate-900">Into</td>
+          <tr class="border-b border-hairline">
+            <td class="py-2.5 pr-4 font-bold text-ink">Into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - High Route B</td>
-            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span><div class="text-[.8rem] font-normal text-slate-500">2 trips — see note 2</div></td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-mute">COVERED</span><div class="text-[.8rem] font-normal text-mute">2 trips — see note 2</div></td>
             <td class="py-2.5 pr-4"><code class="k">AM-HS-EMRG-25</code></td>
             <td class="py-2.5"><strong>8 stops · 7:06 – 7:34 AM</strong></td>
           </tr>
           <tr>
-            <td class="py-2.5 pr-4 font-bold text-slate-900">And into</td>
+            <td class="py-2.5 pr-4 font-bold text-ink">And into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - West Alternative</td>
-            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">UNCOVERED</span></td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-mute">UNCOVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">AM-ALT-EMRG-52</code></td>
             <td class="py-2.5"><strong>8 stops · 7:27 – 7:55 AM</strong></td>
           </tr>
@@ -392,15 +392,15 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       </table>
     </div>
 
-    <div class="rounded-xl border-2 border-slate-300 bg-slate-100 p-5 mb-6">
-      <div class="font-bold text-slate-900 mb-2">Three things to know before step 1</div>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-2">
+    <div class="rounded-xl border-2 border-token bg-page p-5 mb-6">
+      <div class="font-bold text-ink mb-2">Three things to know before step 1</div>
+      <p class="text-body text-[.95rem] leading-relaxed mb-2">
         <strong>1.</strong> The route list is split across two tabs — <strong>UNCOVERED ROUTES</strong> (the one you land
         on) and <strong>COVERED ROUTES</strong>. A route lands on COVERED only when it has both a bus and an available
         driver, so the same route can be on a different tab in each environment. The <strong>“Which tab”</strong> column
         in each lineup table below is the one to follow — it was read from that environment's own data.
       </p>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-2">
+      <p class="text-body text-[.95rem] leading-relaxed mb-2">
         <strong>2.</strong> <code class="k">AM-HS-EMRG-25</code> will <em>not</em> be on screen when you first look.
         <strong>Emergency Transport - High Route B runs two trips</strong> on both service days, and the default
         <strong>VIEW TRIP LIST</strong> shows only the other one (<code class="k">AM-HS-EMRG-30</code>). Click
@@ -408,59 +408,59 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         <code class="k">AM-HS-EMRG-25</code> from there. This applies to that route only — the other trips in the
         lineups are the sole trip on their route.
       </p>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed">
+      <p class="text-body text-[.95rem] leading-relaxed">
         <strong>3.</strong> Inside a trip, the stop list is <strong>numbered</strong> in a <code class="k">#</code>
         column. You never have to hand-count stops — scroll to the bottom and read the number on the last row.
       </p>
     </div>
 
     <ol class="space-y-4 mb-6">
-      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">1</span>
-        <div><div class="font-bold text-slate-900">Set the service day</div>
-        <p class="text-slate-700 leading-relaxed">Click the date at the top of the page, step back with <strong>&lt;</strong> to the right month, then click the day. Wait for the route counts to appear on the two tabs.</p></div></li>
-      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">2</span>
-        <div><div class="font-bold text-slate-900">Record both destinations' baselines</div>
-        <p class="text-slate-700 leading-relaxed">For each destination trip: hover its route row, click the ✏️ beside the trip name, scroll to the bottom of the stop list and write down <strong>the number on the last row</strong>. Also note the trip's <strong>time window</strong> from the route list. Then <strong>CANCEL</strong>. Everything after this compares against these two numbers, so don't skip it. If you can't see <code class="k">AM-HS-EMRG-25</code>, that's note 2 above — switch to <strong>VIEW TRIP BY TIME</strong>.</p></div></li>
-      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">3</span>
-        <div><div class="font-bold text-slate-900">Open the source trip and click <strong>BREAK UP</strong></div>
-        <p class="text-slate-700 leading-relaxed">Find West Elementary, hover the row, click the ✏️ beside <code class="k">Test3</code>. The pencil only exists while the row is hovered. In the trip window, click <strong>BREAK UP</strong>.</p></div></li>
-      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">4</span>
-        <div><div class="font-bold text-slate-900">Tick the two destination trips, then <strong>CALCULATE</strong></div>
-        <p class="text-slate-700 leading-relaxed">This list is <strong>not alphabetical</strong> and is longer than the day's route list — scroll to find each one by trip name. A ticked row turns green. Use only the two trips named above (see the traps below). <strong>CALCULATE</strong> stays greyed out until something is ticked.</p></div></li>
-      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">5</span>
-        <div><div class="font-bold text-slate-900">Click <strong>CALCULATE DETAILS</strong></div>
-        <p class="text-slate-700 leading-relaxed">Leave the two checkboxes at the top right (“Never move the stops to the beginning…”, “Keep original school arrival time”) <strong>unticked</strong>. This screen shows <strong>one destination at a time</strong> — use the <strong>“Select a trip to view details”</strong> dropdown to look at the other. Its row count is <em>higher</em> than what gets saved in both environments, so don't judge the result from here.</p></div></li>
-      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">6</span>
-        <div><div class="font-bold text-slate-900">Save: <strong>SAVE</strong> → <strong>YES</strong> → <strong>NO</strong></div>
-        <p class="text-slate-700 leading-relaxed">“Do you really want to save the break-up results?” → <strong>YES</strong>. Then “Do you want to send notifications to the parents…?” → <strong>NO</strong>, so no messages go out. The save has already happened by the time that second question appears.</p></div></li>
-      <li class="flex gap-4"><span class="badge-num bg-rose-100 text-rose-900 border border-rose-300 shrink-0">7</span>
-        <div><div class="font-bold text-slate-900">Reopen each destination and read the last row</div>
-        <p class="text-slate-700 leading-relaxed">Back on the route list both destination time windows should now end <strong>visibly later</strong> than the baseline — a quick confirmation the split landed. Then open each destination trip again for the check below.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-fill text-rose-text border border-rose-border shrink-0">1</span>
+        <div><div class="font-bold text-ink">Set the service day</div>
+        <p class="text-body leading-relaxed">Click the date at the top of the page, step back with <strong>&lt;</strong> to the right month, then click the day. Wait for the route counts to appear on the two tabs.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-fill text-rose-text border border-rose-border shrink-0">2</span>
+        <div><div class="font-bold text-ink">Record both destinations' baselines</div>
+        <p class="text-body leading-relaxed">For each destination trip: hover its route row, click the ✏️ beside the trip name, scroll to the bottom of the stop list and write down <strong>the number on the last row</strong>. Also note the trip's <strong>time window</strong> from the route list. Then <strong>CANCEL</strong>. Everything after this compares against these two numbers, so don't skip it. If you can't see <code class="k">AM-HS-EMRG-25</code>, that's note 2 above — switch to <strong>VIEW TRIP BY TIME</strong>.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-fill text-rose-text border border-rose-border shrink-0">3</span>
+        <div><div class="font-bold text-ink">Open the source trip and click <strong>BREAK UP</strong></div>
+        <p class="text-body leading-relaxed">Find West Elementary, hover the row, click the ✏️ beside <code class="k">Test3</code>. The pencil only exists while the row is hovered. In the trip window, click <strong>BREAK UP</strong>.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-fill text-rose-text border border-rose-border shrink-0">4</span>
+        <div><div class="font-bold text-ink">Tick the two destination trips, then <strong>CALCULATE</strong></div>
+        <p class="text-body leading-relaxed">This list is <strong>not alphabetical</strong> and is longer than the day's route list — scroll to find each one by trip name. A ticked row turns green. Use only the two trips named above (see the traps below). <strong>CALCULATE</strong> stays greyed out until something is ticked.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-fill text-rose-text border border-rose-border shrink-0">5</span>
+        <div><div class="font-bold text-ink">Click <strong>CALCULATE DETAILS</strong></div>
+        <p class="text-body leading-relaxed">Leave the two checkboxes at the top right (“Never move the stops to the beginning…”, “Keep original school arrival time”) <strong>unticked</strong>. This screen shows <strong>one destination at a time</strong> — use the <strong>“Select a trip to view details”</strong> dropdown to look at the other. Its row count is <em>higher</em> than what gets saved in both environments, so don't judge the result from here.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-fill text-rose-text border border-rose-border shrink-0">6</span>
+        <div><div class="font-bold text-ink">Save: <strong>SAVE</strong> → <strong>YES</strong> → <strong>NO</strong></div>
+        <p class="text-body leading-relaxed">“Do you really want to save the break-up results?” → <strong>YES</strong>. Then “Do you want to send notifications to the parents…?” → <strong>NO</strong>, so no messages go out. The save has already happened by the time that second question appears.</p></div></li>
+      <li class="flex gap-4"><span class="badge-num bg-rose-fill text-rose-text border border-rose-border shrink-0">7</span>
+        <div><div class="font-bold text-ink">Reopen each destination and read the last row</div>
+        <p class="text-body leading-relaxed">Back on the route list both destination time windows should now end <strong>visibly later</strong> than the baseline — a quick confirmation the split landed. Then open each destination trip again for the check below.</p></div></li>
     </ol>
 
-    <div class="rounded-xl border-2 border-rose-200 bg-rose-50 p-5 mb-4">
-      <div class="font-bold text-slate-900 mb-2">What you'll see — bug present</div>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+    <div class="rounded-xl border-2 border-rose-border bg-rose-fill p-5 mb-4">
+      <div class="font-bold text-ink mb-2">What you'll see — bug present</div>
+      <p class="text-body text-[.95rem] leading-relaxed mb-3">
         In each reopened destination trip, the <strong>DESCRIPTION</strong> column tells you where every row came from. A
         stop moved by your split reads <strong>“Moved from route West Elementary”</strong> with the date under it. A stop
         the bus already served has a <strong>blank</strong> Description. Those are the only two legitimate cases.
       </p>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+      <p class="text-body text-[.95rem] leading-relaxed mb-3">
         The bug adds rows that are <em>neither</em> — blank Description, but not a stop this bus served before you
         started. They're often a <em>school</em> the bus doesn't normally serve.
       </p>
-      <div class="rounded-lg bg-white border border-rose-200 p-4">
-        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The test: count the rows with a blank Description</p>
-        <p class="text-slate-600 text-[.88rem]">
+      <div class="rounded-lg bg-surface border border-rose-border p-4">
+        <p class="text-ink text-[.95rem] font-semibold mb-1">The test: count the rows with a blank Description</p>
+        <p class="text-mute text-[.88rem]">
           That count must equal the <strong>baseline number you wrote down in step 2</strong>. On production it will be
           <strong>higher</strong> — those extras are the defect. Do this on both destinations.
         </p>
       </div>
     </div>
 
-    <div class="rounded-xl border-2 border-slate-200 bg-slate-50 p-5">
-      <div class="font-bold text-slate-900 mb-2">Decide from the saved trip, not from Calculate Details</div>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed">
+    <div class="rounded-xl border-2 border-hairline bg-surface-2 p-5">
+      <div class="font-bold text-ink mb-2">Decide from the saved trip, not from Calculate Details</div>
+      <p class="text-body text-[.95rem] leading-relaxed">
         The Calculate Details screen lists working stops in <strong>both</strong> environments, so it cannot tell them
         apart. Judge the result only from the <strong>reopened trip after saving</strong> — that's what the driver tablets
         and parent apps read, and it's the only thing this fix changes.
@@ -469,18 +469,18 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- UAT -->
-  <section id="uat" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
-    <div class="kicker text-emerald-800 mb-4"><span class="kdot"></span> Run 2</div>
-    <h2 class="text-2xl font-bold text-slate-950 mb-2">Verify fix on UAT</h2>
-    <p class="text-slate-700 leading-relaxed mb-6 max-w-3xl">
+  <section id="uat" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-emerald-text mb-4"><span class="kdot"></span> Run 2</div>
+    <h2 class="text-2xl font-bold text-ink mb-2">Verify fix on UAT</h2>
+    <p class="text-body leading-relaxed mb-6 max-w-3xl">
       Same steps, fix deployed. Open Trip Preparation for <code class="k">testqa</code> from
       <code class="k">home.pathwiserouting.com</code>.
     </p>
 
-    <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5 mb-5">
-      <div class="text-xs font-extrabold uppercase tracking-wider text-amber-800 mb-2">Service day — different from prod, and in the past</div>
-      <p class="text-slate-900 text-lg font-bold mb-1">05 / 27 / 2026 &nbsp;<span class="text-slate-500 text-sm font-semibold">(Wednesday)</span></p>
-      <p class="text-slate-700 text-[.9rem]">
+    <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5 mb-5">
+      <div class="text-xs font-extrabold uppercase tracking-wider text-amber-text mb-2">Service day — different from prod, and in the past</div>
+      <p class="text-ink text-lg font-bold mb-1">05 / 27 / 2026 &nbsp;<span class="text-mute text-sm font-semibold">(Wednesday)</span></p>
+      <p class="text-body text-[.9rem]">
         This tenant's routes sit in the <strong>2025~2026 semester, which ended 07/05/2026</strong>, so there is no
         current or future date that offers these trips — a past service day is the only option here, and that's the data
         rather than a broken environment. Checked against the database: all three trips run that day and the day has no
@@ -491,33 +491,33 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <div class="overflow-x-auto mb-5">
       <table class="w-full text-[.93rem] border-collapse">
         <thead>
-          <tr class="border-b-2 border-slate-300">
-            <th class="text-left font-bold text-slate-800 py-2 pr-4">Role</th>
-            <th class="text-left font-bold text-slate-800 py-2 pr-4">Route</th>
-            <th class="text-left font-bold text-slate-800 py-2 pr-4">Which tab</th>
-            <th class="text-left font-bold text-slate-800 py-2 pr-4">Trip</th>
-            <th class="text-left font-bold text-slate-800 py-2">Note this before you start</th>
+          <tr class="border-b-2 border-token">
+            <th class="text-left font-bold text-ink py-2 pr-4">Role</th>
+            <th class="text-left font-bold text-ink py-2 pr-4">Route</th>
+            <th class="text-left font-bold text-ink py-2 pr-4">Which tab</th>
+            <th class="text-left font-bold text-ink py-2 pr-4">Trip</th>
+            <th class="text-left font-bold text-ink py-2">Note this before you start</th>
           </tr>
         </thead>
-        <tbody class="text-slate-700">
-          <tr class="border-b border-slate-200 bg-emerald-50">
-            <td class="py-2.5 pr-4 font-bold text-emerald-900">Break&nbsp;up</td>
+        <tbody class="text-body">
+          <tr class="border-b border-hairline bg-emerald-fill">
+            <td class="py-2.5 pr-4 font-bold text-emerald-text">Break&nbsp;up</td>
             <td class="py-2.5 pr-4 font-semibold">West Elementary</td>
-            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span></td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-mute">COVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">Test3</code></td>
             <td class="py-2.5">27 stops · 6:00 – 7:27 AM</td>
           </tr>
-          <tr class="border-b border-slate-200">
-            <td class="py-2.5 pr-4 font-bold text-slate-900">Into</td>
+          <tr class="border-b border-hairline">
+            <td class="py-2.5 pr-4 font-bold text-ink">Into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - High Route B</td>
-            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">COVERED</span><div class="text-[.8rem] font-normal text-slate-500">2 trips — see note 2</div></td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-mute">COVERED</span><div class="text-[.8rem] font-normal text-mute">2 trips — see note 2</div></td>
             <td class="py-2.5 pr-4"><code class="k">AM-HS-EMRG-25</code></td>
             <td class="py-2.5"><strong>7 stops · 7:06 – 7:34 AM</strong></td>
           </tr>
           <tr>
-            <td class="py-2.5 pr-4 font-bold text-slate-900">And into</td>
+            <td class="py-2.5 pr-4 font-bold text-ink">And into</td>
             <td class="py-2.5 pr-4 font-semibold">Emergency Transport - West Alternative</td>
-            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-slate-600">UNCOVERED</span></td>
+            <td class="py-2.5 pr-4"><span class="whitespace-nowrap text-[.85rem] font-semibold text-mute">UNCOVERED</span></td>
             <td class="py-2.5 pr-4"><code class="k">AM-ALT-EMRG-52</code></td>
             <td class="py-2.5"><strong>8 stops · 7:27 – 7:55 AM</strong></td>
           </tr>
@@ -525,63 +525,63 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       </table>
     </div>
 
-    <p class="text-slate-700 leading-relaxed mb-5 max-w-3xl">
+    <p class="text-body leading-relaxed mb-5 max-w-3xl">
       Run steps 1–7 exactly as above. Then check the fix held:
     </p>
 
-    <div class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-5 mb-5">
-      <div class="font-bold text-slate-900 mb-2">What you'll see — fix working</div>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+    <div class="rounded-xl border-2 border-emerald-border bg-emerald-fill p-5 mb-5">
+      <div class="font-bold text-ink mb-2">What you'll see — fix working</div>
+      <p class="text-body text-[.95rem] leading-relaxed mb-3">
         <strong>The Calculate Details screen looks much the same as it did on prod</strong> — it still lists working stops
         used to work out arrival times, and that's expected. The difference is in what gets <em>saved</em>, so don't judge
         this run from that screen.
       </p>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+      <p class="text-body text-[.95rem] leading-relaxed mb-3">
         Reopen each destination trip after saving. Every row is accountable: it either reads “Moved from route West
         Elementary” in the Description column, or it's a stop that trip already served before you started.
       </p>
-      <div class="rounded-lg bg-white border border-emerald-200 p-4">
-        <p class="text-slate-900 text-[.95rem] font-semibold mb-1">The test: blank-Description rows = your baseline number</p>
-        <p class="text-slate-600 text-[.88rem]">
+      <div class="rounded-lg bg-surface border border-emerald-border p-4">
+        <p class="text-ink text-[.95rem] font-semibold mb-1">The test: blank-Description rows = your baseline number</p>
+        <p class="text-mute text-[.88rem]">
           Exactly equal, on both destinations. Where production came out over, this lands on the number. We ran this end
           to end against the fix and both destinations matched their baseline exactly.
         </p>
       </div>
     </div>
 
-    <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
-      <div class="font-bold text-slate-900 mb-2">You will see some stop names twice — that part is expected, on both runs</div>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed mb-3">
+    <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5">
+      <div class="font-bold text-ink mb-2">You will see some stop names twice — that part is expected, on both runs</div>
+      <p class="text-body text-[.95rem] leading-relaxed mb-3">
         These two destinations already serve some of the stops <code class="k">Test3</code> hands them, so one place ends
         up on two rows, usually adjacent and at the same time: the bus's own stop with a <strong>blank</strong>
         Description, and the moved one reading <strong>“Moved from route West Elementary”</strong>. Both are accounted
         for, and the blank-row count still matches your baseline. Merging them into a single visit is tracked separately.
       </p>
       <div class="overflow-x-auto">
-        <table class="w-full text-[.9rem] border-collapse bg-white rounded-lg">
+        <table class="w-full text-[.9rem] border-collapse bg-surface rounded-lg">
           <thead>
-            <tr class="border-b-2 border-amber-200">
-              <th class="text-left font-bold text-slate-800 py-2 px-3">Destination</th>
-              <th class="text-left font-bold text-slate-800 py-2 px-3">Stops it already shares with <code class="k">Test3</code></th>
+            <tr class="border-b-2 border-amber-border">
+              <th class="text-left font-bold text-ink py-2 px-3">Destination</th>
+              <th class="text-left font-bold text-ink py-2 px-3">Stops it already shares with <code class="k">Test3</code></th>
             </tr>
           </thead>
-          <tbody class="text-slate-700">
-            <tr class="border-b border-amber-100">
-              <td class="py-2 px-3 font-semibold"><code class="k">AM-HS-EMRG-25</code><div class="text-[.8rem] font-normal text-slate-500">UAT</div></td>
+          <tbody class="text-body">
+            <tr class="border-b border-amber-fill">
+              <td class="py-2 px-3 font-semibold"><code class="k">AM-HS-EMRG-25</code><div class="text-[.8rem] font-normal text-mute">UAT</div></td>
               <td class="py-2 px-3">up to <strong>6</strong> — Bayside Village Center, Dean Road &amp; Lake Drive, Diversey Boulevard &amp; Port Washington, Fox Point-Bayside High School, Good Hope &amp; Calumet, Sunset Drive &amp; Mohawk</td>
             </tr>
-            <tr class="border-b border-amber-100">
-              <td class="py-2 px-3 font-semibold"><code class="k">AM-HS-EMRG-25</code><div class="text-[.8rem] font-normal text-slate-500">production</div></td>
+            <tr class="border-b border-amber-fill">
+              <td class="py-2 px-3 font-semibold"><code class="k">AM-HS-EMRG-25</code><div class="text-[.8rem] font-normal text-mute">production</div></td>
               <td class="py-2 px-3">up to <strong>7</strong> — the six above, plus Gray Log Lane Circle Test</td>
             </tr>
             <tr>
-              <td class="py-2 px-3 font-semibold"><code class="k">AM-ALT-EMRG-52</code><div class="text-[.8rem] font-normal text-slate-500">both</div></td>
+              <td class="py-2 px-3 font-semibold"><code class="k">AM-ALT-EMRG-52</code><div class="text-[.8rem] font-normal text-mute">both</div></td>
               <td class="py-2 px-3">up to <strong>6</strong> — Bender Road &amp; Lake Drive, Calumet Road East, Dean Road &amp; Lake Drive, Fox Point Drive &amp; Seneca, Fox Point Village Hall, Mohawk &amp; Indian Creek</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p class="text-slate-700 text-[.95rem] leading-relaxed mt-3">
+      <p class="text-body text-[.95rem] leading-relaxed mt-3">
         A repeated name outside these lists, or one where <em>neither</em> row has a “Moved from …” label, is worth
         raising.
       </p>
@@ -589,29 +589,29 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- TRAPS -->
-  <section id="traps" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
-    <div class="kicker text-amber-800 mb-4"><span class="kdot"></span> Before you start</div>
-    <h2 class="text-2xl font-bold text-slate-950 mb-5">Three things that will waste your time</h2>
+  <section id="traps" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-amber-text mb-4"><span class="kdot"></span> Before you start</div>
+    <h2 class="text-2xl font-bold text-ink mb-5">Three things that will waste your time</h2>
     <div class="space-y-4">
-      <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
-        <div class="font-bold text-slate-900 mb-1">Use the destination trips named above, not others</div>
-        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+      <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5">
+        <div class="font-bold text-ink mb-1">Use the destination trips named above, not others</div>
+        <p class="text-body text-[.95rem] leading-relaxed">
           The Break&nbsp;Up list offers trips whose <strong>route isn't in the day's route list behind the modal</strong>,
           and picking one <strong>crashes on CALCULATE</strong> with nothing on screen to explain it. That's a separate
           known defect. If you do substitute a destination, first check its route name is visible in the list behind the
           modal. Both trips named above were confirmed present on their stated date.
         </p>
       </div>
-      <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
-        <div class="font-bold text-slate-900 mb-1">The edit pencil only exists while the row is hovered</div>
-        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+      <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5">
+        <div class="font-bold text-ink mb-1">The edit pencil only exists while the row is hovered</div>
+        <p class="text-body text-[.95rem] leading-relaxed">
           Hover the route row first. On a narrow window it sits past the right edge — widen the window or scroll the
           table sideways.
         </p>
       </div>
-      <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
-        <div class="font-bold text-slate-900 mb-1">An empty route list means the wrong date</div>
-        <p class="text-slate-700 text-[.95rem] leading-relaxed">
+      <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5">
+        <div class="font-bold text-ink mb-1">An empty route list means the wrong date</div>
+        <p class="text-body text-[.95rem] leading-relaxed">
           Trip Prep is day-scoped, and the two environments need <strong>different dates</strong> — 08/05/2026 on
           production, 05/27/2026 on UAT. An empty list is almost always a date outside the semester holding the data.
         </p>
@@ -620,21 +620,21 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- CLEANUP -->
-  <section id="after" class="bg-white border-2 border-slate-300 rounded-2xl p-7 sm:p-9 main-card">
-    <div class="kicker text-slate-700 mb-4"><span class="kdot"></span> Afterwards</div>
-    <h2 class="text-2xl font-bold text-slate-950 mb-4">What you leave behind</h2>
-    <p class="text-slate-700 leading-relaxed mb-4 max-w-3xl">
+  <section id="after" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+    <div class="kicker text-body mb-4"><span class="kdot"></span> Afterwards</div>
+    <h2 class="text-2xl font-bold text-ink mb-4">What you leave behind</h2>
+    <p class="text-body leading-relaxed mb-4 max-w-3xl">
       Both tenants had <strong>no prior day-changes</strong> on these trips, so everything you see afterwards is
       yours. A saved split affects only the service day you chose and leaves the permanent route plan untouched.
     </p>
-    <p class="text-slate-700 leading-relaxed max-w-3xl">
+    <p class="text-body leading-relaxed max-w-3xl">
       If you repeat a run, start from a <strong>different source trip</strong>. Re-running a split over trips you've
       already split adds to the mess rather than resetting it — on the unfixed environment that makes the symptom
       worse each time, which is exactly what the reporting district experienced.
     </p>
   </section>
 
-  <footer class="pt-4 pb-10 text-center text-slate-500 text-sm">
+  <footer class="pt-4 pb-10 text-center text-mute text-sm">
     EZRD-1653 · verification guide · Trip Preparation break-up flow
   </footer>
 

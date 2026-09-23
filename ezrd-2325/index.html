@@ -279,24 +279,24 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 });
 </script>
 </head>
-<body class="bg-slate-100">
+<body class="bg-page">
 <div class="max-w-4xl mx-auto px-4 py-8">
 
   <header class="mb-6">
     <div class="flex flex-wrap items-center gap-2 mb-2">
-      <a href="https://pathwise.atlassian.net/browse/EZRD-2325" class="font-mono text-sm font-semibold text-blue-600 hover:underline">EZRD-2325</a>
-      <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-800">P1 · S2 High</span>
-      <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Testing guide</span>
-      <a href="https://github.com/TransActComm/ezrd-mono/pull/690" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-violet-100 text-violet-800 hover:underline">PR #690</a>
+      <a href="https://pathwise.atlassian.net/browse/EZRD-2325" class="font-mono text-sm font-semibold text-sky-dot hover:underline">EZRD-2325</a>
+      <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-fill text-rose-text">P1 · S2 High</span>
+      <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-chip text-body">Testing guide</span>
+      <a href="https://github.com/TransActComm/ezrd-mono/pull/690" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-fill text-purple-text hover:underline">PR #690</a>
     </div>
-    <h1 class="text-2xl font-extrabold text-slate-900">Off-day trip variants must appear on the first stop selection</h1>
-    <p class="text-sm text-slate-600 mt-1">Spokane reported that a Monday late-start trip is missing from the &ldquo;other trips&rdquo; panel when assigning students, and only shows up if you repeat the selection.</p>
+    <h1 class="text-2xl font-extrabold text-ink">Off-day trip variants must appear on the first stop selection</h1>
+    <p class="text-sm text-mute mt-1">Spokane reported that a Monday late-start trip is missing from the &ldquo;other trips&rdquo; panel when assigning students, and only shows up if you repeat the selection.</p>
   </header>
 
   <!-- What you are testing -->
-  <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 mb-4 main-card">
+  <div class="bg-surface border-2 border-hairline rounded-2xl p-6 mb-4 main-card">
     <div class="flex items-center gap-3 mb-3">
-      <span class="badge-num bg-blue-100 text-blue-700">?</span>
+      <span class="badge-num bg-sky-fill text-sky-text">?</span>
       <h2 class="text-lg font-bold">What you're testing</h2>
     </div>
     <p class="text-sm leading-relaxed mb-3">
@@ -317,9 +317,9 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </div>
 
   <!-- Part A -->
-  <div class="bg-white border-2 border-red-200 rounded-2xl p-6 mb-4 main-card">
+  <div class="bg-surface border-2 border-rose-border rounded-2xl p-6 mb-4 main-card">
     <div class="flex items-center gap-3 mb-3">
-      <span class="badge-num bg-red-100 text-red-700">A</span>
+      <span class="badge-num bg-rose-fill text-rose-text">A</span>
       <h2 class="text-lg font-bold">Confirm the bug on UAT (before the fix ships)</h2>
     </div>
     <p class="text-sm mb-3">
@@ -334,14 +334,14 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <table class="data">
         <thead><tr><th>Field</th><th>Value</th></tr></thead>
         <tbody>
-          <tr><td>URL</td><td><a class="text-blue-600 hover:underline" href="https://uat.pathwiserouting.com/testqa">https://uat.pathwiserouting.com/testqa</a><br><span class="text-slate-500">The same tenant exists on <a class="text-blue-600 hover:underline" href="https://www.ezrouting.com/testqa">www.ezrouting.com/testqa</a> with the same route name but different ids and 12 trips rather than 10 — the steps work there too, just expect a different split count.</span></td></tr>
-          <tr><td>Semester</td><td>2026 ~ 2027 <span class="text-slate-500">(the current one — no switching needed)</span></td></tr>
+          <tr><td>URL</td><td><a class="text-sky-dot hover:underline" href="https://uat.pathwiserouting.com/testqa">https://uat.pathwiserouting.com/testqa</a><br><span class="text-mute">The same tenant exists on <a class="text-sky-dot hover:underline" href="https://www.ezrouting.com/testqa">www.ezrouting.com/testqa</a> with the same route name but different ids and 12 trips rather than 10 — the steps work there too, just expect a different split count.</span></td></tr>
+          <tr><td>Semester</td><td>2026 ~ 2027 <span class="text-mute">(the current one — no switching needed)</span></td></tr>
           <tr><td>Route</td><td><strong>Activity Bus - Alternative Route A Test</strong></td></tr>
           <tr><td>Trip to select</td><td><strong>PM-ALT-ACT-83</strong> &nbsp;— runs <strong>Mon–Fri</strong></td></tr>
-          <tr><td>Trip that should also be offered</td><td><strong>PM-ALT-ACT-83PM-ALT-ACT-83…</strong> <span class="text-slate-500">(the long repeated name — it's the only one)</span> — runs <strong>Mon, Wed, Fri</strong></td></tr>
-          <tr><td>Stop to click</td><td><strong>Indian Creek Parkway North</strong> <span class="text-slate-500">(both trips serve it)</span></td></tr>
+          <tr><td>Trip that should also be offered</td><td><strong>PM-ALT-ACT-83PM-ALT-ACT-83…</strong> <span class="text-mute">(the long repeated name — it's the only one)</span> — runs <strong>Mon, Wed, Fri</strong></td></tr>
+          <tr><td>Stop to click</td><td><strong>Indian Creek Parkway North</strong> <span class="text-mute">(both trips serve it)</span></td></tr>
           <tr><td>Student</td><td>any unrouted student at <strong>Fox Point-Bayside Middle School</strong> — e.g. <strong>Matthew Anderson</strong>, Stephany Bergnaum, Tamara Conroy, Dawson Daniel</td></tr>
-          <tr><td>Date — <strong>must be a Tuesday or Thursday</strong></td><td>Tue <strong>08/04/2026</strong>, Thu <strong>08/06/2026</strong>, Tue <strong>08/11/2026</strong> — or any other Tue/Thu through 06/30/2027. <span class="text-slate-500">Dates are as the app's picker shows them, <strong>MM/DD/YYYY</strong>. Mon/Wed/Fri prove nothing here: both trips run those days.</span></td></tr>
+          <tr><td>Date — <strong>must be a Tuesday or Thursday</strong></td><td>Tue <strong>08/04/2026</strong>, Thu <strong>08/06/2026</strong>, Tue <strong>08/11/2026</strong> — or any other Tue/Thu through 06/30/2027. <span class="text-mute">Dates are as the app's picker shows them, <strong>MM/DD/YYYY</strong>. Mon/Wed/Fri prove nothing here: both trips run those days.</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -363,19 +363,19 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <strong>Mon, Wed, Fri</strong> variant is <em>not</em> among them. Every row you can see says
       &ldquo;Every weekday&rdquo;. There is no way to put the student on the Mon/Wed/Fri run from here.
     </div>
-    <p class="text-xs text-slate-500 mt-2">Cancel out with the red ✕ when you're done — don't save during Part A.</p>
+    <p class="text-xs text-mute mt-2">Cancel out with the red ✕ when you're done — don't save during Part A.</p>
   </div>
 
   <!-- Part B -->
-  <div class="bg-white border-2 border-emerald-200 rounded-2xl p-6 mb-4 main-card">
+  <div class="bg-surface border-2 border-emerald-border rounded-2xl p-6 mb-4 main-card">
     <div class="flex items-center gap-3 mb-3">
-      <span class="badge-num bg-emerald-100 text-emerald-700">B</span>
+      <span class="badge-num bg-emerald-fill text-emerald-text">B</span>
       <h2 class="text-lg font-bold">Re-test after the fix deploys to UAT</h2>
     </div>
     <p class="text-sm mb-3">
       <strong>This is the test to run.</strong> The fix is deployed as of 4 August 2026 — verified by checking that the
       merge commit for PR #690 is an ancestor of the build reported by
-      <a class="text-blue-600 hover:underline" href="https://uat.pathwiserouting.com/version">/version</a>, and that the
+      <a class="text-sky-dot hover:underline" href="https://uat.pathwiserouting.com/version">/version</a>, and that the
       served UI bundle contains the new code. Note that the branch commits alone will look absent, because the PR was
       squash-merged; check the merge commit. Now follow the steps in Part A and expect the result below.
     </p>
@@ -399,9 +399,9 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </div>
 
   <!-- Part C -->
-  <div class="bg-white border-2 border-slate-300 rounded-2xl p-6 mb-4 main-card">
+  <div class="bg-surface border-2 border-token rounded-2xl p-6 mb-4 main-card">
     <div class="flex items-center gap-3 mb-3">
-      <span class="badge-num bg-slate-200 text-slate-700">C</span>
+      <span class="badge-num bg-chip text-body">C</span>
       <h2 class="text-lg font-bold">The same shape in production (Spokane)</h2>
     </div>
     <p class="text-sm mb-3">
@@ -423,7 +423,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     <p class="text-sm mb-3">
       <strong>172 routes</strong> carry both. Spokane names the Monday trip with an <code class="k">-M</code> suffix,
       which makes the pairs easy to spot. On route <strong>126</strong>
-      (<a class="text-blue-600 hover:underline" href="https://www.ezrouting.com/spokanewa">www.ezrouting.com/spokanewa</a>):
+      (<a class="text-sky-dot hover:underline" href="https://www.ezrouting.com/spokanewa">www.ezrouting.com/spokanewa</a>):
     </p>
 
     <div class="wrap mb-3">
@@ -443,16 +443,16 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       will not be offered. On a <strong>Monday</strong> it flips — you'll see the <code class="k">-M</code> trip and the
       Tue&ndash;Fri one will be the one missing.
     </div>
-    <p class="text-xs text-slate-500 mt-2">
+    <p class="text-xs text-mute mt-2">
       Read-only check please — don't save assignments in production. Because the 2026&ndash;27 semester starts 08/26/2026,
       Spokane is routing for it right now, which is why this landed as a back-to-school P1.
     </p>
   </div>
 
   <!-- Notes -->
-  <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 main-card">
+  <div class="bg-surface border-2 border-hairline rounded-2xl p-6 main-card">
     <div class="flex items-center gap-3 mb-3">
-      <span class="badge-num bg-amber-100 text-amber-700">!</span>
+      <span class="badge-num bg-amber-fill text-amber-text">!</span>
       <h2 class="text-lg font-bold">Notes &amp; known limits</h2>
     </div>
     <ul class="list-disc pl-5 text-sm space-y-2">
@@ -461,13 +461,13 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <li><strong>Degraded path is safe by design.</strong> If the extra trip list can't be loaded, the panel falls back to showing only the current day's trips — the old behaviour. It will never offer a trip whose schedule it couldn't confirm, because saving that could write the assignment against the wrong schedule.</li>
       <li><strong>Tested before shipping:</strong> the whole flow was driven by hand on testqa before and after the change, including saving and confirming both assignments landed on their own schedules.</li>
     </ul>
-    <p class="text-xs text-slate-500 mt-4">
+    <p class="text-xs text-mute mt-4">
       Data in this guide was read from the UAT and production databases on 3 August 2026 and re-verified against UAT on 4 August 2026 (route, both trips and their recurrences, the shared stop, the four named students, and the day-activity of each recommended date all unchanged). The exact trip counts are still a snapshot — what matters is the <em>difference</em> between Part A and Part B (one extra row), not the absolute numbers. Trip and route names can be
       renamed by district staff — if a name here no longer matches, look for the pair by recurrence instead.
     </p>
   </div>
 
-  <p class="text-center text-xs text-slate-400 mt-8">
+  <p class="text-center text-xs text-mute mt-8">
     <a href="../index.html" class="hover:underline">← all reports</a>
   </p>
 </div>

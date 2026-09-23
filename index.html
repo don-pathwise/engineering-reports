@@ -345,29 +345,29 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 });
 </script>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+<body class="bg-page text-ink font-sans antialiased">
 
   <!-- ===== Hero ===== -->
-  <header class="border-b-2 border-slate-300 bg-white">
+  <header class="border-b-2 border-token bg-surface">
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
       <div>
-        <span class="pill bg-sky-100 text-sky-900 border-sky-300 mb-5">
-          <span class="w-2 h-2 rounded-full bg-sky-600"></span>
+        <span class="pill bg-sky-fill text-sky-text border-sky-border mb-5">
+          <span class="w-2 h-2 rounded-full bg-sky-solid"></span>
           Pathwise · EZRouting Platform
         </span>
-        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950" style="text-wrap: balance;">
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink" style="text-wrap: balance;">
           Engineering Reports
         </h1>
-        <p class="mt-4 text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
+        <p class="mt-4 text-lg sm:text-xl text-body max-w-3xl leading-relaxed">
           Self-contained references for the EZRouting platform — UAT test plans, root-cause
           findings, and migration/infrastructure docs. Each report is written to be read on
           screen, printed for review, and acted on directly.
         </p>
-        <p class="mt-5 text-sm text-slate-600 flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span><strong id="totalCount" class="text-slate-900 font-bold tabular-nums">16</strong> reports</span>
-          <span class="text-slate-400">·</span>
+        <p class="mt-5 text-sm text-mute flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span><strong id="totalCount" class="text-ink font-bold tabular-nums">16</strong> reports</span>
+          <span class="text-mute">·</span>
           <span>3 categories</span>
-          <span class="text-slate-400">·</span>
+          <span class="text-mute">·</span>
           <span>published to <code class="k">don-pathwise.github.io/engineering-reports</code></span>
         </p>
       </div>
@@ -375,19 +375,19 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </header>
 
   <!-- ===== Controls (sticky) ===== -->
-  <div class="no-print sticky top-0 z-30 bg-slate-100/90 backdrop-blur border-b border-slate-200">
+  <div class="no-print sticky top-0 z-30 bg-page/90 backdrop-blur border-b border-hairline">
     <div class="max-w-6xl mx-auto px-6 py-4">
       <div class="flex flex-col lg:flex-row lg:items-center gap-3">
         <div class="search-wrap flex-1">
-          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-mute" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
           <input id="search" type="search" class="search-input" placeholder="Search by ticket, title, or keyword…" autocomplete="off" aria-label="Search reports" />
           <span class="absolute right-3 top-1/2 -translate-y-1/2 kbd" aria-hidden="true">/</span>
         </div>
         <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by category">
           <button class="chip" data-filter="all" aria-pressed="true">All <span class="count">16</span></button>
-          <button class="chip" data-filter="test" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Test Plans <span class="count">10</span></button>
-          <button class="chip" data-filter="rootcause" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-purple-500"></span>Root Cause <span class="count">3</span></button>
-          <button class="chip" data-filter="infra" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-sky-500"></span>Migration &amp; Infra <span class="count">3</span></button>
+          <button class="chip" data-filter="test" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-emerald-solid"></span>Test Plans <span class="count">10</span></button>
+          <button class="chip" data-filter="rootcause" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-purple-solid"></span>Root Cause <span class="count">3</span></button>
+          <button class="chip" data-filter="infra" aria-pressed="false"><span class="w-2 h-2 rounded-full bg-sky-solid"></span>Migration &amp; Infra <span class="count">3</span></button>
         </div>
       </div>
     </div>
@@ -397,266 +397,266 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-10 space-y-6">
 
     <!-- Test Plans & Walkthroughs -->
-    <section class="report-group bg-white border-2 border-slate-300 rounded-2xl main-card" data-category="test">
+    <section class="report-group bg-surface border-2 border-token rounded-2xl main-card" data-category="test">
       <div class="px-7 sm:px-9 pt-7 sm:pt-8 pb-2">
         <div class="flex items-center gap-3 mb-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">Test Plans &amp; Walkthroughs</div>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-solid"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Test Plans &amp; Walkthroughs</div>
         </div>
-        <p class="text-slate-600 text-sm leading-relaxed ml-[1.375rem]">Step-by-step UAT verification for shipped and in-flight changes.</p>
+        <p class="text-mute text-sm leading-relaxed ml-[1.375rem]">Step-by-step UAT verification for shipped and in-flight changes.</p>
       </div>
-      <ul class="divide-y divide-slate-200">
+      <ul class="divide-y divide-hairline">
         <!-- rows injected/authored below -->
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2325/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2325</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2325</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Monday Late-Start Trips Missing When Assigning Students</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">A route's off-day trip variant never appeared in the &ldquo;other trips&rdquo; panel, so a student couldn't be put on both runs in one action. Exact route, trips, stop, student and <strong>which weekday to pick</strong> on UAT testqa — the day is the whole test — plus the real Spokane data in production so the original report can be confirmed.</span>
+              <span class="block font-semibold text-ink">Monday Late-Start Trips Missing When Assigning Students</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">A route's off-day trip variant never appeared in the &ldquo;other trips&rdquo; panel, so a student couldn't be put on both runs in one action. Exact route, trips, stop, student and <strong>which weekday to pick</strong> on UAT testqa — the day is the whole test — plus the real Spokane data in production so the original report can be confirmed.</span>
             </span>
-            <span class="pill bg-sky-100 text-sky-900 border-sky-300 mt-0.5 hidden sm:inline-flex">Ready to test</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-sky-fill text-sky-text border-sky-border mt-0.5 hidden sm:inline-flex">Ready to test</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1949/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1949</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1949</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Map Regeneration — Honest Status &amp; Tenant Scoping</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">The admin map-regeneration action always reported success, and never told EZRouting which district the request was for — so the regeneration never ran. Both fixed. Testing walkthrough for <code class="k">admin.pathwiserouting.com</code>, plus what could not be clicked and how it was verified instead.</span>
+              <span class="block font-semibold text-ink">Map Regeneration — Honest Status &amp; Tenant Scoping</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">The admin map-regeneration action always reported success, and never told EZRouting which district the request was for — so the regeneration never ran. Both fixed. Testing walkthrough for <code class="k">admin.pathwiserouting.com</code>, plus what could not be clicked and how it was verified instead.</span>
             </span>
-            <span class="pill bg-sky-100 text-sky-900 border-sky-300 mt-0.5 hidden sm:inline-flex">Ready to test</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-sky-fill text-sky-text border-sky-border mt-0.5 hidden sm:inline-flex">Ready to test</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1757/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1757</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1757</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Route-Split Save Outcome Visibility — UAT Test Steps</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">A split could fail and tell the dispatcher nothing — no error, sometimes not even a success. Five checks on UAT testqa with the exact routes, trips and service day to use, the message each should produce, and the two quirks of that tenant that will otherwise waste your time.</span>
+              <span class="block font-semibold text-ink">Route-Split Save Outcome Visibility — UAT Test Steps</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">A split could fail and tell the dispatcher nothing — no error, sometimes not even a success. Five checks on UAT testqa with the exact routes, trips and service day to use, the message each should produce, and the two quirks of that tenant that will otherwise waste your time.</span>
             </span>
-            <span class="pill bg-amber-100 text-amber-900 border-amber-300 mt-0.5 hidden sm:inline-flex">In Testing</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-amber-fill text-amber-text border-amber-border mt-0.5 hidden sm:inline-flex">In Testing</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1653-verify/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1653</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1653</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Split Trip Adds Unassigned Stops — Verification</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Two runs of one flow: reproduce the bug on production, then confirm the fix on UAT. Exact service day and trips for each environment, plus the pass/fail signal and the one repeated-stop case that is <em>not</em> a failure.</span>
+              <span class="block font-semibold text-ink">Split Trip Adds Unassigned Stops — Verification</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Two runs of one flow: reproduce the bug on production, then confirm the fix on UAT. Exact service day and trips for each environment, plus the pass/fail signal and the one repeated-stop case that is <em>not</em> a failure.</span>
             </span>
-            <span class="pill bg-amber-100 text-amber-900 border-amber-300 mt-0.5 hidden sm:inline-flex">In Testing</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-amber-fill text-amber-text border-amber-border mt-0.5 hidden sm:inline-flex">In Testing</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2319/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2319</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2319</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Route-List Stop-Cache Fix</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">The route list re-ran a heavy <code class="k">vwAllStops</code> view scan on every request because the route-only stop list skipped the cache. Now cached and invalidated on the route tables. Explainer + UAT verification — invalidation confirmed, no regression.</span>
+              <span class="block font-semibold text-ink">Route-List Stop-Cache Fix</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">The route list re-ran a heavy <code class="k">vwAllStops</code> view scan on every request because the route-only stop list skipped the cache. Now cached and invalidated on the route tables. Explainer + UAT verification — invalidation confirmed, no regression.</span>
             </span>
-            <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300 mt-0.5 hidden sm:inline-flex">Verified</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-emerald-fill text-emerald-text border-emerald-border mt-0.5 hidden sm:inline-flex">Verified</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1664/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1664</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1664</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Stop Addresses Intermittently Ungeocoded</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Stops flipped to a red "ungeocoded" warning during Show Students because they loaded under the selected session instead of the route's own. Fix confirmed live on UAT via a deterministic session-mismatch test, with one open question on private stops.</span>
+              <span class="block font-semibold text-ink">Stop Addresses Intermittently Ungeocoded</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Stops flipped to a red "ungeocoded" warning during Show Students because they loaded under the selected session instead of the route's own. Fix confirmed live on UAT via a deterministic session-mismatch test, with one open question on private stops.</span>
             </span>
-            <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300 mt-0.5 hidden sm:inline-flex">Verified</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-emerald-fill text-emerald-text border-emerald-border mt-0.5 hidden sm:inline-flex">Verified</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2008/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2008</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2008</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Duplicate Primary Student Addresses Fan Out the Student List</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">A student saved with more than one "primary" address showed up twice in the paginated student list. Write-path guard so a student keeps exactly one primary — breakdown + how to verify.</span>
+              <span class="block font-semibold text-ink">Duplicate Primary Student Addresses Fan Out the Student List</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">A student saved with more than one "primary" address showed up twice in the paginated student list. Write-path guard so a student keeps exactly one primary — breakdown + how to verify.</span>
             </span>
-            <span class="pill bg-amber-100 text-amber-900 border-amber-300 mt-0.5 hidden sm:inline-flex">In Testing</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-amber-fill text-amber-text border-amber-border mt-0.5 hidden sm:inline-flex">In Testing</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2059/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2059</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2059</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Move Trips — Conflict Highlighting</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Verify the redesigned conflict view: salmon rows, stacked overlap lanes, the candycane merged block, and the collapse/expand toggle.</span>
+              <span class="block font-semibold text-ink">Move Trips — Conflict Highlighting</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Verify the redesigned conflict view: salmon rows, stacked overlap lanes, the candycane merged block, and the collapse/expand toggle.</span>
             </span>
-            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Walkthrough</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-page text-body border-token mt-0.5 hidden sm:inline-flex">Walkthrough</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2049/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2049</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2049</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Lock SSC Change Requests After Submission</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Freeze a Student Support Coordinator's change requests the moment they submit; the request is read-only afterward.</span>
+              <span class="block font-semibold text-ink">Lock SSC Change Requests After Submission</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Freeze a Student Support Coordinator's change requests the moment they submit; the request is read-only afterward.</span>
             </span>
-            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Plan</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-page text-body border-token mt-0.5 hidden sm:inline-flex">Test Plan</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2037/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2037</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2037</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Processing / Completed Statuses (SSC Requests)</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">New Processing and Completed statuses for SSC New/Change Requests. Accepting a request that needs a transportation review now moves it to Processing.</span>
+              <span class="block font-semibold text-ink">Processing / Completed Statuses (SSC Requests)</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">New Processing and Completed statuses for SSC New/Change Requests. Accepting a request that needs a transportation review now moves it to Processing.</span>
             </span>
-            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Plan</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-page text-body border-token mt-0.5 hidden sm:inline-flex">Test Plan</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-2019/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2019</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-2019</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Exempt from Eligibility Recalculation in CSV Import</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Support an "exempt from recalc" flag in the student CSV import so flagged students keep their assignments. Breakdown + test plan.</span>
+              <span class="block font-semibold text-ink">Exempt from Eligibility Recalculation in CSV Import</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Support an "exempt from recalc" flag in the student CSV import so flagged students keep their assignments. Breakdown + test plan.</span>
             </span>
-            <span class="pill bg-amber-100 text-amber-900 border-amber-300 mt-0.5 hidden sm:inline-flex">In Review</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-amber-fill text-amber-text border-amber-border mt-0.5 hidden sm:inline-flex">In Review</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1564/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1564</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1564</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">busapp Validate-First</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Confirm <code class="k">POST /api/v1/mobile/busapp</code> rejects bad payloads with an immediate 400 instead of hanging for ~138s.</span>
+              <span class="block font-semibold text-ink">busapp Validate-First</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Confirm <code class="k">POST /api/v1/mobile/busapp</code> rejects bad payloads with an immediate 400 instead of hanging for ~138s.</span>
             </span>
-            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Steps</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-page text-body border-token mt-0.5 hidden sm:inline-flex">Test Steps</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1341/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1341</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1341</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Duplicate Route Fix</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Confirm that approving a route matching an existing driverless route merges into it (no duplicate) and fills in the driver. Tenant: testqa.</span>
+              <span class="block font-semibold text-ink">Duplicate Route Fix</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Confirm that approving a route matching an existing driverless route merges into it (no duplicate) and fills in the driver. Tenant: testqa.</span>
             </span>
-            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Steps</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-page text-body border-token mt-0.5 hidden sm:inline-flex">Test Steps</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1180/">
-            <span class="ticket text-emerald-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1180</span>
+            <span class="ticket text-emerald-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1180</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Add Bus Schedule — Nearest Stops Outside Walk Zone</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">EZRouting now surfaces the nearest stops beyond a student's walk zone, tagged <em>Outside Walk Zone</em>, on the Add Bus Schedule screen.</span>
+              <span class="block font-semibold text-ink">Add Bus Schedule — Nearest Stops Outside Walk Zone</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">EZRouting now surfaces the nearest stops beyond a student's walk zone, tagged <em>Outside Walk Zone</em>, on the Add Bus Schedule screen.</span>
             </span>
-            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Test Steps</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-page text-body border-token mt-0.5 hidden sm:inline-flex">Test Steps</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
       </ul>
     </section>
 
     <!-- Root Cause & Findings -->
-    <section class="report-group bg-white border-2 border-slate-300 rounded-2xl main-card" data-category="rootcause">
+    <section class="report-group bg-surface border-2 border-token rounded-2xl main-card" data-category="rootcause">
       <div class="px-7 sm:px-9 pt-7 sm:pt-8 pb-2">
         <div class="flex items-center gap-3 mb-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-purple-800">Root Cause &amp; Findings</div>
+          <span class="w-2.5 h-2.5 rounded-full bg-purple-solid"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-purple-text">Root Cause &amp; Findings</div>
         </div>
-        <p class="text-slate-600 text-sm leading-relaxed ml-[1.375rem]">Investigations: where a bug comes from, and the evidence behind the fix.</p>
+        <p class="text-mute text-sm leading-relaxed ml-[1.375rem]">Investigations: where a bug comes from, and the evidence behind the fix.</p>
       </div>
-      <ul class="divide-y divide-slate-200">
+      <ul class="divide-y divide-hairline">
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1653/">
-            <span class="ticket text-purple-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1653</span>
+            <span class="ticket text-purple-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1653</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Route Split Stops Leak</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">When a route is split across buses in Trip Preparation, one destination bus shows the other bus's stops. Root cause + test steps.</span>
+              <span class="block font-semibold text-ink">Route Split Stops Leak</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">When a route is split across buses in Trip Preparation, one destination bus shows the other bus's stops. Root cause + test steps.</span>
             </span>
-            <span class="pill bg-rose-100 text-rose-900 border-rose-300 mt-0.5 hidden sm:inline-flex">Root Cause</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-rose-fill text-rose-text border-rose-border mt-0.5 hidden sm:inline-flex">Root Cause</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1276/">
-            <span class="ticket text-purple-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1276</span>
+            <span class="ticket text-purple-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1276</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Student Record Save Latency Spike</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Where the save-latency spike comes from on the student record path, with a post-save request waterfall.</span>
+              <span class="block font-semibold text-ink">Student Record Save Latency Spike</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Where the save-latency spike comes from on the student record path, with a post-save request waterfall.</span>
               <span class="mt-1.5 flex flex-wrap gap-2 text-xs">
-                <a href="ezrd-1276/post-save-waterfall.html" class="inline-flex items-center gap-1 text-purple-700 hover:text-purple-900 hover:underline font-medium" onclick="event.stopPropagation()">↳ Post-Save Waterfall Analysis</a>
+                <a href="ezrd-1276/post-save-waterfall.html" class="inline-flex items-center gap-1 text-purple-text hover:text-purple-text hover:underline font-medium" onclick="event.stopPropagation()">↳ Post-Save Waterfall Analysis</a>
               </span>
             </span>
-            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Spike Findings</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-page text-body border-token mt-0.5 hidden sm:inline-flex">Spike Findings</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-976/">
-            <span class="ticket text-purple-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-976</span>
+            <span class="ticket text-purple-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-976</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">GPS Ingestion Simulation</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Simulating the GPS ingestion path — including the dropped-coordinate warning — to reproduce and characterize the behavior.</span>
+              <span class="block font-semibold text-ink">GPS Ingestion Simulation</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Simulating the GPS ingestion path — including the dropped-coordinate warning — to reproduce and characterize the behavior.</span>
             </span>
-            <span class="pill bg-slate-100 text-slate-700 border-slate-300 mt-0.5 hidden sm:inline-flex">Report</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-page text-body border-token mt-0.5 hidden sm:inline-flex">Report</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
       </ul>
     </section>
 
     <!-- Migration & Infrastructure -->
-    <section class="report-group bg-white border-2 border-slate-300 rounded-2xl main-card" data-category="infra">
+    <section class="report-group bg-surface border-2 border-token rounded-2xl main-card" data-category="infra">
       <div class="px-7 sm:px-9 pt-7 sm:pt-8 pb-2">
         <div class="flex items-center gap-3 mb-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-          <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Migration &amp; Infrastructure</div>
+          <span class="w-2.5 h-2.5 rounded-full bg-sky-solid"></span>
+          <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Migration &amp; Infrastructure</div>
         </div>
-        <p class="text-slate-600 text-sm leading-relaxed ml-[1.375rem]">EKS cutover plans, environment references, and legacy-parity strategy.</p>
+        <p class="text-mute text-sm leading-relaxed ml-[1.375rem]">EKS cutover plans, environment references, and legacy-parity strategy.</p>
       </div>
-      <ul class="divide-y divide-slate-200">
+      <ul class="divide-y divide-hairline">
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="export-student-buses-eks/">
-            <span class="ticket text-sky-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EKS Flow</span>
+            <span class="ticket text-sky-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EKS Flow</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">export-student-buses — Proposed EKS Flow</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">One new module inside the existing <code class="k">crons-worker</code> pod; config and secrets move into source control. Same 30-min cadence for every client.</span>
+              <span class="block font-semibold text-ink">export-student-buses — Proposed EKS Flow</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">One new module inside the existing <code class="k">crons-worker</code> pod; config and secrets move into source control. Same 30-min cadence for every client.</span>
               <span class="mt-1.5 flex flex-wrap gap-2 text-xs">
-                <a href="export-student-buses-eks/export-student-buses-flow.html" class="inline-flex items-center gap-1 text-sky-700 hover:text-sky-900 hover:underline font-medium" onclick="event.stopPropagation()">↳ Legacy Data Flow (companion)</a>
+                <a href="export-student-buses-eks/export-student-buses-flow.html" class="inline-flex items-center gap-1 text-sky-text hover:text-sky-text hover:underline font-medium" onclick="event.stopPropagation()">↳ Legacy Data Flow (companion)</a>
               </span>
             </span>
-            <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300 mt-0.5 hidden sm:inline-flex">Proposed</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-emerald-fill text-emerald-text border-emerald-border mt-0.5 hidden sm:inline-flex">Proposed</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="ezrd-1462/">
-            <span class="ticket text-sky-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1462</span>
+            <span class="ticket text-sky-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">EZRD-1462</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">export-student-buses EKS Migration — Cutover &amp; Env Reference</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">Migrating the legacy 201-invocation crond launcher (30-min Mon–Fri) to a single BullMQ queue in the EKS crons-worker pod. Cutover status + AWS env reference.</span>
+              <span class="block font-semibold text-ink">export-student-buses EKS Migration — Cutover &amp; Env Reference</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">Migrating the legacy 201-invocation crond launcher (30-min Mon–Fri) to a single BullMQ queue in the EKS crons-worker pod. Cutover status + AWS env reference.</span>
             </span>
-            <span class="pill bg-sky-100 text-sky-900 border-sky-300 mt-0.5 hidden sm:inline-flex">Reference</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-sky-fill text-sky-text border-sky-border mt-0.5 hidden sm:inline-flex">Reference</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
         <li>
           <a class="report-row flex items-start gap-4 px-7 sm:px-9 py-4" href="legacy-cron-audit/">
-            <span class="ticket text-sky-800 pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">Cron Audit</span>
+            <span class="ticket text-sky-text pt-0.5 w-[4.75rem] sm:w-24 flex-shrink-0">Cron Audit</span>
             <span class="flex-1 min-w-0">
-              <span class="block font-semibold text-slate-950">Legacy Cron Output Audit — Parity Validation</span>
-              <span class="block text-sm text-slate-600 leading-snug mt-0.5">For each of the 22 legacy cron entries still on the EC2 host: what it produces, where output lands, and how to validate EKS parity.</span>
+              <span class="block font-semibold text-ink">Legacy Cron Output Audit — Parity Validation</span>
+              <span class="block text-sm text-mute leading-snug mt-0.5">For each of the 22 legacy cron entries still on the EC2 host: what it produces, where output lands, and how to validate EKS parity.</span>
             </span>
-            <span class="pill bg-amber-100 text-amber-900 border-amber-300 mt-0.5 hidden sm:inline-flex">Draft</span>
-            <span class="chevron text-slate-300 pt-1 flex-shrink-0" aria-hidden="true">→</span>
+            <span class="pill bg-amber-fill text-amber-text border-amber-border mt-0.5 hidden sm:inline-flex">Draft</span>
+            <span class="chevron text-mute pt-1 flex-shrink-0" aria-hidden="true">→</span>
           </a>
         </li>
       </ul>
@@ -664,18 +664,18 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
     <!-- Empty state (search with no matches) -->
     <div id="noResults" class="hidden text-center py-16">
-      <div class="text-slate-400 text-4xl mb-3">⌕</div>
-      <p class="text-slate-700 font-semibold text-lg">No reports match “<span id="noResultsTerm" class="text-slate-900"></span>”</p>
-      <p class="text-slate-500 text-sm mt-1">Try a ticket number (e.g. <code class="k">2059</code>) or a keyword like <code class="k">cutover</code>.</p>
+      <div class="text-mute text-4xl mb-3">⌕</div>
+      <p class="text-body font-semibold text-lg">No reports match “<span id="noResultsTerm" class="text-ink"></span>”</p>
+      <p class="text-mute text-sm mt-1">Try a ticket number (e.g. <code class="k">2059</code>) or a keyword like <code class="k">cutover</code>.</p>
       <button id="clearSearch" class="chip mt-4 mx-auto">Clear search</button>
     </div>
 
   </main>
 
   <footer class="max-w-6xl mx-auto px-6 pb-12 pt-2">
-    <div class="text-slate-500 text-sm text-center">
+    <div class="text-mute text-sm text-center">
       Internal engineering references · Pathwise K-12 Transportation ·
-      <a href="https://github.com/don-pathwise/engineering-reports" class="text-slate-600 hover:text-slate-900 hover:underline">source</a>
+      <a href="https://github.com/don-pathwise/engineering-reports" class="text-mute hover:text-ink hover:underline">source</a>
     </div>
   </footer>
 

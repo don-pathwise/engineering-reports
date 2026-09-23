@@ -297,28 +297,28 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 });
 </script>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+<body class="bg-page text-ink font-sans antialiased">
 
   <!-- HERO -->
-  <header class="border-b-2 border-slate-300 bg-white">
+  <header class="border-b-2 border-token bg-surface">
     <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
-      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 text-amber-900 text-sm font-bold tracking-wide uppercase mb-5 border border-amber-300">
-        <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-fill text-amber-text text-sm font-bold tracking-wide uppercase mb-5 border border-amber-border">
+        <span class="w-2 h-2 rounded-full bg-amber-solid"></span>
         In flight · revised 2026-05-13
       </div>
-      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mb-3">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink mb-3">
         export-student-buses EKS Migration — Cutover Status &amp; AWS Env Reference
       </h1>
-      <p class="text-lg sm:text-xl text-slate-700 max-w-3xl leading-relaxed">
-        <a href="https://pathwise.atlassian.net/browse/EZRD-1462" class="underline font-semibold text-slate-900">EZRD-1462</a> — migrating the legacy aarzhou crond launcher (201 invocations / 30-min Mon-Fri cadence) to a single BullMQ queue inside the EKS <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-base text-slate-900">crons-worker</code> pod. This page is the cutover punch list, the env-var reference, and the diary of what we got wrong on first pass and corrected.
+      <p class="text-lg sm:text-xl text-body max-w-3xl leading-relaxed">
+        <a href="https://pathwise.atlassian.net/browse/EZRD-1462" class="underline font-semibold text-ink">EZRD-1462</a> — migrating the legacy aarzhou crond launcher (201 invocations / 30-min Mon-Fri cadence) to a single BullMQ queue inside the EKS <code class="font-mono bg-chip px-1.5 py-0.5 rounded text-base text-ink">crons-worker</code> pod. This page is the cutover punch list, the env-var reference, and the diary of what we got wrong on first pass and corrected.
       </p>
 
       <div class="flex flex-wrap gap-2 mt-6">
-        <span class="pill bg-rose-100 text-rose-900 border-rose-300">★ Required</span>
-        <span class="pill bg-sky-100 text-sky-900 border-sky-300">○ Optional</span>
-        <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">✓ Done</span>
-        <span class="pill bg-amber-100 text-amber-900 border-amber-300">⚑ Ops / external</span>
-        <span class="pill bg-purple-100 text-purple-900 border-purple-300">↺ Corrected</span>
+        <span class="pill bg-rose-fill text-rose-text border-rose-border">★ Required</span>
+        <span class="pill bg-sky-fill text-sky-text border-sky-border">○ Optional</span>
+        <span class="pill bg-emerald-fill text-emerald-text border-emerald-border">✓ Done</span>
+        <span class="pill bg-amber-fill text-amber-text border-amber-border">⚑ Ops / external</span>
+        <span class="pill bg-purple-fill text-purple-text border-purple-border">↺ Corrected</span>
       </div>
     </div>
   </header>
@@ -326,18 +326,18 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-5">
 
     <!-- ═════════ CORRECTIONS BANNER ═════════ -->
-    <section class="bg-purple-50 border-2 border-purple-300 rounded-2xl p-6 sm:p-7 mb-2">
+    <section class="bg-purple-fill border-2 border-purple-border rounded-2xl p-6 sm:p-7 mb-2">
       <div class="flex items-start gap-4">
-        <div class="text-purple-900 text-2xl flex-shrink-0 leading-none">↺</div>
+        <div class="text-purple-text text-2xl flex-shrink-0 leading-none">↺</div>
         <div class="flex-1">
-          <div class="text-purple-900 font-bold text-sm tracking-wider uppercase mb-2">Corrections vs. the 2026-05-12 plan</div>
-          <ul class="space-y-2 text-slate-800 text-base leading-relaxed">
+          <div class="text-purple-text font-bold text-sm tracking-wider uppercase mb-2">Corrections vs. the 2026-05-12 plan</div>
+          <ul class="space-y-2 text-ink text-base leading-relaxed">
             <li>
-              <strong class="text-slate-950">"ESO auto-surfaces every payload key as a pod env var."</strong>
+              <strong class="text-ink">"ESO auto-surfaces every payload key as a pod env var."</strong>
               False. The chart's <code class="k">ezrouting.externalSecretsEnv</code> helper uses per-key <code class="k">secretKeyRef</code> — not <code class="k">envFrom: secretRef</code>. ESO populates the K8s Secret with every JSON field, but only keys enumerated in <code class="k">_helpers.tpl</code> reach the pod. Wired in <a class="underline font-semibold" href="https://github.com/TransActComm/ezrd-gitops/pull/188">ezrd-gitops PR #188</a>.
             </li>
             <li>
-              <strong class="text-slate-950">"Add an IRSA grant for crons-worker."</strong>
+              <strong class="text-ink">"Add an IRSA grant for crons-worker."</strong>
               The crons-worker pod has no IRSA. <code class="k">serviceAccount.create: false</code> in the ezrouting chart; an <code class="k">ezrd-app-role</code> IRSA module exists in <code class="k">ezrd-infra/terraform/modules/iam</code> but isn't attached to any SA. The active path is the static <code class="k">ezrd-app-&lt;env&gt;</code> IAM user (provisioned by <code class="k">s3-ezrouting</code>) which already has <code class="k">s3:PutObject</code> on the whole <code class="k">ezrd-&lt;env&gt;-ezrouting</code> bucket. <a class="underline font-semibold" href="https://github.com/TransActComm/ezrouting/pull/1477">Routing PR #1477</a> passes those creds explicitly to <code class="k">new S3Client(...)</code> for shadow mode — no IRSA wiring needed.
             </li>
           </ul>
@@ -346,61 +346,61 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ STATUS DASHBOARD ═════════ -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-slate-200 text-slate-900 step-number flex-shrink-0">0</div>
+          <div class="badge-num bg-chip text-ink step-number flex-shrink-0">0</div>
           <div class="flex-1 pt-1">
-            <div class="text-sm font-bold tracking-wider uppercase text-slate-800 mb-1">Today</div>
-            <h2 class="text-2xl font-bold text-slate-950 mb-2">Where the work sits</h2>
+            <div class="text-sm font-bold tracking-wider uppercase text-ink mb-1">Today</div>
+            <h2 class="text-2xl font-bold text-ink mb-2">Where the work sits</h2>
           </div>
         </div>
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
           <table class="w-full text-sm min-w-[860px]">
             <thead>
-              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+              <tr class="bg-chip text-ink text-xs font-bold tracking-wider uppercase">
                 <th class="text-left px-4 py-3">Workstream</th>
                 <th class="text-left px-4 py-3">Where</th>
                 <th class="text-left px-4 py-3">Status</th>
                 <th class="text-left px-4 py-3">Notes</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200">
-              <tr class="hover:bg-slate-50 align-top">
-                <td class="px-4 py-3 font-semibold text-slate-950">Routing — BullMQ module + worker</td>
+            <tbody class="divide-y divide-hairline">
+              <tr class="hover:bg-surface-2 align-top">
+                <td class="px-4 py-3 font-semibold text-ink">Routing — BullMQ module + worker</td>
                 <td class="px-4 py-3"><a class="underline" href="https://github.com/TransActComm/ezrouting/pull/1477">ezrouting PR #1477</a></td>
-                <td class="px-4 py-3"><span class="pill bg-amber-100 text-amber-900 border-amber-300">⚑ Open / in review</span></td>
-                <td class="px-4 py-3 text-slate-600 text-xs">Includes shadow-mode S3 cred plumbing and dry-run password redaction. Copilot review addressed.</td>
+                <td class="px-4 py-3"><span class="pill bg-amber-fill text-amber-text border-amber-border">⚑ Open / in review</span></td>
+                <td class="px-4 py-3 text-mute text-xs">Includes shadow-mode S3 cred plumbing and dry-run password redaction. Copilot review addressed.</td>
               </tr>
-              <tr class="hover:bg-slate-50 align-top">
-                <td class="px-4 py-3 font-semibold text-slate-950">Gitops — dev SHADOW_PATH + 8 SFTP secret keys</td>
+              <tr class="hover:bg-surface-2 align-top">
+                <td class="px-4 py-3 font-semibold text-ink">Gitops — dev SHADOW_PATH + 8 SFTP secret keys</td>
                 <td class="px-4 py-3"><a class="underline" href="https://github.com/TransActComm/ezrd-gitops/pull/188">ezrd-gitops PR #188</a></td>
-                <td class="px-4 py-3"><span class="pill bg-amber-100 text-amber-900 border-amber-300">⚑ Open / awaiting merge</span></td>
-                <td class="px-4 py-3 text-slate-600 text-xs">Adds <code class="k">EXPORT_STUDENT_BUSES_SHADOW_PATH</code> in dev overlay and the 8 per-client <code class="k">EZROUTING_SFTP_PASSWORD_*</code> keys to the chart helper (<code class="k">optional: true</code>).</td>
+                <td class="px-4 py-3"><span class="pill bg-amber-fill text-amber-text border-amber-border">⚑ Open / awaiting merge</span></td>
+                <td class="px-4 py-3 text-mute text-xs">Adds <code class="k">EXPORT_STUDENT_BUSES_SHADOW_PATH</code> in dev overlay and the 8 per-client <code class="k">EZROUTING_SFTP_PASSWORD_*</code> keys to the chart helper (<code class="k">optional: true</code>).</td>
               </tr>
-              <tr class="hover:bg-slate-50 align-top">
-                <td class="px-4 py-3 font-semibold text-slate-950">Infra — AWS Secrets Manager seed</td>
+              <tr class="hover:bg-surface-2 align-top">
+                <td class="px-4 py-3 font-semibold text-ink">Infra — AWS Secrets Manager seed</td>
                 <td class="px-4 py-3"><code class="k">ezrd/&lt;env&gt;/ezrouting</code></td>
-                <td class="px-4 py-3"><span class="pill bg-rose-100 text-rose-900 border-rose-300">★ Pending</span></td>
-                <td class="px-4 py-3 text-slate-600 text-xs">Seed 8 per-client passwords into the dev/uat/prd payload. Pure cosmetic for dev shadow validation (managed mode bypasses SFTP), required before prd cutover.</td>
+                <td class="px-4 py-3"><span class="pill bg-rose-fill text-rose-text border-rose-border">★ Pending</span></td>
+                <td class="px-4 py-3 text-mute text-xs">Seed 8 per-client passwords into the dev/uat/prd payload. Pure cosmetic for dev shadow validation (managed mode bypasses SFTP), required before prd cutover.</td>
               </tr>
-              <tr class="hover:bg-slate-50 align-top">
-                <td class="px-4 py-3 font-semibold text-slate-950">Infra — IRSA grant on shadow prefix</td>
+              <tr class="hover:bg-surface-2 align-top">
+                <td class="px-4 py-3 font-semibold text-ink">Infra — IRSA grant on shadow prefix</td>
                 <td class="px-4 py-3">—</td>
-                <td class="px-4 py-3"><span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">✓ Not needed</span></td>
-                <td class="px-4 py-3 text-slate-600 text-xs">Earlier plan assumed IRSA. Crons-worker uses the existing static IAM user; that user's policy already covers the shadow prefix.</td>
+                <td class="px-4 py-3"><span class="pill bg-emerald-fill text-emerald-text border-emerald-border">✓ Not needed</span></td>
+                <td class="px-4 py-3 text-mute text-xs">Earlier plan assumed IRSA. Crons-worker uses the existing static IAM user; that user's policy already covers the shadow prefix.</td>
               </tr>
-              <tr class="hover:bg-slate-50 align-top">
-                <td class="px-4 py-3 font-semibold text-slate-950">Customer ops — EKS NAT egress allowlist (8 districts)</td>
+              <tr class="hover:bg-surface-2 align-top">
+                <td class="px-4 py-3 font-semibold text-ink">Customer ops — EKS NAT egress allowlist (8 districts)</td>
                 <td class="px-4 py-3">—</td>
-                <td class="px-4 py-3"><span class="pill bg-rose-100 text-rose-900 border-rose-300">★ Pending</span></td>
-                <td class="px-4 py-3 text-slate-600 text-xs">Required before any external-SFTP job fires in prd. Shadow mode bypasses entirely so this doesn't block dev validation.</td>
+                <td class="px-4 py-3"><span class="pill bg-rose-fill text-rose-text border-rose-border">★ Pending</span></td>
+                <td class="px-4 py-3 text-mute text-xs">Required before any external-SFTP job fires in prd. Shadow mode bypasses entirely so this doesn't block dev validation.</td>
               </tr>
-              <tr class="hover:bg-slate-50 align-top">
-                <td class="px-4 py-3 font-semibold text-slate-950">Infra — private-IP routing for <code class="k">stfrancismn</code></td>
+              <tr class="hover:bg-surface-2 align-top">
+                <td class="px-4 py-3 font-semibold text-ink">Infra — private-IP routing for <code class="k">stfrancismn</code></td>
                 <td class="px-4 py-3"><code class="k">10.32.15.214</code></td>
-                <td class="px-4 py-3"><span class="pill bg-amber-100 text-amber-900 border-amber-300">⚑ Open question</span></td>
-                <td class="px-4 py-3 text-slate-600 text-xs">VPN, peering, or relay. Per-job isolation absorbs the failure until resolved.</td>
+                <td class="px-4 py-3"><span class="pill bg-amber-fill text-amber-text border-amber-border">⚑ Open question</span></td>
+                <td class="px-4 py-3 text-mute text-xs">VPN, peering, or relay. Per-job isolation absorbs the failure until resolved.</td>
               </tr>
             </tbody>
           </table>
@@ -409,23 +409,23 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ §1 — SECRETS MANAGER KEYS ═════════ -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-rose-200 text-rose-900 step-number flex-shrink-0">1</div>
+          <div class="badge-num bg-rose-border text-rose-text step-number flex-shrink-0">1</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
-              <div class="text-sm font-bold tracking-wider uppercase text-rose-800">AWS Secrets Manager</div>
-              <span class="pill bg-rose-100 text-rose-900 border-rose-300">★ Required</span>
+              <div class="text-sm font-bold tracking-wider uppercase text-rose-text">AWS Secrets Manager</div>
+              <span class="pill bg-rose-fill text-rose-text border-rose-border">★ Required</span>
             </div>
-            <h2 class="text-2xl font-bold text-slate-950 mb-2">8 SFTP password keys × 3 envs</h2>
-            <p class="text-slate-700 leading-relaxed">
-              Stored under <code class="font-mono bg-slate-200 px-1.5 py-0.5 rounded text-sm text-slate-900">ezrd/&lt;env&gt;/ezrouting</code> for each of <strong class="text-slate-950">dev</strong>, <strong class="text-slate-950">uat</strong>, and <strong class="text-slate-950">prd</strong>. ESO's <code class="k">dataFrom.extract</code> pulls every JSON field into the K8s Secret, but the chart helper enumerates each pod env var explicitly via <code class="k">secretKeyRef</code> — both halves must be wired. Helper side landed in <a class="underline font-semibold" href="https://github.com/TransActComm/ezrd-gitops/pull/188">ezrd-gitops PR #188</a>; Secrets Manager seeding is what's left.
+            <h2 class="text-2xl font-bold text-ink mb-2">8 SFTP password keys × 3 envs</h2>
+            <p class="text-body leading-relaxed">
+              Stored under <code class="font-mono bg-chip px-1.5 py-0.5 rounded text-sm text-ink">ezrd/&lt;env&gt;/ezrouting</code> for each of <strong class="text-ink">dev</strong>, <strong class="text-ink">uat</strong>, and <strong class="text-ink">prd</strong>. ESO's <code class="k">dataFrom.extract</code> pulls every JSON field into the K8s Secret, but the chart helper enumerates each pod env var explicitly via <code class="k">secretKeyRef</code> — both halves must be wired. Helper side landed in <a class="underline font-semibold" href="https://github.com/TransActComm/ezrd-gitops/pull/188">ezrd-gitops PR #188</a>; Secrets Manager seeding is what's left.
             </p>
           </div>
         </div>
 
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
           <table class="w-full text-sm min-w-[860px]">
             <colgroup>
               <col class="w-10">
@@ -434,130 +434,130 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
               <col class="w-[22%]">
             </colgroup>
             <thead>
-              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+              <tr class="bg-chip text-ink text-xs font-bold tracking-wider uppercase">
                 <th class="text-left px-4 py-3"></th>
                 <th class="text-left px-4 py-3">Secret key (env var)</th>
                 <th class="text-left px-4 py-3">SFTP destination</th>
                 <th class="text-left px-4 py-3">YAML entry</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200">
-              <tr class="hover:bg-slate-50">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+            <tbody class="divide-y divide-hairline">
+              <tr class="hover:bg-surface-2">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3"><code class="k">EZROUTING_SFTP_PASSWORD_NEWARKOH</code></td>
-                <td class="px-4 py-3 text-slate-600 text-xs break-all">newarkcitysd@ftp.swiftwavenetwork.com:9922</td>
+                <td class="px-4 py-3 text-mute text-xs break-all">newarkcitysd@ftp.swiftwavenetwork.com:9922</td>
                 <td class="px-4 py-3"><code class="k">newarkoh-buses</code></td>
               </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3"><code class="k">EZROUTING_SFTP_PASSWORD_CALDWELLNC</code></td>
-                <td class="px-4 py-3 text-slate-600 text-xs break-all">caldwellschools18202@caldwellschools-files.parentlink.net:22</td>
+                <td class="px-4 py-3 text-mute text-xs break-all">caldwellschools18202@caldwellschools-files.parentlink.net:22</td>
                 <td class="px-4 py-3"><code class="k">caldwellnc-external-buses</code></td>
               </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3"><code class="k">EZROUTING_SFTP_PASSWORD_MONTGOMERYMO</code></td>
-                <td class="px-4 py-3 text-slate-600 text-xs break-all">mcr2sftp@67.221.223.230:22</td>
+                <td class="px-4 py-3 text-mute text-xs break-all">mcr2sftp@67.221.223.230:22</td>
                 <td class="px-4 py-3">
                   <code class="k">montgomerymo-external-buses</code><br>
                   <code class="k">montgomerymo-mcr2-busexport</code>
                 </td>
               </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3"><code class="k">EZROUTING_SFTP_PASSWORD_SANBMN</code></td>
-                <td class="px-4 py-3 text-slate-600 text-xs break-all">stanthony@54.158.77.160:14444</td>
+                <td class="px-4 py-3 text-mute text-xs break-all">stanthony@54.158.77.160:14444</td>
                 <td class="px-4 py-3"><code class="k">sanbmn-buses</code></td>
               </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3">
                   <code class="k">EZROUTING_SFTP_PASSWORD_STFRANCISMN</code>
-                  <span class="inline-flex items-center gap-1 ml-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300 align-middle">private IP — see §3</span>
+                  <span class="inline-flex items-center gap-1 ml-1 px-2 py-0.5 rounded-md bg-amber-fill text-amber-text text-xs font-bold border border-amber-border align-middle">private IP — see §3</span>
                 </td>
-                <td class="px-4 py-3 text-slate-600 text-xs break-all">campus@10.32.15.214:22</td>
+                <td class="px-4 py-3 text-mute text-xs break-all">campus@10.32.15.214:22</td>
                 <td class="px-4 py-3"><code class="k">stfrancismn-buses</code></td>
               </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3"><code class="k">EZROUTING_SFTP_PASSWORD_DSBUSLA</code></td>
-                <td class="px-4 py-3 text-slate-600 text-xs break-all">beaconsftp.sis…laschoolrouteuploader@beaconsftp.blob.core.windows.net:22</td>
+                <td class="px-4 py-3 text-mute text-xs break-all">beaconsftp.sis…laschoolrouteuploader@beaconsftp.blob.core.windows.net:22</td>
                 <td class="px-4 py-3"><code class="k">dsbusla-magn-bus-info2</code></td>
               </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3"><code class="k">EZROUTING_SFTP_PASSWORD_LARCALA</code></td>
-                <td class="px-4 py-3 text-slate-600 text-xs break-all">beaconsftp.sis…ladistrictrouteuploader@beaconsftp.blob.core.windows.net:22</td>
+                <td class="px-4 py-3 text-mute text-xs break-all">beaconsftp.sis…ladistrictrouteuploader@beaconsftp.blob.core.windows.net:22</td>
                 <td class="px-4 py-3"><code class="k">larcala-lafa-bus-info2</code></td>
               </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3"><code class="k">EZROUTING_SFTP_PASSWORD_IPCALA</code></td>
-                <td class="px-4 py-3 text-slate-600 text-xs break-all">beaconsftp.sis…ladistrictrouteuploader@beaconsftp.blob.core.windows.net:22</td>
+                <td class="px-4 py-3 text-mute text-xs break-all">beaconsftp.sis…ladistrictrouteuploader@beaconsftp.blob.core.windows.net:22</td>
                 <td class="px-4 py-3"><code class="k">ipcala-iber-bus-info2</code></td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div class="bg-amber-50 border-2 border-amber-300 rounded-lg p-4 mt-5 text-slate-800 leading-relaxed text-sm">
-          <strong class="text-slate-950">Plaintext passwords are redacted from this page.</strong>
+        <div class="bg-amber-fill border-2 border-amber-border rounded-lg p-4 mt-5 text-ink leading-relaxed text-sm">
+          <strong class="text-ink">Plaintext passwords are redacted from this page.</strong>
           Definitive values live in the local OneDrive AWS env checklist and in <code class="k">ezrd-async</code>'s legacy launcher script. Source of truth post-cutover is AWS Secrets Manager.
         </div>
-        <div class="bg-slate-100 border-2 border-slate-300 rounded-lg p-4 mt-3 text-slate-800 leading-relaxed text-sm">
-          <strong class="text-slate-950">9 external YAML entries → 8 unique secret keys.</strong>
+        <div class="bg-page border-2 border-token rounded-lg p-4 mt-3 text-ink leading-relaxed text-sm">
+          <strong class="text-ink">9 external YAML entries → 8 unique secret keys.</strong>
           Both <code class="k">montgomerymo</code> entries share one destination (different file shapes, same creds). A 10th candidate (<code class="k">cowetaga</code>, line 206 of the legacy launcher) is commented out — not seeded.
         </div>
       </div>
     </section>
 
     <!-- ═════════ §2 — OPTIONAL ENV VARS ═════════ -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-sky-200 text-sky-900 step-number flex-shrink-0">2</div>
+          <div class="badge-num bg-sky-border text-sky-text step-number flex-shrink-0">2</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
-              <div class="text-sm font-bold tracking-wider uppercase text-sky-800">Pod env vars</div>
-              <span class="pill bg-sky-100 text-sky-900 border-sky-300">○ Optional</span>
+              <div class="text-sm font-bold tracking-wider uppercase text-sky-text">Pod env vars</div>
+              <span class="pill bg-sky-fill text-sky-text border-sky-border">○ Optional</span>
             </div>
-            <h2 class="text-2xl font-bold text-slate-950 mb-2">Tuning knobs (not secrets)</h2>
-            <p class="text-slate-700 leading-relaxed">
+            <h2 class="text-2xl font-bold text-ink mb-2">Tuning knobs (not secrets)</h2>
+            <p class="text-body leading-relaxed">
               Plain Helm values under <code class="k">envFromValues</code> in the env overlay. Materialized as pod env vars by the chart's <code class="k">ezrouting.externalSecretsEnv</code> helper, which iterates the map alphabetically.
             </p>
           </div>
         </div>
 
         <div class="space-y-4">
-          <div class="bg-sky-50 border-2 border-sky-200 rounded-xl p-5">
+          <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
-              <code class="font-mono bg-white px-2 py-1 rounded text-sm text-slate-900 border border-sky-200 font-semibold">EXPORT_STUDENT_BUSES_CONCURRENCY</code>
-              <span class="text-xs font-bold text-sky-800">DEFAULT: <code class="font-mono">3</code></span>
-              <span class="pill bg-sky-100 text-sky-900 border-sky-300">○ Optional</span>
+              <code class="font-mono bg-surface px-2 py-1 rounded text-sm text-ink border border-sky-border font-semibold">EXPORT_STUDENT_BUSES_CONCURRENCY</code>
+              <span class="text-xs font-bold text-sky-text">DEFAULT: <code class="font-mono">3</code></span>
+              <span class="pill bg-sky-fill text-sky-text border-sky-border">○ Optional</span>
             </div>
-            <p class="text-slate-700 text-sm leading-relaxed">
+            <p class="text-body text-sm leading-relaxed">
               Override worker concurrency. Bump to <code class="k">4</code>–<code class="k">5</code> if back-to-school surge pushes the 30-min window; drop to <code class="k">2</code> if pod memory is tight. Resolution order: env var → <code class="k">configuration.cronJobConcurrency.exportStudentBuses</code> → default. No code change required.
             </p>
           </div>
 
-          <div class="bg-sky-50 border-2 border-sky-200 rounded-xl p-5">
+          <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
-              <code class="font-mono bg-white px-2 py-1 rounded text-sm text-slate-900 border border-sky-200 font-semibold">EXPORT_STUDENT_BUSES_SHADOW_PATH</code>
-              <span class="text-xs font-bold text-sky-800">DEV: <code class="font-mono">s3://ezrd-dev-ezrouting/export-student-buses-shadow/</code></span>
-              <span class="pill bg-amber-100 text-amber-900 border-amber-300">⚑ Wired in <a class="underline" href="https://github.com/TransActComm/ezrd-gitops/pull/188">PR #188</a></span>
+              <code class="font-mono bg-surface px-2 py-1 rounded text-sm text-ink border border-sky-border font-semibold">EXPORT_STUDENT_BUSES_SHADOW_PATH</code>
+              <span class="text-xs font-bold text-sky-text">DEV: <code class="font-mono">s3://ezrd-dev-ezrouting/export-student-buses-shadow/</code></span>
+              <span class="pill bg-amber-fill text-amber-text border-amber-border">⚑ Wired in <a class="underline" href="https://github.com/TransActComm/ezrd-gitops/pull/188">PR #188</a></span>
             </div>
-            <p class="text-slate-700 text-sm leading-relaxed">
-              Validation-phase only. When set, the worker's <code class="k">maybeAttachShadowExec</code> diverts <em>all</em> uploads to S3 instead of real SFTP. Object lands at <code class="k">&lt;bucket&gt;/&lt;prefix&gt;/&lt;entryName&gt;/&lt;filename&gt;</code>. Accepts a full <code class="k">s3://bucket/prefix</code> URL <strong class="text-slate-950">or</strong> a bare prefix (then needs the bucket var below). Dev uses the existing app bucket — the static <code class="k">ezrd-app-dev</code> IAM user already has <code class="k">s3:PutObject</code> on the whole bucket, so no IAM work is required.
+            <p class="text-body text-sm leading-relaxed">
+              Validation-phase only. When set, the worker's <code class="k">maybeAttachShadowExec</code> diverts <em>all</em> uploads to S3 instead of real SFTP. Object lands at <code class="k">&lt;bucket&gt;/&lt;prefix&gt;/&lt;entryName&gt;/&lt;filename&gt;</code>. Accepts a full <code class="k">s3://bucket/prefix</code> URL <strong class="text-ink">or</strong> a bare prefix (then needs the bucket var below). Dev uses the existing app bucket — the static <code class="k">ezrd-app-dev</code> IAM user already has <code class="k">s3:PutObject</code> on the whole bucket, so no IAM work is required.
             </p>
           </div>
 
-          <div class="bg-sky-50 border-2 border-sky-200 rounded-xl p-5">
+          <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
-              <code class="font-mono bg-white px-2 py-1 rounded text-sm text-slate-900 border border-sky-200 font-semibold">EXPORT_STUDENT_BUSES_SHADOW_BUCKET</code>
-              <span class="text-xs font-bold text-sky-800">DEFAULT: <em>unset</em></span>
-              <span class="pill bg-sky-100 text-sky-900 border-sky-300">○ Optional</span>
+              <code class="font-mono bg-surface px-2 py-1 rounded text-sm text-ink border border-sky-border font-semibold">EXPORT_STUDENT_BUSES_SHADOW_BUCKET</code>
+              <span class="text-xs font-bold text-sky-text">DEFAULT: <em>unset</em></span>
+              <span class="pill bg-sky-fill text-sky-text border-sky-border">○ Optional</span>
             </div>
-            <p class="text-slate-700 text-sm leading-relaxed">
+            <p class="text-body text-sm leading-relaxed">
               Required only if <code class="k">SHADOW_PATH</code> is a bare prefix (not a full <code class="k">s3://</code> URL). Ignored when <code class="k">SHADOW_PATH</code> is unset or already carries an <code class="k">s3://</code> scheme. Dev uses the full-URL form so this var stays unset.
             </p>
           </div>
@@ -566,23 +566,23 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ §3 — OTHER INFRA PREREQS ═════════ -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-amber-200 text-amber-900 step-number flex-shrink-0">3</div>
+          <div class="badge-num bg-amber-border text-amber-text step-number flex-shrink-0">3</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
-              <div class="text-sm font-bold tracking-wider uppercase text-amber-800">Other workstreams</div>
-              <span class="pill bg-amber-100 text-amber-900 border-amber-300">⚑ Ops</span>
+              <div class="text-sm font-bold tracking-wider uppercase text-amber-text">Other workstreams</div>
+              <span class="pill bg-amber-fill text-amber-text border-amber-border">⚑ Ops</span>
             </div>
-            <h2 class="text-2xl font-bold text-slate-950 mb-2">AWS infra prereqs (not in any of this work's PRs)</h2>
-            <p class="text-slate-700 leading-relaxed">
+            <h2 class="text-2xl font-bold text-ink mb-2">AWS infra prereqs (not in any of this work's PRs)</h2>
+            <p class="text-body leading-relaxed">
               Blocking for prod cutover, but tracked separately. Coordinate with the owning teams.
             </p>
           </div>
         </div>
 
-        <div class="bg-slate-50 border-2 border-slate-300 rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
           <table class="w-full text-sm min-w-[860px]">
             <colgroup>
               <col class="w-10">
@@ -592,7 +592,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
               <col>
             </colgroup>
             <thead>
-              <tr class="bg-slate-200 text-slate-800 text-xs font-bold tracking-wider uppercase">
+              <tr class="bg-chip text-ink text-xs font-bold tracking-wider uppercase">
                 <th class="text-left px-4 py-3"></th>
                 <th class="text-left px-4 py-3">Item</th>
                 <th class="text-left px-4 py-3">Owner</th>
@@ -600,45 +600,45 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
                 <th class="text-left px-4 py-3">Notes</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200">
-              <tr class="hover:bg-slate-50 align-top bg-emerald-50">
-                <td class="px-4 py-3"><input type="checkbox" checked class="w-4 h-4 rounded border-slate-400"></td>
+            <tbody class="divide-y divide-hairline">
+              <tr class="hover:bg-surface-2 align-top bg-emerald-fill">
+                <td class="px-4 py-3"><input type="checkbox" checked class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3">
-                  <span class="strike-line"><strong class="text-slate-950">IRSA role:</strong> <code class="k">s3:PutObject</code> on shadow bucket/prefix for <code class="k">crons-worker</code> pod</span><br>
-                  <span class="text-emerald-900 text-xs font-semibold">↺ Not needed — see correction below</span>
+                  <span class="strike-line"><strong class="text-ink">IRSA role:</strong> <code class="k">s3:PutObject</code> on shadow bucket/prefix for <code class="k">crons-worker</code> pod</span><br>
+                  <span class="text-emerald-text text-xs font-semibold">↺ Not needed — see correction below</span>
                 </td>
-                <td class="px-4 py-3 text-slate-700">—</td>
-                <td class="px-4 py-3 text-slate-700">—</td>
-                <td class="px-4 py-3 text-slate-700 text-xs">
+                <td class="px-4 py-3 text-body">—</td>
+                <td class="px-4 py-3 text-body">—</td>
+                <td class="px-4 py-3 text-body text-xs">
                   Crons-worker pod has no IRSA. The <code class="k">ezrd-app-&lt;env&gt;</code> static IAM user (from <code class="k">terraform/modules/s3-ezrouting</code>) already has <code class="k">s3:PutObject</code> on the whole <code class="k">ezrd-&lt;env&gt;-ezrouting</code> bucket. <a class="underline font-semibold" href="https://github.com/TransActComm/ezrouting/pull/1477">Routing PR #1477</a> threads those creds via <code class="k">configuration.aws</code> into <code class="k">new S3Client(...)</code>; default SDK chain isn't used.
                 </td>
               </tr>
-              <tr class="hover:bg-slate-50 align-top">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2 align-top">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3">
-                  <strong class="text-slate-950">EKS NAT egress IP</strong> allowlist on each of the 8 external SFTP destinations
+                  <strong class="text-ink">EKS NAT egress IP</strong> allowlist on each of the 8 external SFTP destinations
                 </td>
-                <td class="px-4 py-3 text-slate-700">Customer ops / success</td>
-                <td class="px-4 py-3 text-slate-700">Before any external job fires in prd</td>
-                <td class="px-4 py-3 text-slate-600 text-xs">Each customer firewall must allowlist the EKS cluster's NAT egress IP. Shadow mode bypasses SFTP entirely, so dev validation doesn't block on this.</td>
+                <td class="px-4 py-3 text-body">Customer ops / success</td>
+                <td class="px-4 py-3 text-body">Before any external job fires in prd</td>
+                <td class="px-4 py-3 text-mute text-xs">Each customer firewall must allowlist the EKS cluster's NAT egress IP. Shadow mode bypasses SFTP entirely, so dev validation doesn't block on this.</td>
               </tr>
-              <tr class="hover:bg-slate-50 align-top">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2 align-top">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3">
-                  <strong class="text-slate-950">Private-IP routing</strong> for <code class="k">stfrancismn</code> → <code class="k">10.32.15.214</code>
+                  <strong class="text-ink">Private-IP routing</strong> for <code class="k">stfrancismn</code> → <code class="k">10.32.15.214</code>
                 </td>
-                <td class="px-4 py-3 text-slate-700">Infra</td>
-                <td class="px-4 py-3 text-slate-700">That tenant's cutover only</td>
-                <td class="px-4 py-3 text-slate-600 text-xs">EKS pods can't reach private IPs by default. Needs VPN, VPC peering, or relay. Per-job isolation (BR-5) keeps the other 200 alive.</td>
+                <td class="px-4 py-3 text-body">Infra</td>
+                <td class="px-4 py-3 text-body">That tenant's cutover only</td>
+                <td class="px-4 py-3 text-mute text-xs">EKS pods can't reach private IPs by default. Needs VPN, VPC peering, or relay. Per-job isolation (BR-5) keeps the other 200 alive.</td>
               </tr>
-              <tr class="hover:bg-slate-50 align-top">
-                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-slate-400"></td>
+              <tr class="hover:bg-surface-2 align-top">
+                <td class="px-4 py-3"><input type="checkbox" class="w-4 h-4 rounded border-token"></td>
                 <td class="px-4 py-3">
-                  <strong class="text-slate-950">Datadog monitors</strong> for <code class="k">queue:export-student-buses</code>
+                  <strong class="text-ink">Datadog monitors</strong> for <code class="k">queue:export-student-buses</code>
                 </td>
-                <td class="px-4 py-3 text-slate-700">Auto-wired</td>
-                <td class="px-4 py-3 text-slate-700">Verification only</td>
-                <td class="px-4 py-3 text-slate-600 text-xs">Generated by <code class="k">monitors_bullmq.tf</code> in <code class="k">ezrd-infra</code> once the queue name appears. Verify after deploy.</td>
+                <td class="px-4 py-3 text-body">Auto-wired</td>
+                <td class="px-4 py-3 text-body">Verification only</td>
+                <td class="px-4 py-3 text-mute text-xs">Generated by <code class="k">monitors_bullmq.tf</code> in <code class="k">ezrd-infra</code> once the queue name appears. Verify after deploy.</td>
               </tr>
             </tbody>
           </table>
@@ -647,53 +647,53 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ §4 — ALREADY WIRED ═════════ -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-emerald-200 text-emerald-900 step-number flex-shrink-0">4</div>
+          <div class="badge-num bg-emerald-border text-emerald-text step-number flex-shrink-0">4</div>
           <div class="flex-1 pt-1">
             <div class="flex items-center gap-3 mb-1">
-              <div class="text-sm font-bold tracking-wider uppercase text-emerald-800">No action required</div>
-              <span class="pill bg-emerald-100 text-emerald-900 border-emerald-300">✓ Done</span>
+              <div class="text-sm font-bold tracking-wider uppercase text-emerald-text">No action required</div>
+              <span class="pill bg-emerald-fill text-emerald-text border-emerald-border">✓ Done</span>
             </div>
-            <h2 class="text-2xl font-bold text-slate-950 mb-2">Already in place — don't re-do</h2>
+            <h2 class="text-2xl font-bold text-ink mb-2">Already in place — don't re-do</h2>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
-            <div class="text-emerald-900 font-bold text-xs tracking-wider uppercase mb-2">ExternalSecret → K8s Secret</div>
-            <p class="text-slate-700 text-sm leading-relaxed">
-              <code class="k">ezrd-gitops/charts/ezrouting/templates/externalsecret.yaml</code> uses <code class="k">dataFrom.extract</code> against <code class="k">ezrd/&lt;env&gt;/ezrouting</code>. Every JSON field lands in the materialized K8s Secret automatically. <strong class="text-slate-950">But</strong> reaching the pod env still requires a <code class="k">secretKeyRef</code> entry in <code class="k">_helpers.tpl</code> (PR #188).
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+            <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">ExternalSecret → K8s Secret</div>
+            <p class="text-body text-sm leading-relaxed">
+              <code class="k">ezrd-gitops/charts/ezrouting/templates/externalsecret.yaml</code> uses <code class="k">dataFrom.extract</code> against <code class="k">ezrd/&lt;env&gt;/ezrouting</code>. Every JSON field lands in the materialized K8s Secret automatically. <strong class="text-ink">But</strong> reaching the pod env still requires a <code class="k">secretKeyRef</code> entry in <code class="k">_helpers.tpl</code> (PR #188).
             </p>
           </div>
-          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
-            <div class="text-emerald-900 font-bold text-xs tracking-wider uppercase mb-2">Managed SFTP creds (192/201)</div>
-            <p class="text-slate-700 text-sm leading-relaxed">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+            <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">Managed SFTP creds (192/201)</div>
+            <p class="text-body text-sm leading-relaxed">
               <code class="k">configuration.sftp</code> in <code class="k">config.json</code> already holds creds for <code class="k">sftp.ezrouting.com</code>. No Secrets Manager work for managed-mode entries.
             </p>
           </div>
-          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
-            <div class="text-emerald-900 font-bold text-xs tracking-wider uppercase mb-2">Redis (BullMQ)</div>
-            <p class="text-slate-700 text-sm leading-relaxed">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+            <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">Redis (BullMQ)</div>
+            <p class="text-body text-sm leading-relaxed">
               <code class="k">cron-jobs/redis-connection.js</code> reuses the existing connection used by every other cron module. Nothing new.
             </p>
           </div>
-          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
-            <div class="text-emerald-900 font-bold text-xs tracking-wider uppercase mb-2">S3 IAM for shadow mode</div>
-            <p class="text-slate-700 text-sm leading-relaxed">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+            <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">S3 IAM for shadow mode</div>
+            <p class="text-body text-sm leading-relaxed">
               <code class="k">ezrd-app-&lt;env&gt;</code> static IAM user has <code class="k">s3:PutObject</code> on <code class="k">ezrd-&lt;env&gt;-ezrouting/*</code>. Worker passes those creds explicitly via <code class="k">configuration.aws</code> (Routing PR #1477).
             </p>
           </div>
-          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
-            <div class="text-emerald-900 font-bold text-xs tracking-wider uppercase mb-2">Datadog logs/metrics</div>
-            <p class="text-slate-700 text-sm leading-relaxed">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+            <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">Datadog logs/metrics</div>
+            <p class="text-body text-sm leading-relaxed">
               <code class="k">app/datadog/index</code> helpers already used by every cron module. Just verify dashboards pick up the new queue name.
             </p>
           </div>
-          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-5">
-            <div class="text-emerald-900 font-bold text-xs tracking-wider uppercase mb-2">Dry-run password redaction</div>
-            <p class="text-slate-700 text-sm leading-relaxed">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+            <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">Dry-run password redaction</div>
+            <p class="text-body text-sm leading-relaxed">
               <code class="k">makeDryRunExec</code> runs every command through <code class="k">redactSshpassPassword()</code> before logging. <code class="k">sshpass -p &lt;value&gt;</code> (double-quoted, single-quoted, unquoted) is replaced with <code class="k">***REDACTED***</code>.
             </p>
           </div>
@@ -702,14 +702,14 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ §5 — CUTOVER ORDER ═════════ -->
-    <section class="bg-white border-2 border-slate-300 rounded-2xl main-card overflow-hidden">
+    <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
-          <div class="badge-num bg-purple-200 text-purple-900 step-number flex-shrink-0">5</div>
+          <div class="badge-num bg-purple-border text-purple-text step-number flex-shrink-0">5</div>
           <div class="flex-1 pt-1">
-            <div class="text-sm font-bold tracking-wider uppercase text-purple-800 mb-1">Sequence</div>
-            <h2 class="text-2xl font-bold text-slate-950 mb-2">Cutover order of operations</h2>
-            <p class="text-slate-700 leading-relaxed">
+            <div class="text-sm font-bold tracking-wider uppercase text-purple-text mb-1">Sequence</div>
+            <h2 class="text-2xl font-bold text-ink mb-2">Cutover order of operations</h2>
+            <p class="text-body leading-relaxed">
               Run top-to-bottom. Each step gates the next.
             </p>
           </div>
@@ -717,64 +717,64 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <ol class="space-y-4">
           <li class="flex gap-4 items-start">
-            <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
+            <div class="badge-num bg-chip text-ink flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">1</div>
             <div class="flex-1 pt-1">
-              <h3 class="text-base font-bold text-slate-950 mb-1">Seed Secrets Manager</h3>
-              <p class="text-slate-700 leading-relaxed text-sm">
-                <strong class="text-slate-950">ezrd-infra:</strong> add the 8 keys from §1 to <code class="k">ezrd/dev/ezrouting</code>, <code class="k">ezrd/uat/ezrouting</code>, <code class="k">ezrd/prd/ezrouting</code>. Optional for dev shadow validation (managed mode doesn't need them); required before any external prd job.
+              <h3 class="text-base font-bold text-ink mb-1">Seed Secrets Manager</h3>
+              <p class="text-body leading-relaxed text-sm">
+                <strong class="text-ink">ezrd-infra:</strong> add the 8 keys from §1 to <code class="k">ezrd/dev/ezrouting</code>, <code class="k">ezrd/uat/ezrouting</code>, <code class="k">ezrd/prd/ezrouting</code>. Optional for dev shadow validation (managed mode doesn't need them); required before any external prd job.
               </p>
             </div>
           </li>
           <li class="flex gap-4 items-start">
-            <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
+            <div class="badge-num bg-chip text-ink flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">2</div>
             <div class="flex-1 pt-1">
-              <h3 class="text-base font-bold text-slate-950 mb-1">Notify external-SFTP districts</h3>
-              <p class="text-slate-700 leading-relaxed text-sm">
-                <strong class="text-slate-950">Customer ops:</strong> share the EKS NAT egress IP with the 8 districts; collect allowlist confirmations.
+              <h3 class="text-base font-bold text-ink mb-1">Notify external-SFTP districts</h3>
+              <p class="text-body leading-relaxed text-sm">
+                <strong class="text-ink">Customer ops:</strong> share the EKS NAT egress IP with the 8 districts; collect allowlist confirmations.
               </p>
             </div>
           </li>
           <li class="flex gap-4 items-start">
-            <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
+            <div class="badge-num bg-chip text-ink flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">3</div>
             <div class="flex-1 pt-1">
-              <h3 class="text-base font-bold text-slate-950 mb-1">Solve private-IP routing for stfrancismn</h3>
-              <p class="text-slate-700 leading-relaxed text-sm">
-                <strong class="text-slate-950">Infra:</strong> VPN / peering / relay to <code class="k">10.32.15.214</code>. Or accept that tenant fails on day 1 (per-job isolation absorbs it).
+              <h3 class="text-base font-bold text-ink mb-1">Solve private-IP routing for stfrancismn</h3>
+              <p class="text-body leading-relaxed text-sm">
+                <strong class="text-ink">Infra:</strong> VPN / peering / relay to <code class="k">10.32.15.214</code>. Or accept that tenant fails on day 1 (per-job isolation absorbs it).
               </p>
             </div>
           </li>
           <li class="flex gap-4 items-start">
-            <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">4</div>
+            <div class="badge-num bg-chip text-ink flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">4</div>
             <div class="flex-1 pt-1">
-              <h3 class="text-base font-bold text-slate-950 mb-1">Merge gitops PR #188 + Routing PR #1477 → deploy dev</h3>
-              <p class="text-slate-700 leading-relaxed text-sm">
+              <h3 class="text-base font-bold text-ink mb-1">Merge gitops PR #188 + Routing PR #1477 → deploy dev</h3>
+              <p class="text-body leading-relaxed text-sm">
                 Merge order: gitops first (chart change is forward-compatible — <code class="k">optional: true</code> means missing keys stay unset), then Routing. Verify the tick fires every 30 min Mon-Fri ET, child jobs run, S3 objects appear under <code class="k">s3://ezrd-dev-ezrouting/export-student-buses-shadow/</code>.
               </p>
             </div>
           </li>
           <li class="flex gap-4 items-start">
-            <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">5</div>
+            <div class="badge-num bg-chip text-ink flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">5</div>
             <div class="flex-1 pt-1">
-              <h3 class="text-base font-bold text-slate-950 mb-1">Deploy uat → repeat verification</h3>
-              <p class="text-slate-700 leading-relaxed text-sm">
+              <h3 class="text-base font-bold text-ink mb-1">Deploy uat → repeat verification</h3>
+              <p class="text-body leading-relaxed text-sm">
                 Decide whether uat runs shadow-mode too (set <code class="k">EXPORT_STUDENT_BUSES_SHADOW_PATH</code> in the uat overlay) or goes straight to real SFTP.
               </p>
             </div>
           </li>
           <li class="flex gap-4 items-start">
-            <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">6</div>
+            <div class="badge-num bg-chip text-ink flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">6</div>
             <div class="flex-1 pt-1">
-              <h3 class="text-base font-bold text-slate-950 mb-1">Deploy prd → pick validation strategy</h3>
-              <p class="text-slate-700 leading-relaxed text-sm">
+              <h3 class="text-base font-bold text-ink mb-1">Deploy prd → pick validation strategy</h3>
+              <p class="text-body leading-relaxed text-sm">
                 OQ-6 — shadow / canary / schedule-offset / direct. Ops decision.
               </p>
             </div>
           </li>
           <li class="flex gap-4 items-start">
-            <div class="badge-num bg-slate-200 text-slate-900 flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">7</div>
+            <div class="badge-num bg-chip text-ink flex-shrink-0 step-number" style="width:2.25rem;height:2.25rem;font-size:1rem">7</div>
             <div class="flex-1 pt-1">
-              <h3 class="text-base font-bold text-slate-950 mb-1">Decommission legacy path</h3>
-              <p class="text-slate-700 leading-relaxed text-sm">
+              <h3 class="text-base font-bold text-ink mb-1">Decommission legacy path</h3>
+              <p class="text-body leading-relaxed text-sm">
                 Comment out aarzhou's <code class="k">crond</code> line. Delete legacy launcher from <code class="k">ezrd-async</code>. Retire dispatch script on <code class="k">sftp.ezrouting.com</code>.
               </p>
             </div>
@@ -783,7 +783,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       </div>
     </section>
 
-    <div class="text-slate-500 text-sm text-center pt-6">
+    <div class="text-mute text-sm text-center pt-6">
       Sources:
       <code class="k">openspec/changes/migrate-export-student-buses-to-eks/</code> (Routing &amp; ezrd-infra),
       <a class="underline" href="https://github.com/TransActComm/ezrouting/pull/1477">Routing PR #1477</a>,
