@@ -95,22 +95,32 @@ BORDER_W = {"light": "2px", "dark": "1px"}
 # shouts louder than another.
 _HUES = {"rose": 15, "sky": 240, "amber": 75, "emerald": 160, "purple": 300, "teal": 195}
 
+# `solid` is a fifth accent role: a solid badge background meant to carry white
+# text. It is THEME-INVARIANT — pinned to the light theme's `text` hex (the
+# darkest, most saturated step in the palette) in both light and dark, so a
+# `bg-{accent}-solid text-white` badge stays legible whichever theme is active.
+# See check_contrast.py's white-on-solid pairs for the verified ratios.
+_SOLID_HEX = {
+    "rose": "#9f1239", "sky": "#075985", "amber": "#92400e",
+    "emerald": "#065f46", "purple": "#6b21a8", "teal": "#115e59",
+}
+
 ACCENTS_HEX = {
     "light": {
-        "rose":    {"fill": "#ffe4e6", "border": "#fda4af", "text": "#9f1239", "dot": "#e11d48"},
-        "sky":     {"fill": "#e0f2fe", "border": "#7dd3fc", "text": "#075985", "dot": "#0284c7"},
-        "amber":   {"fill": "#fef3c7", "border": "#fcd34d", "text": "#92400e", "dot": "#d97706"},
-        "emerald": {"fill": "#d1fae5", "border": "#6ee7b7", "text": "#065f46", "dot": "#059669"},
-        "purple":  {"fill": "#f3e8ff", "border": "#d8b4fe", "text": "#6b21a8", "dot": "#9333ea"},
-        "teal":    {"fill": "#ccfbf1", "border": "#5eead4", "text": "#115e59", "dot": "#0d9488"},
+        "rose":    {"fill": "#ffe4e6", "border": "#fda4af", "text": "#9f1239", "dot": "#e11d48", "solid": _SOLID_HEX["rose"]},
+        "sky":     {"fill": "#e0f2fe", "border": "#7dd3fc", "text": "#075985", "dot": "#0284c7", "solid": _SOLID_HEX["sky"]},
+        "amber":   {"fill": "#fef3c7", "border": "#fcd34d", "text": "#92400e", "dot": "#d97706", "solid": _SOLID_HEX["amber"]},
+        "emerald": {"fill": "#d1fae5", "border": "#6ee7b7", "text": "#065f46", "dot": "#059669", "solid": _SOLID_HEX["emerald"]},
+        "purple":  {"fill": "#f3e8ff", "border": "#d8b4fe", "text": "#6b21a8", "dot": "#9333ea", "solid": _SOLID_HEX["purple"]},
+        "teal":    {"fill": "#ccfbf1", "border": "#5eead4", "text": "#115e59", "dot": "#0d9488", "solid": _SOLID_HEX["teal"]},
     },
     "dark": {
-        "rose":    {"fill": "#2e1219", "border": "#7c2d43", "text": "#fda4af", "dot": "#f43f5e"},
-        "sky":     {"fill": "#0d2233", "border": "#1c5878", "text": "#7dd3fc", "dot": "#38bdf8"},
-        "amber":   {"fill": "#2a1e0c", "border": "#7a4c15", "text": "#fbbf24", "dot": "#f59e0b"},
-        "emerald": {"fill": "#0b2a20", "border": "#166c50", "text": "#6ee7b7", "dot": "#10b981"},
-        "purple":  {"fill": "#231540", "border": "#5b2fae", "text": "#c4b5fd", "dot": "#a78bfa"},
-        "teal":    {"fill": "#0a2a28", "border": "#12655e", "text": "#5eead4", "dot": "#14b8a6"},
+        "rose":    {"fill": "#2e1219", "border": "#7c2d43", "text": "#fda4af", "dot": "#f43f5e", "solid": _SOLID_HEX["rose"]},
+        "sky":     {"fill": "#0d2233", "border": "#1c5878", "text": "#7dd3fc", "dot": "#38bdf8", "solid": _SOLID_HEX["sky"]},
+        "amber":   {"fill": "#2a1e0c", "border": "#7a4c15", "text": "#fbbf24", "dot": "#f59e0b", "solid": _SOLID_HEX["amber"]},
+        "emerald": {"fill": "#0b2a20", "border": "#166c50", "text": "#6ee7b7", "dot": "#10b981", "solid": _SOLID_HEX["emerald"]},
+        "purple":  {"fill": "#231540", "border": "#5b2fae", "text": "#c4b5fd", "dot": "#a78bfa", "solid": _SOLID_HEX["purple"]},
+        "teal":    {"fill": "#0a2a28", "border": "#12655e", "text": "#5eead4", "dot": "#14b8a6", "solid": _SOLID_HEX["teal"]},
     },
 }
 

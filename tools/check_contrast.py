@@ -21,6 +21,9 @@ def pairs():
         for name, roles in ACCENTS_HEX[theme].items():
             yield (f"{theme}/{name}.text-on-fill", roles["text"], roles["fill"], BODY_MIN)
             yield (f"{theme}/{name}.text-on-surface", roles["text"], t["surface"], BODY_MIN)
+            # `solid` is theme-invariant (pinned to the light-theme text hex), but
+            # verify white-on-it clears AA under both theme labels for the record.
+            yield (f"{theme}/{name}.white-on-solid", "#ffffff", roles["solid"], BODY_MIN)
 
 
 def main():

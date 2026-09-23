@@ -28,12 +28,12 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   surface: 'var(--surface)', 'surface-2': 'var(--surface-2)', page: 'var(--page)',
   ink: 'var(--ink)', body: 'var(--ink-body)', mute: 'var(--ink-mute)',
   token: 'var(--border)', hairline: 'var(--hairline)', chip: 'var(--chip-bg)',
-  rose: { fill: 'var(--accent-rose-fill)', border: 'var(--accent-rose-border)', text: 'var(--accent-rose-text)', dot: 'var(--accent-rose-dot)' },
-  sky: { fill: 'var(--accent-sky-fill)', border: 'var(--accent-sky-border)', text: 'var(--accent-sky-text)', dot: 'var(--accent-sky-dot)' },
-  amber: { fill: 'var(--accent-amber-fill)', border: 'var(--accent-amber-border)', text: 'var(--accent-amber-text)', dot: 'var(--accent-amber-dot)' },
-  emerald: { fill: 'var(--accent-emerald-fill)', border: 'var(--accent-emerald-border)', text: 'var(--accent-emerald-text)', dot: 'var(--accent-emerald-dot)' },
-  purple: { fill: 'var(--accent-purple-fill)', border: 'var(--accent-purple-border)', text: 'var(--accent-purple-text)', dot: 'var(--accent-purple-dot)' },
-  teal: { fill: 'var(--accent-teal-fill)', border: 'var(--accent-teal-border)', text: 'var(--accent-teal-text)', dot: 'var(--accent-teal-dot)' },
+  rose: { fill: 'var(--accent-rose-fill)', border: 'var(--accent-rose-border)', text: 'var(--accent-rose-text)', dot: 'var(--accent-rose-dot)', solid: 'var(--accent-rose-solid)' },
+  sky: { fill: 'var(--accent-sky-fill)', border: 'var(--accent-sky-border)', text: 'var(--accent-sky-text)', dot: 'var(--accent-sky-dot)', solid: 'var(--accent-sky-solid)' },
+  amber: { fill: 'var(--accent-amber-fill)', border: 'var(--accent-amber-border)', text: 'var(--accent-amber-text)', dot: 'var(--accent-amber-dot)', solid: 'var(--accent-amber-solid)' },
+  emerald: { fill: 'var(--accent-emerald-fill)', border: 'var(--accent-emerald-border)', text: 'var(--accent-emerald-text)', dot: 'var(--accent-emerald-dot)', solid: 'var(--accent-emerald-solid)' },
+  purple: { fill: 'var(--accent-purple-fill)', border: 'var(--accent-purple-border)', text: 'var(--accent-purple-text)', dot: 'var(--accent-purple-dot)', solid: 'var(--accent-purple-solid)' },
+  teal: { fill: 'var(--accent-teal-fill)', border: 'var(--accent-teal-border)', text: 'var(--accent-teal-text)', dot: 'var(--accent-teal-dot)', solid: 'var(--accent-teal-solid)' },
 });
 </script>"""
 

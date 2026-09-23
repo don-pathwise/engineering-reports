@@ -10,7 +10,16 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from check_theme import EXEMPT_DARK, COLOUR_UTIL
 
 # The already-dark code panels keep their own tokens, applied by hand in Task 6.
-SKIP_IN_EXEMPT = {"bg-slate-900", "bg-slate-950", "text-slate-50", "text-slate-100"}
+# Plus the utilities actually used inside those panels' hardcoded-dark sub-areas
+# (e.g. the file-tree listing and its inline badges): migrating them would make
+# them resolve against a still-hardcoded near-black background, not a token
+# surface, tanking contrast. Leaving them raw is the intended behaviour here.
+SKIP_IN_EXEMPT = {
+    "bg-slate-900", "bg-slate-950", "text-slate-50", "text-slate-100",
+    "text-slate-400",
+    "bg-sky-800", "text-sky-100",
+    "bg-emerald-800", "text-emerald-100",
+}
 
 ACCENT_NAMES = ("rose", "sky", "amber", "emerald", "purple", "teal")
 
@@ -42,10 +51,18 @@ _ROLE_BY_STEP = {
     "500": "dot", "600": "dot",
     "700": "text", "800": "text", "900": "text", "950": "text",
 }
+# Property-aware exception: a `bg-{accent}-{step}` at step 500 and above is a
+# solid badge background (paired with white text in the corpus), not a dot or
+# a text colour — it needs the dedicated `solid` role so white stays legible
+# in both themes. `text-{accent}-*` and `border-{accent}-*` are unaffected.
+_BG_SOLID_STEPS = {"500", "600", "700", "800", "900", "950"}
 for _name in ACCENT_NAMES:
     for _step, _role in _ROLE_BY_STEP.items():
         for _prefix in ("bg", "text", "border"):
-            MAP[f"{_prefix}-{_name}-{_step}"] = f"{_prefix}-{_name}-{_role}"
+            if _prefix == "bg" and _step in _BG_SOLID_STEPS:
+                MAP[f"bg-{_name}-{_step}"] = f"bg-{_name}-solid"
+            else:
+                MAP[f"{_prefix}-{_name}-{_step}"] = f"{_prefix}-{_name}-{_role}"
 
 
 def migrate(html, path):
