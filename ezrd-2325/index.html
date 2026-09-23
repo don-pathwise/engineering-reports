@@ -238,6 +238,21 @@ window.__toggleTheme = function (el) {
   if (el) el.setAttribute('aria-checked', next === 'dark' ? 'true' : 'false');
   try { localStorage.setItem('report-theme', next); } catch (e) {}
 };
+</script><script data-report-theme-tw>
+tailwind.config = tailwind.config || {};
+tailwind.config.theme = tailwind.config.theme || {};
+tailwind.config.theme.extend = tailwind.config.theme.extend || {};
+tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.extend.colors, {
+  surface: 'var(--surface)', 'surface-2': 'var(--surface-2)', page: 'var(--page)',
+  ink: 'var(--ink)', body: 'var(--ink-body)', mute: 'var(--ink-mute)',
+  token: 'var(--border)', hairline: 'var(--hairline)', chip: 'var(--chip-bg)',
+  rose: { fill: 'var(--accent-rose-fill)', border: 'var(--accent-rose-border)', text: 'var(--accent-rose-text)', dot: 'var(--accent-rose-dot)' },
+  sky: { fill: 'var(--accent-sky-fill)', border: 'var(--accent-sky-border)', text: 'var(--accent-sky-text)', dot: 'var(--accent-sky-dot)' },
+  amber: { fill: 'var(--accent-amber-fill)', border: 'var(--accent-amber-border)', text: 'var(--accent-amber-text)', dot: 'var(--accent-amber-dot)' },
+  emerald: { fill: 'var(--accent-emerald-fill)', border: 'var(--accent-emerald-border)', text: 'var(--accent-emerald-text)', dot: 'var(--accent-emerald-dot)' },
+  purple: { fill: 'var(--accent-purple-fill)', border: 'var(--accent-purple-border)', text: 'var(--accent-purple-text)', dot: 'var(--accent-purple-dot)' },
+  teal: { fill: 'var(--accent-teal-fill)', border: 'var(--accent-teal-border)', text: 'var(--accent-teal-text)', dot: 'var(--accent-teal-dot)' },
+});
 </script>
 </head>
 <body class="bg-slate-100">

@@ -19,7 +19,8 @@ EXEMPT_DARK = {
 
 COLOUR_UTIL = re.compile(
     r"\b(?:bg|text|border|divide|ring|accent|placeholder|from|to)-"
-    r"(?:slate|gray|zinc|neutral|stone|rose|red|sky|blue|amber|yellow|emerald|green|purple|violet|teal|indigo)-"
+    r"(?:slate|gray|zinc|neutral|stone|rose|red|sky|blue|amber|yellow|emerald|green|purple|violet|teal|indigo|"
+    r"orange|fuchsia|pink|lime|cyan)-"
     r"\d{2,3}\b|\bbg-white\b"
 )
 OLD_RADII = re.compile(r"\brounded-(?:2xl|xl)\b")

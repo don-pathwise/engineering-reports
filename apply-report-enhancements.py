@@ -79,8 +79,8 @@ def inject_theme(html):
     """Add the boot script and token block to <head>. Idempotent.
 
     Both go in <head>, not before </body>: the boot must set data-theme before
-    the body paints, and the block carries Tailwind colour aliases that must be
-    defined before the CDN evaluates.
+    the body paints, so the whole theming unit (vars, aliases, boot) lives
+    together where that ordering is guaranteed.
     """
     if THEME_MARKER in html:
         return html, False
