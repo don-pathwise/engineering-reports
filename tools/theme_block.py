@@ -134,7 +134,9 @@ SLIDER_JS = """<script data-report-slider>
       return b;
     });
 
+    var current = 0;
     function select(i) {
+      current = i;
       btns.forEach(function (b, n) { b.setAttribute('aria-pressed', n === i ? 'true' : 'false'); });
       place(i);
     }
@@ -165,6 +167,23 @@ SLIDER_JS = """<script data-report-slider>
       if (!ticking) { requestAnimationFrame(sync); ticking = true; }
     }, { passive: true });
     sync();
+
+    // The grid's columns are 1fr, so the track's own width changing (window
+    // resize, a scrollbar appearing, any reflow) redistributes every column
+    // and place()'s pixel values go stale -- a ResizeObserver on the track
+    // itself catches all of those, not just window resize, rAF-throttled the
+    // same way scroll is handled above. Re-runs select() for the CURRENT
+    // segment (never select(0)), so a resize can't silently reset which
+    // segment the reader was on.
+    if (window.ResizeObserver) {
+      var resizeTicking = false;
+      new ResizeObserver(function () {
+        if (!resizeTicking) {
+          requestAnimationFrame(function () { select(current); resizeTicking = false; });
+          resizeTicking = true;
+        }
+      }).observe(track);
+    }
   });
 })();
 </script>"""
