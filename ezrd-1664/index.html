@@ -318,7 +318,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
 
     <!-- Verdict -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -328,14 +328,14 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           <h2 class="text-2xl font-bold text-ink mb-2">The reported bug is fixed on UAT</h2>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
             <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Confirmed fixed</div>
             <p class="text-ink leading-relaxed">
               With the active session deliberately different from a route's own session — the exact condition that
               caused the bug — every stop that loads stays fully geocoded. No red "ungeocoded" icons, no refresh needed.
             </p>
           </div>
-          <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-5">
+          <div class="bg-amber-fill border-2 border-amber-border rounded-md p-5">
             <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-2">Open question</div>
             <p class="text-ink leading-relaxed">
               Under the same mismatch, a <strong>private</strong> stop referenced by the route disappears from the stop
@@ -348,7 +348,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Defect & fix -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -364,7 +364,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             reset things.
           </p>
         </div>
-        <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
+        <div class="bg-sky-fill border-2 border-sky-border rounded-md p-5">
           <div class="text-sky-text font-bold text-sm tracking-wider uppercase mb-2">The fix — PR #520 (EZRD-1664)</div>
           <p class="text-ink leading-relaxed">
             The route-expand path now hydrates stops and their addresses under the <strong>route's own</strong>
@@ -376,7 +376,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Deployment check -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -390,7 +390,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             local gitops checkout. Against the current UAT image, the fix <strong>is</strong> included.
           </p>
         </div>
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[560px]">
             <colgroup><col class="w-[30%]"><col><col class="w-24"></colgroup>
             <thead>
@@ -411,7 +411,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- How we verified -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -443,7 +443,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
         </div>
 
-        <div class="bg-surface-2 border-2 border-token rounded-xl p-5 mt-6">
+        <div class="bg-surface-2 border-2 border-token rounded-md p-5 mt-6">
           <div class="text-body font-bold text-sm tracking-wider uppercase mb-2">Method note</div>
           <p class="text-ink leading-relaxed">
             The v3 Routes UI renders through an encrypted channel, so we read verification data directly from the live
@@ -455,7 +455,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Results -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -465,7 +465,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           <h2 class="text-2xl font-bold text-ink mb-2">Stops stay geocoded under the mismatch</h2>
         </div>
 
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto mb-5">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto mb-5">
           <table class="w-full text-sm min-w-[620px]">
             <colgroup><col class="w-[34%]"><col><col></colgroup>
             <thead>
@@ -486,15 +486,15 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </div>
 
         <div class="grid grid-cols-3 gap-3">
-          <div class="bg-surface border-2 border-token rounded-xl p-4 text-center">
+          <div class="bg-surface border-2 border-token rounded-md p-4 text-center">
             <div class="text-2xl font-extrabold text-emerald-text tabular-nums">15 / 15</div>
             <div class="text-xs text-mute mt-1 uppercase tracking-wider">geocoded under mismatch</div>
           </div>
-          <div class="bg-surface border-2 border-token rounded-xl p-4 text-center">
+          <div class="bg-surface border-2 border-token rounded-md p-4 text-center">
             <div class="text-2xl font-extrabold text-emerald-text tabular-nums">0</div>
             <div class="text-xs text-mute mt-1 uppercase tracking-wider">red ungeocoded icons</div>
           </div>
-          <div class="bg-surface border-2 border-token rounded-xl p-4 text-center">
+          <div class="bg-surface border-2 border-token rounded-md p-4 text-center">
             <div class="text-2xl font-extrabold text-emerald-text tabular-nums">0</div>
             <div class="text-xs text-mute mt-1 uppercase tracking-wider">refreshes needed</div>
           </div>
@@ -509,7 +509,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Secondary finding -->
-    <section class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
+    <section class="bg-amber-fill border-2 border-amber-border rounded-lg p-6 sm:p-7">
       <div class="flex items-start gap-4">
         <div class="text-amber-text text-2xl flex-shrink-0 leading-none">⚠</div>
         <div>
@@ -532,7 +532,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Recommendation -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">

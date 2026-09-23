@@ -319,7 +319,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
 
   <!-- SCOPE -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
@@ -337,7 +337,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       </div>
 
       <div class="grid sm:grid-cols-2 gap-4">
-        <div class="bg-rose-fill border-2 border-rose-border rounded-xl p-5">
+        <div class="bg-rose-fill border-2 border-rose-border rounded-md p-5">
           <div class="text-rose-text font-bold text-sm tracking-wider uppercase mb-2">The one rule to remember</div>
           <p class="text-ink leading-relaxed">
             A row fills <strong>salmon</strong> (<span class="swatch" style="background:#ffc0c1"></span>
@@ -347,7 +347,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             <strong>"!"</strong> marker.
           </p>
         </div>
-        <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
+        <div class="bg-sky-fill border-2 border-sky-border rounded-md p-5">
           <div class="text-sky-text font-bold text-sm tracking-wider uppercase mb-2">Only overlaps add lanes</div>
           <p class="text-ink leading-relaxed">
             Overlapping trips <strong>stack into lanes</strong> (row grows taller), and at
@@ -361,7 +361,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- BEFORE YOU START -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
@@ -376,14 +376,14 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       </div>
 
       <div class="grid sm:grid-cols-2 gap-4 mb-6">
-        <div class="bg-surface-2 border-2 border-token rounded-xl p-5">
+        <div class="bg-surface-2 border-2 border-token rounded-md p-5">
           <div class="text-ink font-bold mb-1">1 · Move Trips (between routes)</div>
           <p class="text-body leading-relaxed text-[0.95rem]">
             From the full <strong>Routes</strong> list → <strong>Operations → Move Trips</strong>.
             The slide-out gantt panel. Interactive — you can <strong>drag</strong> trips between routes.
           </p>
         </div>
-        <div class="bg-surface-2 border-2 border-token rounded-xl p-5">
+        <div class="bg-surface-2 border-2 border-token rounded-md p-5">
           <div class="text-ink font-bold mb-1">2 · Move Trips to Other Routes (single route)</div>
           <p class="text-body leading-relaxed text-[0.95rem]">
             From a single route → <strong>Operations → Move Trips to Other Routes</strong>. Its
@@ -393,7 +393,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </div>
       </div>
 
-      <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-5">
+      <div class="bg-amber-fill border-2 border-amber-border rounded-md p-5">
         <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-1">Reference data</div>
         <p class="text-ink leading-relaxed">
           On the <code class="k">testqa</code> district, known conflict examples are
@@ -406,7 +406,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- WALKTHROUGH -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-8">
         <div class="flex items-center gap-3 mb-2">
@@ -518,7 +518,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- CONSTRUCTING A 5+ OVERLAP -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
@@ -548,7 +548,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </div>
       </div>
 
-      <div class="mt-6 bg-surface-2 border-2 border-token rounded-xl p-5">
+      <div class="mt-6 bg-surface-2 border-2 border-token rounded-md p-5">
         <div class="text-ink font-bold text-sm tracking-wider uppercase mb-1">Boundary check</div>
         <p class="text-body leading-relaxed">
           At exactly <strong>4</strong> concurrent trips you should see <strong>4 stacked lanes</strong>,
@@ -560,7 +560,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- REGRESSION -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
@@ -572,11 +572,11 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       </div>
 
       <div class="grid sm:grid-cols-2 gap-4">
-        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
           <div class="text-emerald-text font-bold mb-1">Duration formatting</div>
           <p class="text-ink leading-relaxed text-[0.95rem]">In tooltips, a duration near a minute boundary must read cleanly (e.g. <strong>"1h 0m"</strong>), never <strong>"1h 60m"</strong> or <strong>"60m"</strong>.</p>
         </div>
-        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
           <div class="text-emerald-text font-bold mb-1">Zero-duration / co-located trips</div>
           <p class="text-ink leading-relaxed text-[0.95rem]">Two trips at the same instant (same start = end) must still <strong>split into separate lanes</strong> and stay hoverable — neither one hidden behind the other.</p>
         </div>
@@ -585,7 +585,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- SIGN-OFF -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
@@ -595,7 +595,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         <h2 class="text-2xl font-bold text-ink mb-2">Checklist</h2>
       </div>
 
-      <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+      <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
         <table class="w-full text-sm min-w-[640px]">
           <colgroup>
             <col class="w-10">

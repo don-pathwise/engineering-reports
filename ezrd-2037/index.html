@@ -293,7 +293,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
 
     <!-- Before you start -->
-    <section class="bg-sky-fill border-2 border-sky-border rounded-2xl p-6 sm:p-7">
+    <section class="bg-sky-fill border-2 border-sky-border rounded-lg p-6 sm:p-7">
       <div class="flex items-start gap-4">
         <div class="text-sky-text text-2xl flex-shrink-0 leading-none">✅</div>
         <div>
@@ -309,7 +309,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Status lifecycle -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -319,7 +319,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           <h2 class="text-2xl font-bold text-ink mb-2">Status lifecycle</h2>
           <p class="text-body leading-relaxed">Two new status values. The Accept / Decline buttons and the review checkbox are unchanged — only the resulting status is new.</p>
         </div>
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[720px]">
             <colgroup><col class="w-40"><col><col class="w-[32%]"></colgroup>
             <thead>
@@ -340,7 +340,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Criteria: what triggers Processing -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -355,7 +355,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- Always triggers -->
         <div class="mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-dot"></span><h3 class="text-sm font-bold tracking-wider uppercase text-emerald-text">Always triggers Processing</h3></div>
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto mb-6">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto mb-6">
           <table class="w-full text-sm min-w-[640px]">
             <colgroup><col class="w-[42%]"><col></colgroup>
             <tbody class="divide-y divide-hairline">
@@ -373,7 +373,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         <!-- Configurable -->
         <div class="mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-dot"></span><h3 class="text-sm font-bold tracking-wider uppercase text-amber-text">Triggers only if the district turns it on</h3></div>
         <p class="text-mute text-sm mb-3">Enabled per-district under the ⚙️ gear in the queue header → <em>Transportation Review Settings</em>. <strong>testqa has none of these enabled</strong>, so on your local these behave like “never triggers.”</p>
-        <div class="bg-amber-fill border-2 border-amber-border rounded-xl overflow-x-auto mb-6">
+        <div class="bg-amber-fill border-2 border-amber-border rounded-md overflow-x-auto mb-6">
           <table class="w-full text-sm min-w-[640px]">
             <colgroup><col class="w-[42%]"><col></colgroup>
             <tbody class="divide-y divide-amber-border">
@@ -387,7 +387,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <!-- Never -->
         <div class="mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-mute"></span><h3 class="text-sm font-bold tracking-wider uppercase text-body">Never triggers — stays Accepted</h3></div>
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[640px]">
             <colgroup><col class="w-[42%]"><col></colgroup>
             <tbody class="divide-y divide-hairline">
@@ -401,7 +401,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- The queue column as predictor -->
-    <section class="bg-sky-fill border-2 border-sky-border rounded-2xl p-6 sm:p-7">
+    <section class="bg-sky-fill border-2 border-sky-border rounded-lg p-6 sm:p-7">
       <div class="flex items-start gap-4">
         <div class="text-sky-text text-2xl flex-shrink-0 leading-none">👁</div>
         <div>
@@ -412,7 +412,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Testqa reality -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -422,7 +422,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           <h2 class="text-2xl font-bold text-ink mb-2">Real testqa requests to test with</h2>
           <p class="text-body leading-relaxed">There are <strong>190 pending requests</strong>. Because testqa has no review settings enabled, only the one <em>school change</em> qualifies for Processing — that’s the row with the ⚠️.</p>
         </div>
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[820px]">
             <colgroup><col class="w-[22%]"><col class="w-16"><col><col class="w-40"></colgroup>
             <thead>
@@ -457,7 +457,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Step 1 -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">1</div>
@@ -472,7 +472,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Step 2 -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">2</div>
@@ -488,7 +488,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Step 3 -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">3</div>
@@ -504,7 +504,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Step 4 -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">4</div>
@@ -515,7 +515,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Step 5 -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">5</div>
@@ -526,7 +526,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Want more coverage -->
-    <section class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
+    <section class="bg-amber-fill border-2 border-amber-border rounded-lg p-6 sm:p-7">
       <div class="flex items-start gap-4">
         <div class="text-amber-text text-2xl flex-shrink-0 leading-none">⚠</div>
         <div>
@@ -537,7 +537,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Already verified -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-5">
           <div class="flex items-center gap-3 mb-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-dot"></span><div class="text-sm font-bold tracking-wider uppercase text-emerald-text">Already verified</div></div>

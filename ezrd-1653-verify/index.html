@@ -305,7 +305,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <main class="max-w-6xl mx-auto px-6 py-10 space-y-6">
 
   <!-- ORIENTATION -->
-  <section id="what" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+  <section id="what" class="bg-surface border-2 border-token rounded-lg p-7 sm:p-9 main-card">
     <div class="kicker text-body mb-4"><span class="kdot"></span> Orientation</div>
     <h2 class="text-2xl font-bold text-ink mb-4">What you're doing, in plain terms</h2>
     <p class="text-body leading-relaxed mb-4 max-w-3xl">
@@ -318,7 +318,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       why moved stops are labelled “Moved from route …” and carry an undo arrow.
     </p>
     <div class="grid md:grid-cols-2 gap-4">
-      <div class="rounded-xl border-2 border-rose-border bg-rose-fill p-5">
+      <div class="rounded-md border-2 border-rose-border bg-rose-fill p-5">
         <div class="text-xs font-extrabold uppercase tracking-wider text-rose-text mb-2">The bug</div>
         <p class="text-body text-[.95rem] leading-relaxed">
           Each receiving bus gained extra stops with no “Moved from” label — typically a school the bus doesn't serve,
@@ -326,7 +326,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           apps, so a bus showed a longer route with times that didn't match.
         </p>
       </div>
-      <div class="rounded-xl border-2 border-emerald-border bg-emerald-fill p-5">
+      <div class="rounded-md border-2 border-emerald-border bg-emerald-fill p-5">
         <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-text mb-2">The fix</div>
         <p class="text-body text-[.95rem] leading-relaxed">
           Those stops were scratch work from the arrival-time calculation, never meant to be saved. They're now
@@ -337,7 +337,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- PROD -->
-  <section id="prod" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+  <section id="prod" class="bg-surface border-2 border-token rounded-lg p-7 sm:p-9 main-card">
     <div class="kicker text-rose-text mb-4"><span class="kdot"></span> Run 1</div>
     <h2 class="text-2xl font-bold text-ink mb-2">Verify bug on prod</h2>
     <p class="text-body leading-relaxed mb-6 max-w-3xl">
@@ -345,7 +345,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       “before” evidence. Open Trip Preparation for <code class="k">testqa</code> from the production EZDistrict home.
     </p>
 
-    <div class="rounded-xl border-2 border-rose-border bg-rose-fill p-5 mb-5">
+    <div class="rounded-md border-2 border-rose-border bg-rose-fill p-5 mb-5">
       <div class="text-xs font-extrabold uppercase tracking-wider text-rose-text mb-2">Service day</div>
       <p class="text-ink text-lg font-bold mb-1">08 / 05 / 2026 &nbsp;<span class="text-mute text-sm font-semibold">(Wednesday)</span></p>
       <p class="text-body text-[.9rem]">
@@ -392,7 +392,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       </table>
     </div>
 
-    <div class="rounded-xl border-2 border-token bg-page p-5 mb-6">
+    <div class="rounded-md border-2 border-token bg-page p-5 mb-6">
       <div class="font-bold text-ink mb-2">Three things to know before step 1</div>
       <p class="text-body text-[.95rem] leading-relaxed mb-2">
         <strong>1.</strong> The route list is split across two tabs — <strong>UNCOVERED ROUTES</strong> (the one you land
@@ -438,7 +438,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         <p class="text-body leading-relaxed">Back on the route list both destination time windows should now end <strong>visibly later</strong> than the baseline — a quick confirmation the split landed. Then open each destination trip again for the check below.</p></div></li>
     </ol>
 
-    <div class="rounded-xl border-2 border-rose-border bg-rose-fill p-5 mb-4">
+    <div class="rounded-md border-2 border-rose-border bg-rose-fill p-5 mb-4">
       <div class="font-bold text-ink mb-2">What you'll see — bug present</div>
       <p class="text-body text-[.95rem] leading-relaxed mb-3">
         In each reopened destination trip, the <strong>DESCRIPTION</strong> column tells you where every row came from. A
@@ -458,7 +458,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       </div>
     </div>
 
-    <div class="rounded-xl border-2 border-hairline bg-surface-2 p-5">
+    <div class="rounded-md border-2 border-hairline bg-surface-2 p-5">
       <div class="font-bold text-ink mb-2">Decide from the saved trip, not from Calculate Details</div>
       <p class="text-body text-[.95rem] leading-relaxed">
         The Calculate Details screen lists working stops in <strong>both</strong> environments, so it cannot tell them
@@ -469,7 +469,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- UAT -->
-  <section id="uat" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+  <section id="uat" class="bg-surface border-2 border-token rounded-lg p-7 sm:p-9 main-card">
     <div class="kicker text-emerald-text mb-4"><span class="kdot"></span> Run 2</div>
     <h2 class="text-2xl font-bold text-ink mb-2">Verify fix on UAT</h2>
     <p class="text-body leading-relaxed mb-6 max-w-3xl">
@@ -477,7 +477,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       <code class="k">home.pathwiserouting.com</code>.
     </p>
 
-    <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5 mb-5">
+    <div class="rounded-md border-2 border-amber-border bg-amber-fill p-5 mb-5">
       <div class="text-xs font-extrabold uppercase tracking-wider text-amber-text mb-2">Service day — different from prod, and in the past</div>
       <p class="text-ink text-lg font-bold mb-1">05 / 27 / 2026 &nbsp;<span class="text-mute text-sm font-semibold">(Wednesday)</span></p>
       <p class="text-body text-[.9rem]">
@@ -529,7 +529,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       Run steps 1–7 exactly as above. Then check the fix held:
     </p>
 
-    <div class="rounded-xl border-2 border-emerald-border bg-emerald-fill p-5 mb-5">
+    <div class="rounded-md border-2 border-emerald-border bg-emerald-fill p-5 mb-5">
       <div class="font-bold text-ink mb-2">What you'll see — fix working</div>
       <p class="text-body text-[.95rem] leading-relaxed mb-3">
         <strong>The Calculate Details screen looks much the same as it did on prod</strong> — it still lists working stops
@@ -549,7 +549,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
       </div>
     </div>
 
-    <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5">
+    <div class="rounded-md border-2 border-amber-border bg-amber-fill p-5">
       <div class="font-bold text-ink mb-2">You will see some stop names twice — that part is expected, on both runs</div>
       <p class="text-body text-[.95rem] leading-relaxed mb-3">
         These two destinations already serve some of the stops <code class="k">Test3</code> hands them, so one place ends
@@ -589,11 +589,11 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- TRAPS -->
-  <section id="traps" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+  <section id="traps" class="bg-surface border-2 border-token rounded-lg p-7 sm:p-9 main-card">
     <div class="kicker text-amber-text mb-4"><span class="kdot"></span> Before you start</div>
     <h2 class="text-2xl font-bold text-ink mb-5">Three things that will waste your time</h2>
     <div class="space-y-4">
-      <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5">
+      <div class="rounded-md border-2 border-amber-border bg-amber-fill p-5">
         <div class="font-bold text-ink mb-1">Use the destination trips named above, not others</div>
         <p class="text-body text-[.95rem] leading-relaxed">
           The Break&nbsp;Up list offers trips whose <strong>route isn't in the day's route list behind the modal</strong>,
@@ -602,14 +602,14 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           modal. Both trips named above were confirmed present on their stated date.
         </p>
       </div>
-      <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5">
+      <div class="rounded-md border-2 border-amber-border bg-amber-fill p-5">
         <div class="font-bold text-ink mb-1">The edit pencil only exists while the row is hovered</div>
         <p class="text-body text-[.95rem] leading-relaxed">
           Hover the route row first. On a narrow window it sits past the right edge — widen the window or scroll the
           table sideways.
         </p>
       </div>
-      <div class="rounded-xl border-2 border-amber-border bg-amber-fill p-5">
+      <div class="rounded-md border-2 border-amber-border bg-amber-fill p-5">
         <div class="font-bold text-ink mb-1">An empty route list means the wrong date</div>
         <p class="text-body text-[.95rem] leading-relaxed">
           Trip Prep is day-scoped, and the two environments need <strong>different dates</strong> — 08/05/2026 on
@@ -620,7 +620,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- CLEANUP -->
-  <section id="after" class="bg-surface border-2 border-token rounded-2xl p-7 sm:p-9 main-card">
+  <section id="after" class="bg-surface border-2 border-token rounded-lg p-7 sm:p-9 main-card">
     <div class="kicker text-body mb-4"><span class="kdot"></span> Afterwards</div>
     <h2 class="text-2xl font-bold text-ink mb-4">What you leave behind</h2>
     <p class="text-body leading-relaxed mb-4 max-w-3xl">

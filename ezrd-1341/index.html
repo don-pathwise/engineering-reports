@@ -284,7 +284,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-4xl mx-auto px-6 py-8 space-y-5">
 
     <!-- buses to use -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-2">Buses to use (already exist in testqa)</h2>
       <ul class="text-body space-y-1">
         <li>• <strong>No default driver:</strong> <code class="k">FPB-005</code>, <code class="k">FPB-012</code>, <code class="k">Bus-030</code></li>
@@ -294,7 +294,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 1 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">1 · Driverless route merges + driver filled in <span class="text-emerald-text text-sm font-semibold">(main fix)</span></h2>
       <ol class="steps text-body">
         <li>Routes → make a driverless route named <code class="k">QA1341-A</code> on bus <code class="k">FPB-005</code> (Driver blank). Save.</li>
@@ -306,7 +306,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 2 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">2 · Driver comes from the bus's default driver</h2>
       <ol class="steps text-body">
         <li>Make a driverless route <code class="k">QA1341-B</code> on bus <code class="k">Bus-001</code> (Driver blank). Note Bus-001's default driver — shown as the greyed "default: …" hint.</li>
@@ -317,7 +317,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 3 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">3 · Different driver than the bus default → new route</h2>
       <ol class="steps text-body">
         <li>Make a driverless route <code class="k">QA1341-C</code> on bus <code class="k">Bus-001</code> (Driver blank).</li>
@@ -327,7 +327,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 4 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">4 · Request has no driver → new route</h2>
       <ol class="steps text-body">
         <li>Make a driverless route <code class="k">QA1341-D</code> on bus <code class="k">FPB-012</code> (Driver blank).</li>
@@ -337,7 +337,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 5 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">5 · Different name → new route</h2>
       <ol class="steps text-body">
         <li>Make a driverless route <code class="k">QA1341-E</code> on bus <code class="k">Bus-030</code> (Driver blank).</li>
@@ -347,7 +347,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 6 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">6 · Same fix via the Routes tab (not Route Builder)</h2>
       <ol class="steps text-body">
         <li>Make a driverless route <code class="k">QA1341-F</code> on bus <code class="k">FPB-005</code> (Driver blank).</li>
@@ -358,7 +358,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 7 regression -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">7 · Normal route still merges <span class="text-mute text-sm font-semibold">(regression)</span></h2>
       <ol class="steps text-body">
         <li>Make a route <code class="k">QA1341-G</code> on bus <code class="k">Bus-001</code> <strong>with a driver assigned</strong> (not blank). Save.</li>

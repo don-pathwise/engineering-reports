@@ -301,7 +301,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
 
   <!-- What this delivers + screenshot -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
@@ -316,18 +316,18 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </p>
       </div>
       <div class="grid sm:grid-cols-2 gap-4 mb-7">
-        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
           <div class="text-emerald-text font-bold text-sm mb-1">Discoverability</div>
           <p class="text-body text-sm leading-relaxed">Out-of-zone stops auto-fill the view when in-zone options fall short — instead of being hidden behind repeated “Show 5 More” clicks that flipped an invisible switch.</p>
         </div>
-        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
           <div class="text-emerald-text font-bold text-sm mb-1">Bug fix underneath</div>
           <p class="text-body text-sm leading-relaxed">The gather read stop coordinates from the wrong field, so out-of-zone stops were silently dropped on real data. Fixed — the nearest-stops search now returns results.</p>
         </div>
       </div>
 
       <div class="text-xs font-semibold tracking-wider uppercase text-mute mb-2">What it looks like</div>
-      <figure class="border-2 border-token rounded-xl overflow-hidden">
+      <figure class="border-2 border-token rounded-md overflow-hidden">
         <img src="./add-bus-schedule-outside-walk-zone.png"
              alt="Add Bus Schedule panel for an unrouted student: near stops with no tag, plus nearest stops tagged Outside Walk Zone, above a Top 10 / Top 3 switch."
              class="w-full block" />
@@ -342,7 +342,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- How to test: prereqs -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="mb-5">
         <div class="flex items-center gap-3 mb-2">
@@ -361,7 +361,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- Step 1 -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
         <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">1</div>
@@ -377,14 +377,14 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         <li class="flex gap-3"><span class="text-purple-text font-bold">c.</span><span>Change it to a small value — <strong>100</strong> works well.</span></li>
         <li class="flex gap-3"><span class="text-purple-text font-bold">d.</span><span>Click <strong>Save</strong> (green button, top-left).</span></li>
       </ol>
-      <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-4 mt-5">
+      <div class="bg-sky-fill border-2 border-sky-border rounded-md p-4 mt-5">
         <p class="text-ink text-sm leading-relaxed"><strong class="text-sky-text">Per-grade override:</strong> if the student's grade has its own <em>Max Walk Distance</em> (Settings → <strong>Grade</strong> → that grade), it overrides the default — set it small too, or tick <strong>“Use default max walk distance.”</strong></p>
       </div>
     </div>
   </section>
 
   <!-- Step 2 -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
         <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">2</div>
@@ -403,7 +403,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- Step 3 -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
         <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">3</div>
@@ -420,7 +420,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- Step 4 -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
         <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">4</div>
@@ -438,7 +438,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- Step 5 -->
-  <section class="bg-surface border-2 border-token rounded-2xl main-card">
+  <section class="bg-surface border-2 border-token rounded-lg main-card">
     <div class="p-7 sm:p-9">
       <div class="flex items-start gap-4 mb-5">
         <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">5</div>
@@ -456,7 +456,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </section>
 
   <!-- Gotchas -->
-  <section class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
+  <section class="bg-amber-fill border-2 border-amber-border rounded-lg p-6 sm:p-7">
     <div class="flex items-start gap-4">
       <div class="text-amber-text text-2xl flex-shrink-0 leading-none">⚠</div>
       <div>

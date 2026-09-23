@@ -326,7 +326,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-5">
 
     <!-- ═════════ CORRECTIONS BANNER ═════════ -->
-    <section class="bg-purple-fill border-2 border-purple-border rounded-2xl p-6 sm:p-7 mb-2">
+    <section class="bg-purple-fill border-2 border-purple-border rounded-lg p-6 sm:p-7 mb-2">
       <div class="flex items-start gap-4">
         <div class="text-purple-text text-2xl flex-shrink-0 leading-none">↺</div>
         <div class="flex-1">
@@ -346,7 +346,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ STATUS DASHBOARD ═════════ -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
+    <section class="bg-surface border-2 border-token rounded-lg main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-chip text-ink step-number flex-shrink-0">0</div>
@@ -355,7 +355,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             <h2 class="text-2xl font-bold text-ink mb-2">Where the work sits</h2>
           </div>
         </div>
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[860px]">
             <thead>
               <tr class="bg-chip text-ink text-xs font-bold tracking-wider uppercase">
@@ -409,7 +409,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ §1 — SECRETS MANAGER KEYS ═════════ -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-rose-fill text-rose-text step-number flex-shrink-0">1</div>
@@ -425,7 +425,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
         </div>
 
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[860px]">
             <colgroup>
               <col class="w-10">
@@ -512,7 +512,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ §2 — OPTIONAL ENV VARS ═════════ -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
+    <section class="bg-surface border-2 border-token rounded-lg main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-sky-fill text-sky-text step-number flex-shrink-0">2</div>
@@ -529,7 +529,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </div>
 
         <div class="space-y-4">
-          <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
+          <div class="bg-sky-fill border-2 border-sky-border rounded-md p-5">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
               <code class="font-mono bg-surface px-2 py-1 rounded text-sm text-ink border border-sky-border font-semibold">EXPORT_STUDENT_BUSES_CONCURRENCY</code>
               <span class="text-xs font-bold text-sky-text">DEFAULT: <code class="font-mono">3</code></span>
@@ -540,7 +540,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             </p>
           </div>
 
-          <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
+          <div class="bg-sky-fill border-2 border-sky-border rounded-md p-5">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
               <code class="font-mono bg-surface px-2 py-1 rounded text-sm text-ink border border-sky-border font-semibold">EXPORT_STUDENT_BUSES_SHADOW_PATH</code>
               <span class="text-xs font-bold text-sky-text">DEV: <code class="font-mono">s3://ezrd-dev-ezrouting/export-student-buses-shadow/</code></span>
@@ -551,7 +551,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             </p>
           </div>
 
-          <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
+          <div class="bg-sky-fill border-2 border-sky-border rounded-md p-5">
             <div class="flex items-center gap-3 mb-2 flex-wrap">
               <code class="font-mono bg-surface px-2 py-1 rounded text-sm text-ink border border-sky-border font-semibold">EXPORT_STUDENT_BUSES_SHADOW_BUCKET</code>
               <span class="text-xs font-bold text-sky-text">DEFAULT: <em>unset</em></span>
@@ -566,7 +566,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ §3 — OTHER INFRA PREREQS ═════════ -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-amber-fill text-amber-text step-number flex-shrink-0">3</div>
@@ -582,7 +582,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
         </div>
 
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[860px]">
             <colgroup>
               <col class="w-10">
@@ -647,7 +647,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ §4 — ALREADY WIRED ═════════ -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
+    <section class="bg-surface border-2 border-token rounded-lg main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-emerald-fill text-emerald-text step-number flex-shrink-0">4</div>
@@ -661,37 +661,37 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
             <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">ExternalSecret → K8s Secret</div>
             <p class="text-body text-sm leading-relaxed">
               <code class="k">ezrd-gitops/charts/ezrouting/templates/externalsecret.yaml</code> uses <code class="k">dataFrom.extract</code> against <code class="k">ezrd/&lt;env&gt;/ezrouting</code>. Every JSON field lands in the materialized K8s Secret automatically. <strong class="text-ink">But</strong> reaching the pod env still requires a <code class="k">secretKeyRef</code> entry in <code class="k">_helpers.tpl</code> (PR #188).
             </p>
           </div>
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
             <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">Managed SFTP creds (192/201)</div>
             <p class="text-body text-sm leading-relaxed">
               <code class="k">configuration.sftp</code> in <code class="k">config.json</code> already holds creds for <code class="k">sftp.ezrouting.com</code>. No Secrets Manager work for managed-mode entries.
             </p>
           </div>
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
             <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">Redis (BullMQ)</div>
             <p class="text-body text-sm leading-relaxed">
               <code class="k">cron-jobs/redis-connection.js</code> reuses the existing connection used by every other cron module. Nothing new.
             </p>
           </div>
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
             <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">S3 IAM for shadow mode</div>
             <p class="text-body text-sm leading-relaxed">
               <code class="k">ezrd-app-&lt;env&gt;</code> static IAM user has <code class="k">s3:PutObject</code> on <code class="k">ezrd-&lt;env&gt;-ezrouting/*</code>. Worker passes those creds explicitly via <code class="k">configuration.aws</code> (Routing PR #1477).
             </p>
           </div>
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
             <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">Datadog logs/metrics</div>
             <p class="text-body text-sm leading-relaxed">
               <code class="k">app/datadog/index</code> helpers already used by every cron module. Just verify dashboards pick up the new queue name.
             </p>
           </div>
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
             <div class="text-emerald-text font-bold text-xs tracking-wider uppercase mb-2">Dry-run password redaction</div>
             <p class="text-body text-sm leading-relaxed">
               <code class="k">makeDryRunExec</code> runs every command through <code class="k">redactSshpassPassword()</code> before logging. <code class="k">sshpass -p &lt;value&gt;</code> (double-quoted, single-quoted, unquoted) is replaced with <code class="k">***REDACTED***</code>.
@@ -702,7 +702,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- ═════════ §5 — CUTOVER ORDER ═════════ -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
+    <section class="bg-surface border-2 border-token rounded-lg main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">5</div>

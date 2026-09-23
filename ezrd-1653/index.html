@@ -286,7 +286,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-4xl mx-auto px-6 py-8 space-y-5">
 
     <!-- What / why -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-2">What was wrong</h2>
       <p class="text-body mb-3">A dispatcher split one route across two buses (e.g. Bus&nbsp;5 → half to Bus&nbsp;3, half to Bus&nbsp;6). It looked correct in EZDistrict, but the driver tablets (SD360) and parent apps showed one of the destination buses carrying <strong>all</strong> of the original route's stops — its own share <em>plus</em> the other bus's share — with incorrect stop times. No error appeared anywhere; a silent failure.</p>
       <h2 class="text-lg font-bold text-ink mb-2 mt-4">Root cause (confirmed against production data)</h2>
@@ -294,7 +294,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Why one tenant -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-2">Why it was only seen for one client</h2>
       <p class="text-body mb-2">It is <strong>workflow-specific, not tenant-specific</strong> — nothing about the reporting district's data triggered it:</p>
       <ul class="text-body space-y-1.5">
@@ -306,19 +306,19 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- The fix -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-2">The fix</h2>
       <p class="text-body">In the Trip Prep break-up flow, each destination trip's computed stop list is now filtered to drop any stop the break-up plan assigned to a <strong>different</strong> destination that has leaked onto this one. Stops legitimately moved to this trip (and the trip's own stops) are always kept, so nothing valid is removed.</p>
     </section>
 
     <!-- Verification status -->
-    <section class="bg-surface border-2 border-amber-border rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-amber-border rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-2">⚠ Verification status — read first</h2>
       <div class="warnbox text-ink">The fix was landed on code analysis, <strong>not</strong> a reproduced run — the affected service could not be exercised in a local sandbox. <strong>This test session is the first live verification.</strong> Please also confirm the trigger conditions (single split vs. requiring a repeat) and flag if the customer's case actually came from the manual "move stops to a new trip" flow rather than the "Break up trip" tool — that path would need a follow-up.</div>
     </section>
 
     <!-- Setup -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-2">Setup</h2>
       <ul class="text-body space-y-1">
         <li>• Environment: <strong>dev</strong>, EZDistrict → <strong>Trip Preparation</strong>, a test tenant (e.g. <code class="k">testqa</code>).</li>
@@ -328,7 +328,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 1 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">1 · Split one route across two buses <span class="text-emerald-text text-sm font-semibold">(main fix)</span></h2>
       <ol class="steps text-body">
         <li>Trip Preparation → open the source route's trip → <strong>Break up trip</strong>.</li>
@@ -339,7 +339,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 2 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">2 · Repeat the split on the same buses <span class="text-mute text-sm font-semibold">(accumulation)</span></h2>
       <ol class="steps text-body">
         <li>Perform a second break-up affecting the same source/destination buses (as the customer did).</li>
@@ -349,7 +349,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 3 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">3 · Split affects AM and PM <span class="text-mute text-sm font-semibold">(both sessions)</span></h2>
       <ol class="steps text-body">
         <li>Split both an AM trip and a PM trip across two buses.</li>
@@ -359,7 +359,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Scenario 4 regression -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">4 · Move stops to a single new trip <span class="text-mute text-sm font-semibold">(regression)</span></h2>
       <ol class="steps text-body">
         <li>Use the ordinary "move stops to a new trip" flow — one source, one destination.</li>
@@ -368,7 +368,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- Data spot check -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">5 · Data spot-check <span class="text-mute text-sm font-semibold">(optional, engineering)</span></h2>
       <p class="text-body">In the test tenant's trip-change records for the split date, each destination trip's stops should be <strong>only</strong> its own moved-in stops (plus anchors). There should be <strong>no</strong> un-tagged stops that belong to the other destination bus.</p>
     </section>

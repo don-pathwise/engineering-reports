@@ -332,7 +332,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
 
     <!-- ===== Background ===== -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -356,7 +356,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           this tailed toward ~18s and tripped the EZRD-2111 latency guard.
         </p>
 
-        <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5">
+        <div class="bg-sky-fill border-2 border-sky-border rounded-md p-5">
           <div class="text-xs font-bold uppercase tracking-wider text-sky-text mb-2">The query that re-ran on the hot path</div>
           <pre class="font-mono text-sm text-ink bg-surface rounded-md p-4 border-2 border-sky-border overflow-x-auto leading-relaxed">SELECT * FROM vwAllStops
 WHERE sandboxId = ? AND semesterId = ?
@@ -370,7 +370,7 @@ WHERE sandboxId = ? AND semesterId = ?
     </section>
 
     <!-- ===== The fix ===== -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -393,7 +393,7 @@ WHERE sandboxId = ? AND semesterId = ?
         </p>
 
         <div class="grid sm:grid-cols-2 gap-3 mb-5">
-          <div class="bg-surface-2 border-2 border-token rounded-xl p-4">
+          <div class="bg-surface-2 border-2 border-token rounded-md p-4">
             <div class="text-xs font-bold uppercase tracking-wider text-mute mb-2">Full-district list · unchanged</div>
             <div class="flex flex-wrap gap-1.5">
               <span class="mono-chip">stop</span>
@@ -401,7 +401,7 @@ WHERE sandboxId = ? AND semesterId = ?
               <span class="mono-chip">address</span>
             </div>
           </div>
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-4">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-4">
             <div class="text-xs font-bold uppercase tracking-wider text-emerald-text mb-2">Route-only list · now cached + broadened</div>
             <div class="flex flex-wrap gap-1.5">
               <span class="mono-chip">stop</span>
@@ -416,7 +416,7 @@ WHERE sandboxId = ? AND semesterId = ?
           </div>
         </div>
 
-        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
           <div class="flex items-start gap-3">
             <div class="text-emerald-text text-xl leading-none flex-shrink-0">✓</div>
             <p class="text-ink leading-relaxed">
@@ -432,7 +432,7 @@ WHERE sandboxId = ? AND semesterId = ?
     </section>
 
     <!-- ===== Testing walkthrough (the readout) ===== -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-7">
           <div class="flex items-center gap-3 mb-2">
@@ -492,7 +492,7 @@ WHERE sandboxId = ? AND semesterId = ?
           </div>
         </div>
 
-        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mb-6 ml-0 sm:ml-[3.25rem]">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5 mb-6 ml-0 sm:ml-[3.25rem]">
           <div class="flex items-start gap-3">
             <div class="text-emerald-text text-xl leading-none flex-shrink-0">✓</div>
             <div>
@@ -529,7 +529,7 @@ WHERE sandboxId = ? AND semesterId = ?
     </section>
 
     <!-- ===== Results ===== -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -543,7 +543,7 @@ WHERE sandboxId = ? AND semesterId = ?
           </p>
         </div>
 
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[720px]">
             <colgroup>
               <col class="w-[26%]" />
@@ -585,7 +585,7 @@ WHERE sandboxId = ? AND semesterId = ?
     </section>
 
     <!-- ===== Performance evidence ===== -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -600,15 +600,15 @@ WHERE sandboxId = ? AND semesterId = ?
         </div>
 
         <div class="grid grid-cols-3 gap-3 mb-5">
-          <div class="bg-surface border-2 border-token rounded-xl p-4">
+          <div class="bg-surface border-2 border-token rounded-md p-4">
             <div class="text-2xl font-extrabold text-sky-text tabular-nums">≈20</div>
             <div class="text-xs text-mute mt-1 leading-snug">scans in one route-list request — pre-fix build (still on production)</div>
           </div>
-          <div class="bg-surface border-2 border-token rounded-xl p-4">
+          <div class="bg-surface border-2 border-token rounded-md p-4">
             <div class="text-2xl font-extrabold text-sky-text tabular-nums">≈0</div>
             <div class="text-xs text-mute mt-1 leading-snug">on a warm route-list read — post-fix (UAT); reruns only when route data changes</div>
           </div>
-          <div class="bg-surface border-2 border-token rounded-xl p-4">
+          <div class="bg-surface border-2 border-token rounded-md p-4">
             <div class="text-2xl font-extrabold text-sky-text tabular-nums">1.47s</div>
             <div class="text-xs text-mute mt-1 leading-snug">heaviest single scan, pre-fix — mid-size tenant under load (per ticket, dev-eks)</div>
           </div>
@@ -628,7 +628,7 @@ WHERE sandboxId = ? AND semesterId = ?
     </section>
 
     <!-- ===== Scope & caveats ===== -->
-    <section class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
+    <section class="bg-amber-fill border-2 border-amber-border rounded-lg p-6 sm:p-7">
       <div class="flex items-start gap-4">
         <div class="text-amber-text text-2xl flex-shrink-0 leading-none">⚠</div>
         <div>

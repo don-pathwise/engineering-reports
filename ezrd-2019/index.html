@@ -289,7 +289,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
     <!-- Tab bar -->
     <div role="tablist" aria-label="Ticket sections"
-         class="flex flex-wrap gap-1 p-1 bg-chip/60 rounded-xl mb-6">
+         class="flex flex-wrap gap-1 p-1 bg-chip/60 rounded-md mb-6">
       <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="true"  aria-controls="panel-overview" id="tab-overview">1 · Overview</button>
       <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-plan"     id="tab-plan">2 · Plan</button>
       <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-done"     id="tab-done">3 · What Was Done</button>
@@ -298,14 +298,14 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
     <!-- OVERVIEW -->
     <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-panel space-y-4">
-      <div class="bg-surface border-2 border-hairline rounded-2xl p-6">
+      <div class="bg-surface border-2 border-hairline rounded-lg p-6">
         <div class="flex items-center gap-3 mb-3">
           <span class="badge-num bg-sky-fill text-sky-text">?</span>
           <h2 class="text-lg font-bold text-ink">What this ticket is asking for</h2>
         </div>
         <p class="mb-3">A transportation coordinator wants to bulk-set the <strong>"Exempt from Eligibility Recalculation"</strong> flag on students through the <strong>student CSV import</strong>, instead of toggling it one student at a time. The field already exists on the individual student record (added in <strong>EZRD-1657</strong>) and there was a one-off backend script for a single district (<strong>EZRD-2006</strong>); this story is the permanent, self-service version wired into the normal import.</p>
 
-        <div class="rounded-xl bg-amber-fill border border-amber-border p-4 my-4">
+        <div class="rounded-md bg-amber-fill border border-amber-border p-4 my-4">
           <p class="text-sm font-semibold text-amber-text mb-1">Key implementation fact</p>
           <p class="text-sm text-amber-text">"Exempt from Eligibility Recalculation" is <strong>not a column on the student table</strong>. It is the API/model field <code>exemptFromEligibilityRecalc</code>, physically stored as the <code>locked</code> column in <code>ed_eligibilitystudent</code> (the row with <code>categoryId = 0</code>) — internally the "rider-lock". All writes go through the shared <code>@transactcomm/eligibility-lock</code> package (<code>setRiderLock</code>). So the import cannot just set a field on the student object; it must make a second, dual write into the eligibility domain after the student is saved.</p>
         </div>
@@ -344,13 +344,13 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
     <!-- PLAN -->
     <section id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" class="tab-panel space-y-4" hidden>
-      <div class="bg-surface border-2 border-hairline rounded-2xl p-6">
+      <div class="bg-surface border-2 border-hairline rounded-lg p-6">
         <div class="flex items-center gap-3 mb-3">
           <span class="badge-num bg-purple-fill text-purple-text">→</span>
           <h2 class="text-lg font-bold text-ink">Implementation plan</h2>
         </div>
 
-        <div class="rounded-xl bg-purple-fill border border-purple-border p-4 mb-4">
+        <div class="rounded-md bg-purple-fill border border-purple-border p-4 mb-4">
           <p class="text-sm font-semibold text-purple-text mb-1">Two decisions to confirm first (ticket's open questions)</p>
           <ol class="list-decimal pl-5 text-sm text-purple-text space-y-1">
             <li><strong>Accepted boolean tokens.</strong> Recommend: true = <code>true/t/yes/y/1</code>, false = <code>false/f/no/n/0</code> (case-insensitive); empty cell = leave that student's flag unchanged; anything else = validation error. This is a superset of the existing <code>parseBoolean</code> (which accepts <code>y/t/yes/true</code>) plus explicit false + <code>1/0</code> (common in CSV exports).</li>
@@ -390,7 +390,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
     <!-- WHAT WAS DONE -->
     <section id="panel-done" role="tabpanel" aria-labelledby="tab-done" class="tab-panel space-y-4" hidden>
-      <div class="bg-surface border-2 border-hairline rounded-2xl p-6">
+      <div class="bg-surface border-2 border-hairline rounded-lg p-6">
         <div class="flex items-center gap-3 mb-3">
           <span class="badge-num bg-emerald-fill text-emerald-text">✓</span>
           <h2 class="text-lg font-bold text-ink">What was implemented</h2>
@@ -443,13 +443,13 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
     <!-- LOCAL TEST -->
     <section id="panel-test" role="tabpanel" aria-labelledby="tab-test" class="tab-panel space-y-4" hidden>
-      <div class="bg-surface border-2 border-hairline rounded-2xl p-6">
+      <div class="bg-surface border-2 border-hairline rounded-lg p-6">
         <div class="flex items-center gap-3 mb-3">
           <span class="badge-num bg-amber-fill text-amber-text">▶</span>
           <h2 class="text-lg font-bold text-ink">Verify the fix</h2>
         </div>
 
-        <div class="rounded-xl bg-amber-fill border border-amber-border p-4 mb-4 text-sm text-amber-text">
+        <div class="rounded-md bg-amber-fill border border-amber-border p-4 mb-4 text-sm text-amber-text">
           <p class="font-semibold mb-1">Prerequisite: an eligibility-enabled tenant</p>
           <p>The column is gated on <code>settings.eligibilityEnabled</code>. Use a tenant that has the eligibility module on — confirm by opening any student: the "Exempt from Eligibility Recalculation" checkbox is visible on the General tab. On a tenant without the module, the column is intentionally hidden.</p>
         </div>

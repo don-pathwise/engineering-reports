@@ -287,13 +287,13 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-3xl mx-auto px-6 py-8 space-y-5">
 
     <!-- Step 1 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">Step 1 · Log in to AWS</h2>
       <pre>aws sso login --profile uat</pre>
     </section>
 
     <!-- Step 2 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">Step 2 · Pull the server token + run the checks</h2>
       <p class="text-body text-sm mb-2">Paste the whole block. Replace <code class="k">&lt;MOBILE_TOKEN&gt;</code> with the value from the Jira ticket (EZRD-1564). The server token goes in the <code class="k">token</code> header — that's what authenticates to ezd-core (not a driver login token).</p>
       <pre>TOKEN=$(aws secretsmanager get-secret-value --profile uat --region us-east-1 \
@@ -317,7 +317,7 @@ done</pre>
     </section>
 
     <!-- Step 3 -->
-    <section class="bg-surface border-2 border-token rounded-xl main-card p-6">
+    <section class="bg-surface border-2 border-token rounded-md main-card p-6">
       <h2 class="text-lg font-bold text-ink mb-3">Step 3 · Expected output</h2>
       <div style="overflow-x:auto">
       <table>

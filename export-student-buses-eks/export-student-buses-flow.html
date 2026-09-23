@@ -317,7 +317,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-4">
 
     <!-- ═════════ STEP 1: SOURCE ═════════ -->
-    <section class="bg-surface border border-hairline rounded-2xl shadow-sm overflow-hidden">
+    <section class="bg-surface border border-hairline rounded-lg shadow-sm overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-5">
           <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">1</div>
@@ -327,7 +327,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             <p class="text-mute mb-5 text-lg">
               Each school district has its own MySQL database. The job reads from one client database per invocation.
             </p>
-            <div class="bg-purple-fill border border-purple-border rounded-xl p-5">
+            <div class="bg-purple-fill border border-purple-border rounded-md p-5">
               <div class="font-mono text-lg text-purple-text font-semibold mb-3">er_&lt;client&gt;</div>
               <div class="flex flex-wrap gap-2">
                 <span class="px-3 py-1 rounded-md bg-surface border border-purple-border text-purple-text text-sm font-mono">student</span>
@@ -358,7 +358,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </div>
 
     <!-- ═════════ STEP 2: PROCESSING ═════════ -->
-    <section class="bg-surface border border-hairline rounded-2xl shadow-sm overflow-hidden">
+    <section class="bg-surface border border-hairline rounded-lg shadow-sm overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-5">
           <div class="badge-num bg-teal-fill text-teal-text step-number flex-shrink-0">2</div>
@@ -371,7 +371,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <!-- substep a -->
-              <div class="bg-teal-fill border border-teal-border rounded-xl p-5">
+              <div class="bg-teal-fill border border-teal-border rounded-md p-5">
                 <div class="flex items-center gap-2 mb-3">
                   <span class="w-7 h-7 rounded-full bg-teal-solid text-white font-bold text-sm flex items-center justify-center">a</span>
                   <h3 class="font-bold text-teal-text">Build records</h3>
@@ -385,7 +385,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
               </div>
 
               <!-- substep b -->
-              <div class="bg-teal-fill border border-teal-border rounded-xl p-5">
+              <div class="bg-teal-fill border border-teal-border rounded-md p-5">
                 <div class="flex items-center gap-2 mb-3">
                   <span class="w-7 h-7 rounded-full bg-teal-solid text-white font-bold text-sm flex items-center justify-center">b</span>
                   <h3 class="font-bold text-teal-text">Map to columns</h3>
@@ -399,7 +399,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
               </div>
 
               <!-- substep c -->
-              <div class="bg-teal-fill border border-teal-border rounded-xl p-5">
+              <div class="bg-teal-fill border border-teal-border rounded-md p-5">
                 <div class="flex items-center gap-2 mb-3">
                   <span class="w-7 h-7 rounded-full bg-teal-solid text-white font-bold text-sm flex items-center justify-center">c</span>
                   <h3 class="font-bold text-teal-text">Serialize &amp; write</h3>
@@ -430,7 +430,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </div>
 
     <!-- ═════════ STEP 3: BRANCH ═════════ -->
-    <section class="bg-surface border border-hairline rounded-2xl shadow-sm overflow-hidden">
+    <section class="bg-surface border border-hairline rounded-lg shadow-sm overflow-hidden">
       <div class="p-7 sm:p-9 pb-5">
         <div class="flex items-start gap-5">
           <div class="badge-num bg-amber-fill text-amber-text step-number flex-shrink-0">3</div>
@@ -502,7 +502,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </div>
 
     <!-- ═════════ STEP 4: LANDING ═════════ -->
-    <section class="bg-surface border border-hairline rounded-2xl shadow-sm overflow-hidden">
+    <section class="bg-surface border border-hairline rounded-lg shadow-sm overflow-hidden">
       <div class="p-7 sm:p-9 pb-5">
         <div class="flex items-start gap-5">
           <div class="badge-num bg-sky-fill text-sky-text step-number flex-shrink-0">4</div>
@@ -548,7 +548,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </div>
 
     <!-- ═════════ STEP 5: CONSUMER ═════════ -->
-    <section class="bg-surface border border-hairline rounded-2xl shadow-sm overflow-hidden">
+    <section class="bg-surface border border-hairline rounded-lg shadow-sm overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-5">
           <div class="badge-num bg-emerald-fill text-emerald-text step-number flex-shrink-0">5</div>
@@ -592,51 +592,51 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
     <!-- STATS -->
     <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-8">
-      <div class="bg-surface border border-hairline rounded-xl p-5">
+      <div class="bg-surface border border-hairline rounded-md p-5">
         <div class="text-3xl font-bold text-ink tabular-nums">201</div>
         <div class="text-sm text-mute mt-1 leading-tight">total invocations every 30 min (M–F)</div>
       </div>
-      <div class="bg-surface border border-hairline rounded-xl p-5">
+      <div class="bg-surface border border-hairline rounded-md p-5">
         <div class="text-3xl font-bold text-ink tabular-nums">151</div>
         <div class="text-sm text-mute mt-1 leading-tight">unique districts</div>
       </div>
-      <div class="bg-surface border border-hairline rounded-xl p-5">
+      <div class="bg-surface border border-hairline rounded-md p-5">
         <div class="text-3xl font-bold text-emerald-text tabular-nums">191</div>
         <div class="text-sm text-mute mt-1 leading-tight">files → sftp.ezrouting.com (managed)</div>
       </div>
-      <div class="bg-surface border border-hairline rounded-xl p-5">
+      <div class="bg-surface border border-hairline rounded-md p-5">
         <div class="text-3xl font-bold text-rose-text tabular-nums">10</div>
         <div class="text-sm text-mute mt-1 leading-tight">files → customer-owned SFTP (external)</div>
       </div>
-      <div class="bg-surface border border-hairline rounded-xl p-5">
+      <div class="bg-surface border border-hairline rounded-md p-5">
         <div class="text-3xl font-bold text-amber-text tabular-nums">1</div>
         <div class="text-sm text-mute mt-1 leading-tight">destination on a private IP (needs VPN)</div>
       </div>
     </section>
 
     <!-- MIGRATION CALLOUT -->
-    <section class="bg-surface border border-hairline rounded-2xl shadow-sm p-7 sm:p-9 mt-8">
+    <section class="bg-surface border border-hairline rounded-lg shadow-sm p-7 sm:p-9 mt-8">
       <h2 class="text-2xl font-bold text-ink mb-2">What changes when this moves to EKS</h2>
       <p class="text-mute mb-6 text-lg">
         The data flow itself doesn't change — the CLI tool's behavior is preserved end-to-end. Only the <em>runner</em> moves: from <code class="font-mono text-base bg-page px-1.5 py-0.5 rounded">crond</code> on aarzhou's EC2 box to the <code class="font-mono text-base bg-page px-1.5 py-0.5 rounded">crons-worker</code> pod under <code class="font-mono text-base bg-page px-1.5 py-0.5 rounded">bullmq_crons</code> on EKS. Three things have to follow it:
       </p>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-sky-fill border border-sky-border rounded-xl p-5">
+        <div class="bg-sky-fill border border-sky-border rounded-md p-5">
           <div class="text-sky-text font-bold text-sm tracking-wider uppercase mb-1">1 · Network</div>
           <h3 class="font-bold text-ink mb-2">Outbound reachability</h3>
           <p class="text-body text-sm leading-relaxed">
             EKS pod's NAT egress must reach <code class="font-mono text-xs bg-surface px-1 rounded">sftp.ezrouting.com</code>, all 7 external SFTP hosts (some non-standard ports), and the private IP for stfrancismn.
           </p>
         </div>
-        <div class="bg-amber-fill border border-amber-border rounded-xl p-5">
+        <div class="bg-amber-fill border border-amber-border rounded-md p-5">
           <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-1">2 · Allowlisting</div>
           <h3 class="font-bold text-ink mb-2">Customer IP whitelist</h3>
           <p class="text-body text-sm leading-relaxed">
             Districts currently allow the EC2's external IP. Every external destination needs the new EKS NAT IP added before cutover, or uploads silently fail.
           </p>
         </div>
-        <div class="bg-emerald-fill border border-emerald-border rounded-xl p-5">
+        <div class="bg-emerald-fill border border-emerald-border rounded-md p-5">
           <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-1">3 · Secrets</div>
           <h3 class="font-bold text-ink mb-2">Credential migration</h3>
           <p class="text-body text-sm leading-relaxed">

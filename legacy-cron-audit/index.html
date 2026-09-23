@@ -343,7 +343,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-[110rem] mx-auto px-6 py-12 space-y-5">
 
     <!-- 1. TL;DR -->
-    <section id="tldr" class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
+    <section id="tldr" class="bg-surface border-2 border-token rounded-lg main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">1</div>
@@ -380,7 +380,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- 2. Legend -->
-    <section id="legend" class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
+    <section id="legend" class="bg-surface border-2 border-token rounded-lg main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-chip text-ink step-number flex-shrink-0">2</div>
@@ -394,27 +394,27 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div class="flex items-start gap-3 p-4 bg-emerald-fill border-2 border-emerald-border rounded-xl">
+          <div class="flex items-start gap-3 p-4 bg-emerald-fill border-2 border-emerald-border rounded-md">
             <span class="pill-sm bg-emerald-fill text-emerald-text border-emerald-border flex-shrink-0">🟢 On EKS</span>
             <span class="text-sm text-ink">Built from <code class="k">src/</code>, deployed via <code class="k">ezrd-gitops</code>, running as a K8s <code class="k">CronJob</code></span>
           </div>
-          <div class="flex items-start gap-3 p-4 bg-sky-fill border-2 border-sky-border rounded-xl">
+          <div class="flex items-start gap-3 p-4 bg-sky-fill border-2 border-sky-border rounded-md">
             <span class="pill-sm bg-sky-fill text-sky-text border-sky-border flex-shrink-0">🔵 In repo</span>
             <span class="text-sm text-ink">Script + deps self-contained in <code class="k">legacy/</code>; no cross-repo dependency</span>
           </div>
-          <div class="flex items-start gap-3 p-4 bg-amber-fill border-2 border-amber-border rounded-xl">
+          <div class="flex items-start gap-3 p-4 bg-amber-fill border-2 border-amber-border rounded-md">
             <span class="pill-sm bg-amber-fill text-amber-text border-amber-border flex-shrink-0">🟡 Cross-repo</span>
             <span class="text-sm text-ink">Calls a CLI tool in a sibling repo; tool exists in source control</span>
           </div>
-          <div class="flex items-start gap-3 p-4 bg-rose-fill border-2 border-rose-border rounded-xl">
+          <div class="flex items-start gap-3 p-4 bg-rose-fill border-2 border-rose-border rounded-md">
             <span class="pill-sm bg-rose-fill text-rose-text border-rose-border flex-shrink-0">🔴 EC2-only</span>
             <span class="text-sm text-ink">CLI tool does <span class="font-semibold">not exist in any branch</span> of any TransActComm repo — lives only on aarzhou</span>
           </div>
-          <div class="flex items-start gap-3 p-4 bg-purple-fill border-2 border-purple-border rounded-xl">
+          <div class="flex items-start gap-3 p-4 bg-purple-fill border-2 border-purple-border rounded-md">
             <span class="pill-sm bg-purple-fill text-purple-text border-purple-border flex-shrink-0">🟣 SQL only</span>
             <span class="text-sm text-ink">No Node, just inline <code class="k">mysql</code></span>
           </div>
-          <div class="flex items-start gap-3 p-4 bg-surface-2 border-2 border-hairline rounded-xl">
+          <div class="flex items-start gap-3 p-4 bg-surface-2 border-2 border-hairline rounded-md">
             <span class="pill-sm bg-page text-ink border-token flex-shrink-0">⚪ Shell only</span>
             <span class="text-sm text-ink">No Node code path at all — pure shell utility (7z, s3cmd, sftp, pm2)</span>
           </div>
@@ -423,7 +423,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- 3. Per-job table -->
-    <section id="per-job-audit" class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section id="per-job-audit" class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-teal-fill text-teal-text step-number flex-shrink-0">3</div>
@@ -437,7 +437,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
         </div>
 
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="ttable w-full text-sm min-w-[1280px]">
             <colgroup>
               <col class="w-[18%]">  <!-- Job -->
@@ -686,7 +686,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- 4. Roll-up by status -->
-    <section id="rollup" class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
+    <section id="rollup" class="bg-surface border-2 border-token rounded-lg main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-sky-fill text-sky-text step-number flex-shrink-0">4</div>
@@ -700,32 +700,32 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 text-center">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5 text-center">
             <div class="text-3xl font-extrabold text-emerald-text tabular-nums">1</div>
             <div class="text-xs font-bold tracking-wider uppercase text-emerald-text mt-1">🟢 On EKS</div>
             <div class="text-xs text-mute mt-2">backup-dbs</div>
           </div>
-          <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5 text-center">
+          <div class="bg-sky-fill border-2 border-sky-border rounded-md p-5 text-center">
             <div class="text-3xl font-extrabold text-sky-text tabular-nums">3</div>
             <div class="text-xs font-bold tracking-wider uppercase text-sky-text mt-1">🔵 In repo</div>
             <div class="text-xs text-mute mt-2">schoolToolPost · compare-contact-list · preprocess-clarknv-map</div>
           </div>
-          <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-5 text-center">
+          <div class="bg-amber-fill border-2 border-amber-border rounded-md p-5 text-center">
             <div class="text-3xl font-extrabold text-amber-text tabular-nums">8</div>
             <div class="text-xs font-bold tracking-wider uppercase text-amber-text mt-1">🟡 Cross-repo</div>
             <div class="text-xs text-mute mt-2">student-buses · students-stops · fuellogs · staff-attendance · summarize-trips · photos · photos-2 · leave-requests</div>
           </div>
-          <div class="bg-rose-fill border-2 border-rose-border rounded-xl p-5 text-center">
+          <div class="bg-rose-fill border-2 border-rose-border rounded-md p-5 text-center">
             <div class="text-3xl font-extrabold text-rose-text tabular-nums">6</div>
             <div class="text-xs font-bold tracking-wider uppercase text-rose-text mt-1">🔴 EC2-only</div>
             <div class="text-xs text-mute mt-2">dismissal · contact-list · punch · drivers · photos-taftca · eligibility-programs</div>
           </div>
-          <div class="bg-purple-fill border-2 border-purple-border rounded-xl p-5 text-center">
+          <div class="bg-purple-fill border-2 border-purple-border rounded-md p-5 text-center">
             <div class="text-3xl font-extrabold text-purple-text tabular-nums">2</div>
             <div class="text-xs font-bold tracking-wider uppercase text-purple-text mt-1">🟣 SQL only</div>
             <div class="text-xs text-mute mt-2">sync-eligibility · houston-sandboxes</div>
           </div>
-          <div class="bg-surface-2 border-2 border-hairline rounded-xl p-5 text-center">
+          <div class="bg-surface-2 border-2 border-hairline rounded-md p-5 text-center">
             <div class="text-3xl font-extrabold text-ink tabular-nums">2</div>
             <div class="text-xs font-bold tracking-wider uppercase text-body mt-1">⚪ Shell only</div>
             <div class="text-xs text-mute mt-2">ezr-data · gps-service reload</div>
@@ -735,7 +735,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- 5. Parity strategy by output type -->
-    <section id="parity-buckets" class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
+    <section id="parity-buckets" class="bg-surface border-2 border-token rounded-lg main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-emerald-fill text-emerald-text step-number flex-shrink-0">5</div>
@@ -751,7 +751,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-          <div class="border-2 border-emerald-border rounded-xl p-5 bg-emerald-fill/40">
+          <div class="border-2 border-emerald-border rounded-md p-5 bg-emerald-fill/40">
             <div class="flex items-center gap-2 mb-3">
               <span class="pill-sm bg-emerald-fill text-emerald-text border-emerald-border">Easy</span>
               <h3 class="text-lg font-bold text-ink">Durable file output — just grab it</h3>
@@ -768,7 +768,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             </ul>
           </div>
 
-          <div class="border-2 border-amber-border rounded-xl p-5 bg-amber-fill/40">
+          <div class="border-2 border-amber-border rounded-md p-5 bg-amber-fill/40">
             <div class="flex items-center gap-2 mb-3">
               <span class="pill-sm bg-amber-fill text-amber-text border-amber-border">Timed</span>
               <h3 class="text-lg font-bold text-ink">Transient file output — needs a snapshot window</h3>
@@ -782,7 +782,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             <p class="text-xs text-mute mt-3">One snapshot harness can cover all three: <code class="k wrap">ssh aarzhou 'tar -czf … /tmp/&lt;pattern&gt;'</code> scheduled to run a few minutes after each tick.</p>
           </div>
 
-          <div class="border-2 border-rose-border rounded-xl p-5 bg-rose-fill/40 lg:col-span-2">
+          <div class="border-2 border-rose-border rounded-md p-5 bg-rose-fill/40 lg:col-span-2">
             <div class="flex items-center gap-2 mb-3">
               <span class="pill-sm bg-rose-fill text-rose-text border-rose-border">Harder</span>
               <h3 class="text-lg font-bold text-ink">DB-mutating jobs — snapshot state before &amp; after</h3>
@@ -800,7 +800,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             </ul>
           </div>
 
-          <div class="border-2 border-hairline rounded-xl p-5 bg-surface-2 lg:col-span-2">
+          <div class="border-2 border-hairline rounded-md p-5 bg-surface-2 lg:col-span-2">
             <div class="flex items-center gap-2 mb-3">
               <span class="pill-sm bg-page text-ink border-token">Other</span>
               <h3 class="text-lg font-bold text-ink">Non-comparable — different validation approach</h3>
@@ -817,7 +817,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- 6. Failure detection during cutover -->
-    <section id="failure-detection" class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section id="failure-detection" class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-rose-fill text-rose-text step-number flex-shrink-0">6</div>
@@ -831,7 +831,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
         </div>
 
-        <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-5 mb-6">
+        <div class="bg-amber-fill border-2 border-amber-border rounded-md p-5 mb-6">
           <div class="flex items-start gap-3">
             <div class="text-amber-text text-xl flex-shrink-0 leading-none">📬</div>
             <div>
@@ -841,7 +841,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </div>
         </div>
 
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="ttable w-full text-sm min-w-[1380px]">
             <colgroup>
               <col class="w-[14%]">
@@ -1111,7 +1111,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </table>
         </div>
 
-        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-4 mt-4">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-4 mt-4">
           <div class="flex items-start gap-3">
             <div class="text-emerald-text text-xl flex-shrink-0 leading-none">✓</div>
             <div>
@@ -1122,17 +1122,17 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-4">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-4">
             <div class="text-xs font-bold tracking-wider uppercase text-emerald-text mb-1">🟢 Low risk</div>
             <div class="text-2xl font-extrabold text-emerald-text tabular-nums">5</div>
             <div class="text-xs text-body mt-1">Existing signal sufficient (S3 archive, internal log, idempotent retry, or EKS-monitored).</div>
           </div>
-          <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-4">
+          <div class="bg-amber-fill border-2 border-amber-border rounded-md p-4">
             <div class="text-xs font-bold tracking-wider uppercase text-amber-text mb-1">🟡 Medium risk</div>
             <div class="text-2xl font-extrabold text-amber-text tabular-nums">14</div>
             <div class="text-xs text-body mt-1">Failures discoverable but no one's looking — needs an active monitor.</div>
           </div>
-          <div class="bg-rose-fill border-2 border-rose-border rounded-xl p-4">
+          <div class="bg-rose-fill border-2 border-rose-border rounded-md p-4">
             <div class="text-xs font-bold tracking-wider uppercase text-rose-text mb-1">🔴 High risk</div>
             <div class="text-2xl font-extrabold text-rose-text tabular-nums">3</div>
             <div class="text-xs text-body mt-1">Customer-SLA jobs that are silent today &mdash; <code class="k">export-students-stops</code>, <code class="k">export-punch-reports</code>, <code class="k">import-drivers</code>. Page on miss.</div>
@@ -1142,7 +1142,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- 7. Next steps -->
-    <section id="next-steps" class="bg-surface border-2 border-token rounded-2xl main-card overflow-hidden">
+    <section id="next-steps" class="bg-surface border-2 border-token rounded-lg main-card overflow-hidden">
       <div class="p-7 sm:p-9">
         <div class="flex items-start gap-4 mb-6">
           <div class="badge-num bg-purple-fill text-purple-text step-number flex-shrink-0">7</div>
@@ -1210,7 +1210,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- 8. Open questions -->
-    <section id="open-questions" class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
+    <section id="open-questions" class="bg-amber-fill border-2 border-amber-border rounded-lg p-6 sm:p-7">
       <div class="flex items-start gap-4">
         <div class="text-amber-text text-2xl flex-shrink-0 leading-none">?</div>
         <div class="flex-1">

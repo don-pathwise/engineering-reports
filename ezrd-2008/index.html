@@ -289,7 +289,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
     <!-- Tab bar -->
     <div role="tablist" aria-label="Ticket sections"
-         class="flex flex-wrap gap-1 p-1 bg-chip/60 rounded-xl mb-6">
+         class="flex flex-wrap gap-1 p-1 bg-chip/60 rounded-md mb-6">
       <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="true"  aria-controls="panel-overview" id="tab-overview">1 · Overview</button>
       <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-plan"     id="tab-plan">2 · Plan</button>
       <button class="tab-btn border-2 rounded-lg px-4 py-2 text-sm font-semibold transition" role="tab" aria-selected="false" aria-controls="panel-done"     id="tab-done">3 · What Was Done</button>
@@ -298,7 +298,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 
     <!-- OVERVIEW -->
     <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-panel space-y-4">
-      <div class="bg-surface border-2 border-hairline rounded-2xl p-6">
+      <div class="bg-surface border-2 border-hairline rounded-lg p-6">
         <div class="flex items-center gap-3 mb-3">
           <span class="badge-num bg-sky-fill text-sky-text">?</span>
           <h2 class="text-lg font-bold text-ink">What this ticket is about</h2>
@@ -307,11 +307,11 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
         <p class="mb-3">The cause is a data-quality problem: a student can end up with more than one <code>address</code> row flagged <code>recordType=1, isPrimary=1</code>. Pagination is applied to the <em>distinct student-id list</em> first, then each id is hydrated; the primary-address join assumed one primary per student (1:1) but was actually 1-to-many, so each extra primary <strong>fanned</strong> the student into an additional row <em>after</em> the page had been sized.</p>
 
         <div class="grid sm:grid-cols-2 gap-3 my-4">
-          <div class="rounded-xl bg-emerald-fill border border-emerald-border p-4">
+          <div class="rounded-md bg-emerald-fill border border-emerald-border p-4">
             <p class="text-xs font-bold uppercase tracking-wide text-emerald-text mb-1">Read side — already fixed</p>
             <p class="text-sm text-body">PR #252 replaced the plain equality join with a correlated <code>MIN(id)</code> subquery, so the list picks exactly one deterministic primary per student and never over-delivers, regardless of data quality. Merged to <code>main</code>; uat/prd await operator promotion.</p>
           </div>
-          <div class="rounded-xl bg-rose-fill border border-rose-border p-4">
+          <div class="rounded-md bg-rose-fill border border-rose-border p-4">
             <p class="text-xs font-bold uppercase tracking-wide text-rose-text mb-1">Write side — this PR</p>
             <p class="text-sm text-body">Nothing stopped the app from <em>creating</em> a second primary. A concurrent edit in another tab, or a double-submit, appended another <code>isPrimary=1</code> row. The read-side fix hides the symptom; this guard removes the source.</p>
           </div>
@@ -343,7 +343,7 @@ var recid = await db(context).insert('INSERT INTO address SET ?', addr); // inse
 
     <!-- PLAN -->
     <section id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" class="tab-panel space-y-4" hidden>
-      <div class="bg-surface border-2 border-hairline rounded-2xl p-6">
+      <div class="bg-surface border-2 border-hairline rounded-lg p-6">
         <div class="flex items-center gap-3 mb-3">
           <span class="badge-num bg-purple-fill text-purple-text">→</span>
           <h2 class="text-lg font-bold text-ink">Implementation plan</h2>
@@ -380,7 +380,7 @@ var recid = await db(context).insert('INSERT INTO address SET ?', addr); // inse
 
     <!-- WHAT WAS DONE -->
     <section id="panel-done" role="tabpanel" aria-labelledby="tab-done" class="tab-panel space-y-4" hidden>
-      <div class="bg-surface border-2 border-hairline rounded-2xl p-6">
+      <div class="bg-surface border-2 border-hairline rounded-lg p-6">
         <div class="flex items-center gap-3 mb-3">
           <span class="badge-num bg-emerald-fill text-emerald-text">✓</span>
           <h2 class="text-lg font-bold text-ink">What was implemented</h2>
@@ -432,13 +432,13 @@ var recid = await db(context).insert('INSERT INTO address SET ?', addr); // inse
 
     <!-- LOCAL TEST -->
     <section id="panel-test" role="tabpanel" aria-labelledby="tab-test" class="tab-panel space-y-4" hidden>
-      <div class="bg-surface border-2 border-hairline rounded-2xl p-6">
+      <div class="bg-surface border-2 border-hairline rounded-lg p-6">
         <div class="flex items-center gap-3 mb-3">
           <span class="badge-num bg-amber-fill text-amber-text">▶</span>
           <h2 class="text-lg font-bold text-ink">Verify the fix</h2>
         </div>
 
-        <div class="rounded-xl bg-surface-2 border border-hairline p-4 mb-4 text-sm text-body">
+        <div class="rounded-md bg-surface-2 border border-hairline p-4 mb-4 text-sm text-body">
           <p class="font-semibold text-ink mb-1">Why the test uses two tabs</p>
           <p>The address editor's Primary control is <strong>radio-like</strong> — checking a new Primary auto-unchecks the others — so you can't get two primaries by toggling within one form. The condition arises from state one form can't see: a <strong>second tab or another user</strong> whose view predates your change. That's the path worth testing, so the steps below drive the student from two tabs and confirm the fix keeps a single primary.</p>
         </div>
@@ -461,7 +461,7 @@ var recid = await db(context).insert('INSERT INTO address SET ?', addr); // inse
           <li>Reopen the student (fresh) and expand <strong>Addresses</strong>. <strong>Expected (fixed):</strong> exactly <strong>one</strong> address shows <strong>Primary</strong> checked; the others are present but unchecked. On a broken build you'd instead see <strong>two or more addresses with Primary checked</strong> — the guard is what collapses that back to one.</li>
         </ol>
 
-        <div class="rounded-xl bg-amber-fill border border-amber-border p-4 my-4 text-sm text-amber-text">
+        <div class="rounded-md bg-amber-fill border border-amber-border p-4 my-4 text-sm text-amber-text">
           <p class="font-semibold mb-1">Don't rely on the students list to show a duplicate</p>
           <p>A duplicated list row only appears where the read-side fix (PR #252) is <strong>not</strong> deployed. Where #252 is live (prod today), the list already collapses each student to one row via its <code>MIN(id)</code> primary-address join — so a student with multiple primaries still shows <strong>once</strong> in the list, and the condition is only visible on the edit page (multiple Primary checkboxes). The read-side fix hides the symptom; this PR removes the source. Use the edit-page Primary count as the check.</p>
         </div>

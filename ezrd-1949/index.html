@@ -330,7 +330,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   <main class="max-w-6xl mx-auto px-6 py-12 space-y-6">
 
     <!-- WHAT CHANGED -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -341,7 +341,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           <p class="text-body leading-relaxed">Both were confirmed in code and reproduced before fixing.</p>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
-          <div class="bg-rose-fill border-2 border-rose-border rounded-xl p-5">
+          <div class="bg-rose-fill border-2 border-rose-border rounded-md p-5">
             <div class="text-rose-text font-bold text-sm tracking-wider uppercase mb-3">Before</div>
             <ul class="space-y-2 text-ink leading-relaxed">
               <li>A green <strong>"request submitted"</strong> toast appeared <em>before</em> the request was even sent — always, regardless of outcome.</li>
@@ -350,7 +350,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
               <li>No failure ever reached the agent, which is why the same button got clicked repeatedly and TechOps was asked to push manually.</li>
             </ul>
           </div>
-          <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+          <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
             <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-3">After</div>
             <ul class="space-y-2 text-ink leading-relaxed">
               <li>A neutral <strong>"processing…"</strong> toast first — no claim of success until the system knows.</li>
@@ -364,7 +364,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- BEFORE YOU START -->
-    <section class="bg-amber-fill border-2 border-amber-border rounded-2xl p-6 sm:p-7">
+    <section class="bg-amber-fill border-2 border-amber-border rounded-lg p-6 sm:p-7">
       <div class="flex items-start gap-4">
         <div class="text-amber-text text-2xl flex-shrink-0 leading-none">⚠</div>
         <div>
@@ -380,7 +380,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- RECOMMENDED TENANT -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -394,7 +394,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </p>
         </div>
 
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto mb-6">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto mb-6">
           <table class="w-full text-sm min-w-[620px]">
             <colgroup><col class="w-[38%]"><col class="w-28"><col></colgroup>
             <thead>
@@ -434,7 +434,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </table>
         </div>
 
-        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5">
           <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Expected timing for testqa</div>
           <p class="text-ink leading-relaxed">
             Because the map area is small, this district rebuilds far faster than the ~20 minutes quoted for a normal
@@ -451,7 +451,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- THE TEST -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -511,7 +511,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- EXPECTED RESULTS -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -527,7 +527,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           <span class="toast-demo bg-emerald-solid text-white">2nd gen road network of "&lt;your district&gt;" initialized successfully</span>
         </div>
 
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[760px]">
             <colgroup><col class="w-10"><col class="w-28"><col class="w-24"><col></colgroup>
             <thead>
@@ -572,7 +572,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- UNEXPECTED RESULTS -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -584,7 +584,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             Surfacing failures is the point of this change. What matters is <em>which</em> failure you see.
           </p>
         </div>
-        <div class="bg-surface-2 border-2 border-token rounded-xl overflow-x-auto">
+        <div class="bg-surface-2 border-2 border-token rounded-md overflow-x-auto">
           <table class="w-full text-sm min-w-[820px]">
             <colgroup><col class="w-[40%]"><col class="w-32"><col></colgroup>
             <thead>
@@ -631,7 +631,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- NOT TESTABLE HERE -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -656,7 +656,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
             successfully then breaks. The usual cause is a district whose configured map area is missing or nonsensical.</span>
           </li>
         </ul>
-        <div class="bg-amber-fill border-2 border-amber-border rounded-xl p-5 mb-5">
+        <div class="bg-amber-fill border-2 border-amber-border rounded-md p-5 mb-5">
           <div class="text-amber-text font-bold text-sm tracking-wider uppercase mb-2">No district on Prod UAT will produce an error</div>
           <p class="text-ink leading-relaxed">
             All <strong>657</strong> districts on Prod UAT were checked read-only for the conditions that make a rebuild fail.
@@ -695,7 +695,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
     </section>
 
     <!-- OPTIONAL: CONSOLE SIMULATION -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
@@ -711,7 +711,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
           </p>
         </div>
 
-        <div class="bg-emerald-fill border-2 border-emerald-border rounded-xl p-5 mb-7">
+        <div class="bg-emerald-fill border-2 border-emerald-border rounded-md p-5 mb-7">
           <div class="text-emerald-text font-bold text-sm tracking-wider uppercase mb-2">Safe to run</div>
           <p class="text-ink leading-relaxed">
             Neither recipe changes any data, and neither starts a real regeneration — recipe 2 deliberately intercepts the
@@ -777,7 +777,7 @@ page.api.call = async (a, m, url, d, h) =&gt;
           that district's regeneration action stays intercepted in <em>your</em> browser tab only.
         </p>
 
-        <div class="bg-sky-fill border-2 border-sky-border rounded-xl p-5 mb-6">
+        <div class="bg-sky-fill border-2 border-sky-border rounded-md p-5 mb-6">
           <div class="text-sky-text font-bold text-sm tracking-wider uppercase mb-2">Bonus — a before/after with no broken environment</div>
           <p class="text-ink leading-relaxed mb-3">
             Run each recipe once <strong>before</strong> the fix is deployed and once <strong>after</strong>, and you get a
@@ -789,7 +789,7 @@ page.api.call = async (a, m, url, d, h) =&gt;
           </ul>
         </div>
 
-        <div class="bg-page border-2 border-token rounded-xl p-5">
+        <div class="bg-page border-2 border-token rounded-md p-5">
           <div class="text-ink font-bold text-sm tracking-wider uppercase mb-2">What this does and does not prove</div>
           <p class="text-body leading-relaxed">
             These recipes prove the <strong>browser</strong> reports failures correctly. They do not prove the
@@ -802,7 +802,7 @@ page.api.call = async (a, m, url, d, h) =&gt;
     </section>
 
     <!-- OUT OF SCOPE -->
-    <section class="bg-surface border-2 border-token rounded-2xl main-card">
+    <section class="bg-surface border-2 border-token rounded-lg main-card">
       <div class="p-7 sm:p-9">
         <div class="mb-6">
           <div class="flex items-center gap-3 mb-2">
