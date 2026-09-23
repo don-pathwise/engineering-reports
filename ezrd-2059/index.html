@@ -270,6 +270,27 @@
     }
     .theme-switch { display: none !important; }
   }
+
+  .section-bar { position: sticky; top: 0; z-index: 40; background: var(--surface);
+    border-bottom: var(--border-w) solid var(--border); }
+  .section-bar-inner { max-width: 72rem; margin: 0 auto; padding: 12px 1.5rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+  .seg-track { position: relative; display: grid; flex-grow: 1; max-width: 760px;
+    padding: 4px; border-radius: 9px; background: var(--page); border: 1px solid var(--border);
+    box-shadow: inset 0 2px 5px rgb(0 0 0 / .45), inset 0 -1px 0 rgb(255 255 255 / .04); }
+  .seg-thumb { position: absolute; top: 4px; bottom: 4px; border-radius: 6px;
+    pointer-events: none; background: var(--surface-2); border: 1px solid var(--border);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .10), 0 1px 2px rgb(0 0 0 / .45);
+    transition: left .28s cubic-bezier(.4, 0, .2, 1), width .28s cubic-bezier(.4, 0, .2, 1); }
+  .seg-btn { position: relative; z-index: 1; display: inline-flex; align-items: center;
+    justify-content: center; gap: 8px; padding: 8px 14px; border: 0; background: transparent;
+    border-radius: 6px; font: inherit; font-size: 13px; font-weight: 600;
+    white-space: nowrap; cursor: pointer; color: var(--ink-mute); transition: color .2s ease; }
+  .seg-btn[aria-pressed="true"] { color: var(--ink); }
+  .seg-dot { width: 7px; height: 7px; border-radius: 999px; flex-shrink: 0; }
+  @media (prefers-reduced-motion: reduce) { .seg-thumb { transition: none; } }
+  @media (max-width: 860px) { .section-bar { display: none; } }
+  @media print { .section-bar { display: none !important; } }
 </style>
 <script data-report-theme-toggle>
 window.__toggleTheme = function (el) {
@@ -293,9 +314,86 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   purple: { fill: 'var(--accent-purple-fill)', border: 'var(--accent-purple-border)', text: 'var(--accent-purple-text)', dot: 'var(--accent-purple-dot)', solid: 'var(--accent-purple-solid)' },
   teal: { fill: 'var(--accent-teal-fill)', border: 'var(--accent-teal-border)', text: 'var(--accent-teal-text)', dot: 'var(--accent-teal-dot)', solid: 'var(--accent-teal-solid)' },
 });
+</script><script data-report-slider>
+(function () {
+  if (window.__reportSlider) return; window.__reportSlider = true;
+  document.addEventListener('DOMContentLoaded', function () {
+    var heads = [].slice.call(document.querySelectorAll('main section h2[id]'));
+    if (heads.length < 2) return;                    // one section needs no nav
+    var bar = document.createElement('div');
+    bar.className = 'section-bar no-print';
+    var inner = document.createElement('div');
+    inner.className = 'section-bar-inner';
+    var track = document.createElement('div');
+    track.className = 'seg-track';
+    track.setAttribute('role', 'group');
+    track.setAttribute('aria-label', 'Jump to section');
+    track.style.gridTemplateColumns = 'repeat(' + heads.length + ', minmax(0, 1fr))';
+    var thumb = document.createElement('div');
+    thumb.className = 'seg-thumb';
+    thumb.setAttribute('aria-hidden', 'true');
+    track.appendChild(thumb);
+
+    function place(i) {
+      thumb.style.left = 'calc(4px + (100% - 8px) * ' + i + ' / ' + heads.length + ')';
+      thumb.style.width = 'calc((100% - 8px) / ' + heads.length + ')';
+    }
+
+    var btns = heads.map(function (h, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'seg-btn';
+      b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+      var dot = document.createElement('span');
+      dot.className = 'seg-dot';
+      // Reuse the accent already on the section's own kicker dot, so the bar
+      // cannot drift from the section colours.
+      var src = h.parentNode.querySelector('[class*="bg-"][class*="-dot"]');
+      dot.style.background = src ? getComputedStyle(src).backgroundColor : 'var(--ink-mute)';
+      b.appendChild(dot);
+      b.appendChild(document.createTextNode(h.textContent.replace(/^#/, '').trim()));
+      b.addEventListener('click', function () {
+        document.getElementById(h.id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      track.appendChild(b);
+      return b;
+    });
+
+    function select(i) {
+      btns.forEach(function (b, n) { b.setAttribute('aria-pressed', n === i ? 'true' : 'false'); });
+      place(i);
+    }
+    select(0);
+
+    inner.appendChild(track);
+    var sw = document.querySelector('.theme-switch');
+    if (sw) inner.appendChild(sw);
+    bar.appendChild(inner);
+    var main = document.querySelector('main');
+    main.parentNode.insertBefore(bar, main);
+
+    // Track reading position: the last heading whose top crossed 33% of the viewport.
+    var ticking = false;
+    function sync() {
+      var mark = window.innerHeight * 0.33, idx = 0;
+      for (var i = 0; i < heads.length; i++) {
+        if (heads[i].getBoundingClientRect().top <= mark) idx = i;
+      }
+      select(idx);
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { requestAnimationFrame(sync); ticking = true; }
+    }, { passive: true });
+    sync();
+  });
+})();
 </script>
 </head>
 <body class="bg-page text-ink font-sans antialiased">
+<button type="button" class="theme-switch no-print" role="switch" aria-checked="false" aria-label="Dark theme" onclick="__toggleTheme(this)">
+  <span class="theme-switch-knob" aria-hidden="true"></span>
+</button>
 
 <header class="border-b-2 border-token bg-surface">
   <div class="max-w-6xl mx-auto px-6 py-12 sm:py-16">

@@ -7,7 +7,7 @@ enhance every report page except the root index.html (which has its own system).
     python3 apply-report-enhancements.py               # all report pages
     python3 apply-report-enhancements.py ezrd-1462/index.html   # one page
 """
-import sys, glob, os
+import sys, glob, os, re
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools"))
 from theme_block import HEAD_BOOT, style_block, TOGGLE_HTML, MARKER as THEME_MARKER
 
@@ -76,18 +76,30 @@ MARKER = "data-report-enhanced"
 
 
 def inject_theme(html):
-    """Add the boot script and token block to <head>. Idempotent.
+    """Add the boot script and token block to <head>, and the toggle button
+    just inside <body>. Idempotent.
 
-    Both go in <head>, not before </body>: the boot must set data-theme before
-    the body paints, so the whole theming unit (vars, aliases, boot) lives
-    together where that ordering is guaranteed.
+    Both the boot script and the token block go in <head>, not before
+    </body>: the boot must set data-theme before the body paints, so the
+    whole theming unit (vars, aliases, boot) lives together where that
+    ordering is guaranteed.
+
+    The guard checks for the specific opening tag `<style data-report-theme>`
+    rather than the bare THEME_MARKER substring. THEME_MARKER also matches
+    inside data-report-theme-boot/-toggle/-tw, so a page left with only an
+    orphaned artifact (see theme_block.strip_theme) would otherwise look
+    "already themed" and skip re-injection entirely.
     """
-    if THEME_MARKER in html:
+    anchor = f"<style {THEME_MARKER}>"
+    if anchor in html:
         return html, False
     head_end = html.find("</head>")
     if head_end == -1:
         raise ValueError("no </head>")
     html = html[:head_end] + HEAD_BOOT + "\n" + style_block() + "\n" + html[head_end:]
+    m = re.search(r"<body[^>]*>", html)
+    if m:
+        html = html[:m.end()] + "\n" + TOGGLE_HTML + html[m.end():]
     return html, True
 
 
