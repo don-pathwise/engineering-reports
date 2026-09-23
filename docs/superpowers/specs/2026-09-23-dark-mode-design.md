@@ -278,12 +278,12 @@ Two things follow:
    once already.** Worth understanding why before repeating the shape of it.
    That history is not in git (`eng-local-docs` does not track these files).
 
-### Open decision: notation for B's neutrals
+### Decided 2026-09-23: oklch for B's neutrals
 
 Direction B's tokens are hex. The prior ladder is oklch, with documented
 lightness steps and verified contrast.
 
-**Recommendation:** keep the values the user approved on screen, but express
+**Approved.** Keep the values the user approved on screen, but express
 them in oklch anchored to that ladder's lightness steps. Two reasons — the six
 report accents can then be derived at one consistent lightness and chroma
 rather than hand-picked per hue, and the contrast verification already done
