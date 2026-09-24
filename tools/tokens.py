@@ -3,9 +3,10 @@
 
 Hex values are the approved Direction B palette. oklch is derived, never typed:
 `LIGHT`/`DARK`/`ACCENTS` hold oklch strings for CSS, `*_HEX` hold the source hex
-for contrast maths. Dark neutrals anchor to the ladder documented in
-~/Code/eng-local-docs/DESIGN.md (sunken .140, raised .212, hover .245, line .300,
-ink .950/.800/.665).
+for contrast maths. Dark neutrals anchor to the project's oklch lightness
+ladder -- surfaces at L .140 (sunken/page), .212 (raised/card) and .245 (hover),
+rule lines at .300, and ink at .950 (headings) / .800 (body) / .665 (muted, the
+legibility floor). DESIGN.md at the repo root is the reader-facing write-up.
 """
 import math
 
@@ -64,9 +65,10 @@ LIGHT_HEX = {
     "chip_fg":   "#0f172a",
 }
 
-# Direction B, snapped to the eng-local-docs oklch ladder. The brief's starting
-# hex derived to L values 0.017-0.042 above their ladder steps (verified via
-# check_contrast's Step 5 companion check); each was nudged toward black in
+# Direction B, snapped to the oklch ladder in this module's docstring. The
+# brief's starting hex derived to L values 0.017-0.042 above their ladder
+# steps (verified via check_contrast's Step 5 companion check); each was
+# nudged toward black in
 # OKLab space (same a/b, L set to the ladder target) until its derived L came
 # back within 0.015 of the step, per the task's Step 5 tolerance ruling.
 # ink_mute needed no nudge — it derived exactly on its .665 floor already.
