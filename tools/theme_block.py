@@ -54,7 +54,11 @@ SLIDER_CSS = """
     border-bottom: var(--border-w) solid var(--border); }
   .section-bar-inner { max-width: 72rem; margin: 0 auto; padding: 12px 1.5rem;
     display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-  .seg-track { position: relative; display: grid; flex-grow: 1; max-width: 760px;
+  /* No fixed cap: the bar's own .section-bar-inner (max-width 72rem, 1.5rem
+     padding, minus the toggle and the gap) already bounds this, and the old
+     760px cap threw away ~270px of usable track on every page for nothing.
+     Measured on a 1280px viewport: client width 758px -> 1026px. */
+  .seg-track { position: relative; display: grid; flex-grow: 1; max-width: 100%;
     padding: 4px; border-radius: 9px; background: var(--page); border: 1px solid var(--border);
     box-shadow: inset 0 2px 5px rgb(0 0 0 / .45), inset 0 -1px 0 rgb(255 255 255 / .04);
     overflow-x: auto; }
@@ -64,7 +68,7 @@ SLIDER_CSS = """
     transition: left .28s cubic-bezier(.4, 0, .2, 1), width .28s cubic-bezier(.4, 0, .2, 1); }
   .seg-btn { position: relative; z-index: 1; display: inline-flex; align-items: center;
     justify-content: center; gap: 8px; padding: 8px 14px; border: 0; background: transparent;
-    border-radius: 6px; font: inherit; font-size: 13px; font-weight: 600; min-width: 180px;
+    border-radius: 6px; font: inherit; font-size: 13px; font-weight: 600; min-width: 96px;
     white-space: nowrap; cursor: pointer; color: var(--ink-mute); transition: color .2s ease; }
   .seg-btn[aria-pressed="true"] { color: var(--ink); }
   .seg-dot { width: 7px; height: 7px; border-radius: 999px; flex-shrink: 0; }
@@ -124,6 +128,45 @@ SLIDER_JS = """<script data-report-slider>
       thumb.style.width = b.offsetWidth + 'px';
     }
 
+    // The track scrolls horizontally (a real report has 3-11 sections whose
+    // headings are sentences: measured, one page's segments need 3068px of
+    // track against ~1026px of room). Placing the thumb was never enough --
+    // it was being set to left:1502px inside a 0-1026px window, so the reader
+    // saw a nav bar with no indicator at all. Scroll the track itself rather
+    // than calling scrollIntoView: scrollIntoView walks every scrollable
+    // ancestor including the document, and this runs from the scroll handler,
+    // so it could fight the reader's own scrolling and the click handler's
+    // smooth scroll to the section.
+    var reduceMotion = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function reveal(i) {
+      var b = btns[i];
+      if (!b) return;
+      var pad = 12;                                  // leave a sliver of the neighbour
+      var view = track.scrollLeft, w = track.clientWidth, to = view;
+      if (b.offsetLeft - pad < view) to = b.offsetLeft - pad;
+      else if (b.offsetLeft + b.offsetWidth + pad > view + w) {
+        to = b.offsetLeft + b.offsetWidth + pad - w;
+      }
+      if (to === view) return;                       // already in view: don't fight the reader
+      to = Math.max(0, Math.min(to, track.scrollWidth - w));
+      if (track.scrollTo) track.scrollTo({ left: to, behavior: reduceMotion ? 'auto' : 'smooth' });
+      else track.scrollLeft = to;
+    }
+
+    // The heading's own text, minus any anchors inside it. A plain
+    // textContent.replace(/^#/, '') only stripped a leading hash, but these
+    // pages carry permalink anchors INSIDE the <h2> -- one the page ships
+    // itself (a.permalink) and one the enhancement script adds (a.anchor-link,
+    // whose guard checks for its own class and so does not see the other).
+    // Every label on legacy-cron-audit read "...source#".
+    function label(h) {
+      var c = h.cloneNode(true);
+      var as = c.querySelectorAll('a');
+      for (var i = 0; i < as.length; i++) as[i].parentNode.removeChild(as[i]);
+      return c.textContent.trim();
+    }
+
     var btns = heads.map(function (h, i) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -136,7 +179,7 @@ SLIDER_JS = """<script data-report-slider>
       var src = h.parentNode.querySelector('[class*="bg-"][class*="-dot"]');
       dot.style.background = src ? getComputedStyle(src).backgroundColor : 'var(--ink-mute)';
       b.appendChild(dot);
-      b.appendChild(document.createTextNode(h.textContent.replace(/^#/, '').trim()));
+      b.appendChild(document.createTextNode(label(h)));
       b.addEventListener('click', function () {
         document.getElementById(h.id).scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
@@ -149,6 +192,7 @@ SLIDER_JS = """<script data-report-slider>
       current = i;
       btns.forEach(function (b, n) { b.setAttribute('aria-pressed', n === i ? 'true' : 'false'); });
       place(i);
+      reveal(i);
     }
 
     inner.appendChild(track);
