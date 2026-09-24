@@ -16,14 +16,14 @@
   </script>
   <style>
     html { font-size: 16px; }
-    body { color: rgb(15 23 42); }
-    code.k { font-family:'JetBrains Mono',monospace; background:rgb(226 232 240); padding:.08rem .35rem; border-radius:.25rem; font-size:.85em; }
+    body { color: var(--ink); }
+    code.k { font-family:'JetBrains Mono',monospace; background: var(--chip-bg, rgb(226 232 240)); color: var(--chip-fg, rgb(15 23 42)); padding:.08rem .35rem; border-radius:.25rem; font-size:.85em; }
     .main-card { box-shadow: 0 1px 3px rgba(15,23,42,.08); }
     ol.steps { counter-reset: s; }
     ol.steps > li { counter-increment: s; position: relative; padding-left: 2rem; margin-bottom:.4rem; }
-    ol.steps > li::before { content: counter(s); position:absolute; left:0; top:.05rem; width:1.4rem; height:1.4rem; background:rgb(186 230 253); color:rgb(7 89 133); border-radius:9999px; font-size:.8rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
-    .expect { background:rgb(236 253 245); border-left:4px solid rgb(16 185 129); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
-    .warnbox { background:rgb(255 251 235); border-left:4px solid rgb(217 119 6); padding:.7rem 1rem; border-radius:.3rem; }
+    ol.steps > li::before { content: counter(s); position:absolute; left:0; top:.05rem; width:1.4rem; height:1.4rem; background:var(--accent-sky-fill); color:var(--accent-sky-text); border-radius:9999px; font-size:.8rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .expect { background:var(--accent-emerald-fill); border-left:4px solid var(--accent-emerald-text); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
+    .warnbox { background:var(--accent-amber-fill); border-left:4px solid var(--accent-amber-text); padding:.7rem 1rem; border-radius:.3rem; }
   </style>
 <script data-report-theme-boot>
 (function () {
@@ -527,12 +527,12 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
 <style data-report-enhanced>
   .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 60;
-    background: rgb(2 132 199); transition: width .1s linear; }
+    background: var(--accent-sky-dot, rgb(2 132 199)); transition: width .1s linear; }
   .anchor-h { position: relative; }
   .anchor-link { position: absolute; left: -1.15rem; top: 0.12em; opacity: 0; text-decoration: none;
-    color: rgb(148 163 184); font-weight: 600; transition: opacity .12s ease; }
+    color: var(--ink-mute, rgb(148 163 184)); font-weight: 600; transition: opacity .12s ease; }
   .anchor-h:hover .anchor-link, .anchor-link:focus { opacity: 1; }
-  .anchor-link:hover { color: rgb(37 99 235); }
+  .anchor-link:hover { color: var(--accent-sky-text, rgb(37 99 235)); }
   @media (max-width: 640px) { .anchor-link { display: none; } }
   @media (prefers-reduced-motion: reduce) { .reading-progress { transition: none; } }
   @media print {

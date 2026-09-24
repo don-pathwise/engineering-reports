@@ -16,12 +16,12 @@
   </script>
   <style>
     html { font-size: 17px; }
-    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: var(--ink); }
     .step-number { font-variant-numeric: tabular-nums; }
     .badge-num { width: 3rem; height: 3rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; box-shadow: 0 1px 0 rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.06); }
     .pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.75rem; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border-width: 1px; }
     .main-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
-    code.k { font-family: 'JetBrains Mono', ui-monospace, monospace; background: rgb(226 232 240); color: rgb(15 23 42); padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em; white-space: nowrap; }
+    code.k { font-family: 'JetBrains Mono', ui-monospace, monospace; background: var(--chip-bg, rgb(226 232 240)); color: var(--chip-fg, rgb(15 23 42)); padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-size: 0.82em; white-space: nowrap; }
     code.k.wrap { white-space: normal; word-break: break-all; }
     .tag { display:inline-block; padding:0.05rem 0.5rem; border-radius:0.25rem; font-size:0.72rem; font-weight:700; }
   </style>
@@ -474,6 +474,12 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
                 <th class="text-left px-4 py-3">Status</th><th class="text-left px-4 py-3">Means</th><th class="text-left px-4 py-3">Set when</th>
               </tr>
             </thead>
+            <!-- The .tag chips below reproduce the Change Request queue's OWN status
+                 colours (the product's Material palette), so a reader can match this
+                 table to what the screen shows. They are deliberately theme-invariant
+                 and must NOT be routed through the report token layer -- each is a
+                 self-contained light-fill/dark-text pair that stays legible in both
+                 themes. Same call as the always-dark code panels. -->
             <tbody class="divide-y divide-hairline">
               <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#e0e0e0;color:#333">Pending</span></td><td class="px-4 py-3 text-body">Awaiting admin review</td><td class="px-4 py-3 text-mute">SSC submits (unchanged)</td></tr>
               <tr class="align-top"><td class="px-4 py-3"><span class="tag" style="background:#c8e6c9;color:#1b5e20">Accepted</span></td><td class="px-4 py-3 text-body">Accepted, <strong>no</strong> transportation review needed</td><td class="px-4 py-3 text-mute">Accept, when the change doesn’t need review</td></tr>
@@ -703,12 +709,12 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
 <style data-report-enhanced>
   .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 60;
-    background: rgb(2 132 199); transition: width .1s linear; }
+    background: var(--accent-sky-dot, rgb(2 132 199)); transition: width .1s linear; }
   .anchor-h { position: relative; }
   .anchor-link { position: absolute; left: -1.15rem; top: 0.12em; opacity: 0; text-decoration: none;
-    color: rgb(148 163 184); font-weight: 600; transition: opacity .12s ease; }
+    color: var(--ink-mute, rgb(148 163 184)); font-weight: 600; transition: opacity .12s ease; }
   .anchor-h:hover .anchor-link, .anchor-link:focus { opacity: 1; }
-  .anchor-link:hover { color: rgb(37 99 235); }
+  .anchor-link:hover { color: var(--accent-sky-text, rgb(37 99 235)); }
   @media (max-width: 640px) { .anchor-link { display: none; } }
   @media (prefers-reduced-motion: reduce) { .reading-progress { transition: none; } }
   @media print {

@@ -16,15 +16,15 @@
   </script>
   <style>
     html { font-size: 16px; }
-    body { color: rgb(15 23 42); }
-    code.k { font-family:'JetBrains Mono',monospace; background:rgb(226 232 240); padding:.08rem .35rem; border-radius:.25rem; font-size:.85em; word-break:break-all; }
+    body { color: var(--ink); }
+    code.k { font-family:'JetBrains Mono',monospace; background: var(--chip-bg, rgb(226 232 240)); color: var(--chip-fg, rgb(15 23 42)); padding:.08rem .35rem; border-radius:.25rem; font-size:.85em; word-break:break-all; }
     .main-card { box-shadow: 0 1px 3px rgba(15,23,42,.08); }
-    .expect { background:rgb(236 253 245); border-left:4px solid rgb(16 185 129); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
-    pre { font-family:'JetBrains Mono',monospace; background:rgb(15 23 42); color:rgb(226 232 240); padding:.9rem 1rem; border-radius:.5rem; overflow-x:auto; font-size:.82rem; line-height:1.5; }
+    .expect { background:var(--accent-emerald-fill); border-left:4px solid var(--accent-emerald-text); padding:.55rem .9rem; border-radius:.3rem; margin-top:.6rem; }
+    pre { font-family:'JetBrains Mono',monospace; background:var(--code-panel-bg); color:var(--code-panel-fg); padding:.9rem 1rem; border-radius:.5rem; overflow-x:auto; font-size:.82rem; line-height:1.5; }
     table { width:100%; border-collapse:collapse; font-size:.9rem; }
-    th { background:rgb(226 232 240); text-align:left; padding:.5rem .7rem; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; }
-    td { padding:.5rem .7rem; border-top:1px solid rgb(226 232 240); vertical-align:top; }
-    .badge { display:inline-flex; align-items:center; gap:.4rem; padding:.25rem .7rem; border-radius:9999px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; background:rgb(220 252 231); color:rgb(6 95 70); border:1px solid rgb(110 231 183); }
+    th { background:var(--chip-bg); text-align:left; padding:.5rem .7rem; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; }
+    td { padding:.5rem .7rem; border-top:1px solid var(--hairline); vertical-align:top; }
+    .badge { display:inline-flex; align-items:center; gap:.4rem; padding:.25rem .7rem; border-radius:9999px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; background:var(--accent-emerald-fill); color:var(--accent-emerald-text); border:1px solid var(--accent-emerald-border); }
   </style>
 <script data-report-theme-boot>
 (function () {
@@ -489,12 +489,12 @@ done</pre>
 <!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
 <style data-report-enhanced>
   .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 60;
-    background: rgb(2 132 199); transition: width .1s linear; }
+    background: var(--accent-sky-dot, rgb(2 132 199)); transition: width .1s linear; }
   .anchor-h { position: relative; }
   .anchor-link { position: absolute; left: -1.15rem; top: 0.12em; opacity: 0; text-decoration: none;
-    color: rgb(148 163 184); font-weight: 600; transition: opacity .12s ease; }
+    color: var(--ink-mute, rgb(148 163 184)); font-weight: 600; transition: opacity .12s ease; }
   .anchor-h:hover .anchor-link, .anchor-link:focus { opacity: 1; }
-  .anchor-link:hover { color: rgb(37 99 235); }
+  .anchor-link:hover { color: var(--accent-sky-text, rgb(37 99 235)); }
   @media (max-width: 640px) { .anchor-link { display: none; } }
   @media (prefers-reduced-motion: reduce) { .reading-progress { transition: none; } }
   @media print {

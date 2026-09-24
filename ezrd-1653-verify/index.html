@@ -16,15 +16,15 @@
   </script>
   <style>
     html { font-size: 17px; scroll-behavior: smooth; }
-    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: rgb(15 23 42); }
+    body { font-feature-settings: "cv02","cv03","cv04","cv11"; color: var(--ink); }
     h1,h2,h3 { text-wrap: balance; } p { text-wrap: pretty; }
     .badge-num { width:2.4rem; height:2.4rem; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem; font-variant-numeric:tabular-nums; box-shadow:0 1px 0 rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.06); }
     .pill { display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .75rem; border-radius:9999px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; border-width:1px; }
     .main-card { box-shadow:0 1px 3px rgba(15,23,42,.08), 0 1px 2px rgba(15,23,42,.04); }
-    code.k { font-family:'JetBrains Mono',ui-monospace,monospace; background:rgb(226 232 240); color:rgb(15 23 42); padding:.1rem .4rem; border-radius:.25rem; font-size:.82em; white-space:nowrap; }
+    code.k { font-family:'JetBrains Mono',ui-monospace,monospace; background: var(--chip-bg, rgb(226 232 240)); color: var(--chip-fg, rgb(15 23 42)); padding:.1rem .4rem; border-radius:.25rem; font-size:.82em; white-space:nowrap; }
     .kicker { display:inline-flex; align-items:center; gap:.5rem; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; }
     .kdot { width:2.5px; height:2.5px; border-radius:9999px; box-shadow:0 0 0 2.5px currentColor; }
-    .meta-chip { display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border-radius:.5rem; font-size:.8rem; font-weight:600; background:rgb(248 250 252); border:1px solid rgb(203 213 225); color:rgb(51 65 85); }
+    .meta-chip { display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border-radius:.5rem; font-size:.8rem; font-weight:600; background:var(--surface-2); border:1px solid var(--border); color:var(--ink-body); }
     section { scroll-margin-top: 1.5rem; }
     @media print { .no-print{display:none!important} .main-card{box-shadow:none!important} section{break-inside:avoid} *{print-color-adjust:exact;-webkit-print-color-adjust:exact} }
   </style>
@@ -790,12 +790,12 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
 <style data-report-enhanced>
   .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 60;
-    background: rgb(2 132 199); transition: width .1s linear; }
+    background: var(--accent-sky-dot, rgb(2 132 199)); transition: width .1s linear; }
   .anchor-h { position: relative; }
   .anchor-link { position: absolute; left: -1.15rem; top: 0.12em; opacity: 0; text-decoration: none;
-    color: rgb(148 163 184); font-weight: 600; transition: opacity .12s ease; }
+    color: var(--ink-mute, rgb(148 163 184)); font-weight: 600; transition: opacity .12s ease; }
   .anchor-h:hover .anchor-link, .anchor-link:focus { opacity: 1; }
-  .anchor-link:hover { color: rgb(37 99 235); }
+  .anchor-link:hover { color: var(--accent-sky-text, rgb(37 99 235)); }
   @media (max-width: 640px) { .anchor-link { display: none; } }
   @media (prefers-reduced-motion: reduce) { .reading-progress { transition: none; } }
   @media print {

@@ -29,7 +29,7 @@
     .flow-line {
       position: relative;
       width: 2px;
-      background: linear-gradient(to bottom, rgb(203 213 225), rgb(148 163 184));
+      background: linear-gradient(to bottom, var(--border), var(--ink-mute));
       margin-left: auto; margin-right: auto;
     }
     .flow-line::after {
@@ -37,7 +37,7 @@
       transform: translateX(-50%);
       border-left: 8px solid transparent;
       border-right: 8px solid transparent;
-      border-top: 10px solid rgb(100 116 139);
+      border-top: 10px solid var(--ink-mute);
     }
     .badge-num {
       width: 2.75rem; height: 2.75rem; border-radius: 9999px;
@@ -808,12 +808,12 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
 <!-- report-enhancements v1 · print styles + reading progress + section anchors (shared system) -->
 <style data-report-enhanced>
   .reading-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 60;
-    background: rgb(2 132 199); transition: width .1s linear; }
+    background: var(--accent-sky-dot, rgb(2 132 199)); transition: width .1s linear; }
   .anchor-h { position: relative; }
   .anchor-link { position: absolute; left: -1.15rem; top: 0.12em; opacity: 0; text-decoration: none;
-    color: rgb(148 163 184); font-weight: 600; transition: opacity .12s ease; }
+    color: var(--ink-mute, rgb(148 163 184)); font-weight: 600; transition: opacity .12s ease; }
   .anchor-h:hover .anchor-link, .anchor-link:focus { opacity: 1; }
-  .anchor-link:hover { color: rgb(37 99 235); }
+  .anchor-link:hover { color: var(--accent-sky-text, rgb(37 99 235)); }
   @media (max-width: 640px) { .anchor-link { display: none; } }
   @media (prefers-reduced-motion: reduce) { .reading-progress { transition: none; } }
   @media print {
