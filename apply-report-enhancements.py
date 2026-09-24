@@ -97,7 +97,12 @@ def inject_theme(html):
     if head_end == -1:
         raise ValueError("no </head>")
     html = html[:head_end] + HEAD_BOOT + "\n" + style_block() + "\n" + html[head_end:]
-    m = re.search(r"<body[^>]*>", html)
+    # Search for the body tag AFTER </head>, never from position 0: the block
+    # being injected is CSS and JavaScript, and a comment or a string in it can
+    # legitimately contain the text "<body>". An unanchored search found one and
+    # injected the toggle button inside the <style> element.
+    body_search_from = html.find("</head>")
+    m = re.compile(r"<body[^>]*>").search(html, body_search_from)
     if m:
         html = html[:m.end()] + "\n" + TOGGLE_HTML + html[m.end():]
     return html, True

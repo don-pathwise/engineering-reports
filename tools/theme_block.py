@@ -69,7 +69,17 @@ SLIDER_CSS = """
   .seg-btn[aria-pressed="true"] { color: var(--ink); }
   .seg-dot { width: 7px; height: 7px; border-radius: 999px; flex-shrink: 0; }
   @media (prefers-reduced-motion: reduce) { .seg-thumb { transition: none; } }
-  @media (max-width: 860px) { .section-bar { display: none; } }
+  /* Narrow screens don't get the segmented nav -- but the bar is also where
+     the theme toggle was adopted to, and `display:none` on the bar took the
+     toggle with it: 0x0, unreachable, on every slider page at phone width.
+     So collapse the bar to nothing instead of removing it, and hand the
+     toggle back to its default fixed placement. */
+  @media (max-width: 860px) {
+    .section-bar { position: static; background: none; border: 0; }
+    .section-bar-inner { padding: 0; display: block; }
+    .seg-track { display: none; }
+    .section-bar .theme-switch { position: fixed; top: 14px; right: 18px; }
+  }
   @media print { .section-bar { display: none !important; } }
 """
 
@@ -253,8 +263,18 @@ def style_block():
     color-scheme: dark;
 {dark}
   }}
+  /* The slider adopts this button into its bar (inner.appendChild(sw)), but
+     the slider bails on any page with fewer than 2 <h2 id> headings -- 7 pages
+     today, including the site landing page. With no placement of its own the
+     button then sat as the body's first child at {{x:0, y:0}}: a bare pill in
+     the top-left corner, the first thing a visitor to index.html saw. So it
+     parks itself top-right by default and the bar overrides that when it does
+     adopt it. The override is `relative`, not `static`: the knob is
+     position:absolute and needs this button to stay its containing block --
+     `static` would hand the knob to the sticky .section-bar instead. */
   .theme-switch {{
-    position: relative; width: 60px; height: 30px; padding: 0; flex-shrink: 0;
+    position: fixed; top: 14px; right: 18px; z-index: 50;
+    width: 60px; height: 30px; padding: 0; flex-shrink: 0;
     border-radius: 999px; cursor: pointer; background: var(--page);
     border: 1px solid var(--border);
     box-shadow: inset 0 2px 5px rgb(0 0 0 / .45), inset 0 -1px 0 rgb(255 255 255 / .04);
@@ -265,11 +285,19 @@ def style_block():
     box-shadow: inset 0 1px 0 rgb(255 255 255 / .13), 0 1px 3px rgb(0 0 0 / .5);
     transition: left .22s cubic-bezier(.4, 0, .2, 1);
   }}
+  .section-bar .theme-switch {{ position: relative; top: auto; right: auto; }}
   :root[data-theme="dark"] .theme-switch-knob {{ left: 35px; }}
   @media (prefers-reduced-motion: reduce) {{ .theme-switch-knob {{ transition: none; }} }}
-  /* Print is light, whatever the reader chose. */
+  /* Print is light, whatever the reader chose -- and whether or not JS ran.
+     `:root:not([data-theme="light"])` has to be in this list: with JS
+     disabled no data-theme attribute is ever set, so `:root[data-theme="dark"]`
+     below cannot match and the bare `:root` (0,1,0) loses to the
+     system-preference rule's `:root:not([data-theme="light"])` (0,2,0) above.
+     A dark-preferring OS then printed the dark palette. Matching that
+     selector here makes the specificity equal, and this block is later in the
+     sheet, so it wins. */
   @media print {{
-    :root, :root[data-theme="dark"] {{
+    :root, :root:not([data-theme="light"]), :root[data-theme="dark"] {{
       color-scheme: light;
 {light}
     }}
