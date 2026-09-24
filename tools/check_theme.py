@@ -12,7 +12,7 @@ colour step is a migration bug, not something to pass through silently.
 import glob, os, re, sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-from theme_block import MARKER, TOGGLE_HTML
+from theme_block import MARKER, TOGGLE_HTML, style_block
 
 # The 7 already-dark code panels. These are NOT inverted; they use --code-panel-*.
 EXEMPT_DARK = {
@@ -54,6 +54,30 @@ REQUIRED_ARTIFACTS = [
 ]
 
 
+# Every custom property the generated token block defines. A page's own <style>
+# must not declare any of these.
+#
+# The token block is injected at the END of <head>, after the page's own
+# <style>, so at equal :root specificity document order hands the win to the
+# token layer. Three pages (the GitHub-dark ezrd-976 / ezrd-1276 pair) defined
+# their own :root --surface and --border for a dark card look; the token layer
+# silently overrode both while their --bg/--text survived, so in LIGHT theme
+# the body stayed dark and every card turned white -- 1.18:1, 33 unreadable
+# elements on ezrd-976. Nothing caught it because both files were, by every
+# other measure, correctly themed.
+EMITTED_PROPS = frozenset(re.findall(r"--[a-z0-9-]+(?=\s*:)", style_block()))
+
+_STYLE_RE = re.compile(r"<style([^>]*)>(.*?)</style>", re.S)
+_GENERATED = ("data-report-theme", "data-report-enhanced")
+_CUSTOM_PROP = re.compile(r"(--[a-zA-Z0-9_-]+)\s*:")
+
+
+def page_styles(html):
+    """The page's OWN <style> bodies -- everything the generators did not emit."""
+    return [body for attrs, body in _STYLE_RE.findall(html)
+            if not any(g in attrs for g in _GENERATED)]
+
+
 def pages():
     return sorted(glob.glob("*/*.html") + glob.glob("index.html"))
 
@@ -71,6 +95,14 @@ def main():
             n = html.count(literal)
             if n != 1:
                 failures.append((f, f"{label}: expected exactly 1, found {n}"))
+
+        own_css = "\n".join(page_styles(html))
+        collisions = sorted(set(_CUSTOM_PROP.findall(own_css)) & EMITTED_PROPS)
+        if collisions:
+            failures.append(
+                (f, f"private custom propert{'y' if len(collisions) == 1 else 'ies'} "
+                    f"collide with the token layer: {collisions} -- rename them "
+                    f"(the token block is injected later in <head> and wins)"))
 
         leftovers = COLOUR_UTIL.findall(html)
         if leftovers and f not in EXEMPT_DARK:

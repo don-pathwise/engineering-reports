@@ -7,8 +7,8 @@
 <style>
   :root {
     --bg: #0d1117;
-    --surface: #161b22;
-    --border: #30363d;
+    --gh-surface: #161b22;
+    --gh-border: #30363d;
     --text: #e6edf3;
     --text-muted: #8b949e;
     --accent: #58a6ff;
@@ -28,7 +28,7 @@
     margin: 0 auto;
   }
   h1 { font-size: 2rem; margin-bottom: 0.25rem; }
-  h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--accent); border-bottom: 1px solid var(--gh-border); padding-bottom: 0.5rem; }
   h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--purple); }
   p { margin-bottom: 1rem; }
   .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
@@ -39,8 +39,8 @@
   .badge-ok { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
 
   .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--gh-surface);
+    border: 1px solid var(--gh-border);
     border-radius: 8px;
     padding: 1.25rem;
     margin-bottom: 1rem;
@@ -48,13 +48,13 @@
   .card-title { font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
 
   table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.9rem; }
-  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--gh-border); }
   th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
   tr:hover td { background: rgba(88,166,255,0.04); }
 
   .diagram {
     background: #0d1117;
-    border: 1px solid var(--border);
+    border: 1px solid var(--gh-border);
     border-radius: 8px;
     padding: 1.25rem;
     overflow-x: auto;
@@ -79,11 +79,11 @@
   }
 
   .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+  .metric { background: var(--gh-surface); border: 1px solid var(--gh-border); border-radius: 8px; padding: 1rem; text-align: center; }
   .metric-value { font-size: 2rem; font-weight: 700; }
   .metric-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
 
-  .finding { border-left: 3px solid var(--border); padding-left: 1rem; margin-bottom: 1.5rem; }
+  .finding { border-left: 3px solid var(--gh-border); padding-left: 1rem; margin-bottom: 1.5rem; }
   .finding.critical { border-left-color: var(--red); }
   .finding.high { border-left-color: var(--orange); }
   .finding.medium { border-left-color: var(--accent); }
@@ -91,7 +91,7 @@
   .file-ref { color: var(--text-muted); font-size: 0.85rem; font-family: monospace; }
 
   .suggestion-list { list-style: none; padding: 0; }
-  .suggestion-list li { padding: 0.75rem 1rem; margin-bottom: 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+  .suggestion-list li { padding: 0.75rem 1rem; margin-bottom: 0.5rem; background: var(--gh-surface); border: 1px solid var(--gh-border); border-radius: 6px; }
   .suggestion-list li strong { color: var(--accent); }
 
   .waterfall { margin-bottom: 1.5rem; }
@@ -101,7 +101,7 @@
   .waterfall-bar { height: 100%; border-radius: 3px; min-width: 2px; display: flex; align-items: center; padding-left: 6px; font-size: 0.75rem; color: #fff; font-weight: 500; }
   .waterfall-size { width: 70px; flex-shrink: 0; text-align: right; color: var(--text-muted); font-size: 0.8rem; }
 
-  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 2rem; }
+  .toc { background: var(--gh-surface); border: 1px solid var(--gh-border); border-radius: 8px; padding: 1.25rem; margin-bottom: 2rem; }
   .toc h3 { margin-top: 0; color: var(--text); }
   .toc ol { padding-left: 1.5rem; }
   .toc li { margin-bottom: 0.3rem; }
@@ -816,7 +816,7 @@ tailwind.config.theme.extend.colors = Object.assign({}, tailwind.config.theme.ex
   </tbody>
 </table>
 
-<p style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem;">
+<p style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--gh-border); color: var(--text-muted); font-size: 0.85rem;">
   Generated from spike investigation on 2026-05-08. Measurements taken on local Docker with production-equivalent Clark data (309k students).
   Ticket: <a href="https://pathwise.atlassian.net/browse/EZRD-1276" style="color:var(--accent);">EZRD-1276</a> |
   Blocks: <a href="https://pathwise.atlassian.net/browse/EZRD-1275" style="color:var(--accent);">EZRD-1275</a>
