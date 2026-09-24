@@ -2,7 +2,7 @@
 """Emits the CSS token block, the no-flash boot script, and the toggle markup."""
 import re
 
-from tokens import LIGHT, DARK, ACCENTS, CODE_PANEL_HEX, BORDER_W, RADII
+from tokens import LIGHT, DARK, ACCENTS, CODE_PANEL_HEX, BORDER_W
 
 MARKER = "data-report-theme"
 
@@ -235,13 +235,11 @@ def _vars(tokens, accents, theme):
 def style_block():
     light = _vars(LIGHT, ACCENTS["light"], "light")
     dark = _vars(DARK, ACCENTS["dark"], "dark")
-    radii = "\n".join(f"    --radius-{k}: {v};" for k, v in RADII.items())
     return f"""<!-- report-theme v1 · oklch token layer (shared system — do not hand-edit) -->
 <style {MARKER}>
   :root {{
     color-scheme: light;
 {light}
-{radii}
   }}
   /* System preference, only when the reader has not chosen. */
   @media (prefers-color-scheme: dark) {{

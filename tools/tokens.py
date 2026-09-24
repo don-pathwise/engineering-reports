@@ -142,8 +142,6 @@ ACCENTS = {theme: {name: {role: srgb_to_oklch(h) for role, h in roles.items()}
                    for name, roles in by_name.items()}
            for theme, by_name in ACCENTS_HEX.items()}
 
-RADII = {"card": "8px", "panel": "6px", "code": "8px", "pre": "5px", "chip": "3px"}
-
 
 if __name__ == "__main__":
     for theme, t in (("light", LIGHT), ("dark", DARK)):

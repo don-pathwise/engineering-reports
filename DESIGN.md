@@ -105,11 +105,13 @@ self-describing.
   both the container and the `<pre>` unless it's one of the theme-invariant
   dark panels, in which case both are `rounded-lg`.
 
-  `tools/tokens.py`'s `RADII` dict (`card`/`panel`/`code`/`pre`/`chip`) is
-  emitted as five `--radius-*` custom properties into every page by
-  `tools/theme_block.py`, but nothing in the corpus or the tooling consumes
-  them via `var(--radius-*)`. Treat those as dead, unconsumed config, not as
-  the shipped scale — the Tailwind classes above are what's live.
+  The radius scale lives in those Tailwind classes and nowhere else. An
+  earlier version of `tools/tokens.py` carried a `RADII` dict that
+  `tools/theme_block.py` emitted as five `--radius-*` custom properties on
+  every page; nothing ever consumed them via `var(--radius-*)`, and the
+  figures in them never matched what the class-based migration produced, so
+  both the dict and the emission were deleted. Don't reintroduce a radius
+  token layer unless the components are wired to read from it.
 - **Pill**: `inline-flex rounded-full`, uppercase `0.72rem` tracked, `border-width:1px`. Status pills earn color per row/item; section-header pills usually don't.
 - **Callout banner**: full-width tinted card (`bg-{accent}-fill border-2 border-{accent}-border rounded-lg`), no badge.
 - **Table**: token neutral panel (`bg-surface-2 border-2 border-token rounded-md`), uppercase tracked header row (`bg-chip`), `divide-y divide-hairline` body, wrapper `overflow-x-auto` + `min-w-[…]` + `<colgroup>` so wide tables scroll (never clip) inside the card.
